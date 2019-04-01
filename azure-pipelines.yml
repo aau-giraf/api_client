@@ -1,0 +1,26 @@
+# Flutter build
+variables:
+  projectDirectory: .
+
+jobs:
+  - job: Android
+    pool:
+      vmImage: 'macOS-10.13'
+    steps:
+      - task: FlutterInstall@0
+      - task: Bash@3
+        inputs:
+          targetType: inline
+          script: $(FlutterToolPath)/flutter analyze
+      - task: FlutterBuild@0
+        inputs:
+          target: apk
+          projectDirectory: $(projectDirectory)
+      - task: FlutterTest@0
+        inputs:
+          projectDirectory: $(projectDirectory)
+      - task: CopyFiles@2
+        inputs:
+          contents: '**/*.apk'
+          targetFolder: '$(build.artifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1

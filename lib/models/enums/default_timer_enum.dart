@@ -1,0 +1,3 @@
+enum DefaultTimer{
+  Hourglass, AnalogClock
+}
