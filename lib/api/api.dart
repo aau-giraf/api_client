@@ -1,4 +1,3 @@
-
 import 'package:api_client/api/account_api.dart';
 import 'package:api_client/api/department_api.dart';
 import 'package:api_client/http/http_client.dart';
@@ -13,16 +12,47 @@ import 'package:api_client/persistence/persistence_client.dart';
 /// Weekplanner API
 class Api {
   /// Default constructor
-  Api(this.baseUrl) {
+  Api(this.baseUrl,
+      [String tokenKey = 'token',
+      Duration timeout = const Duration(seconds: 5)]) {
     final Persistence persist = PersistenceClient();
-    account = AccountApi(HttpClient(baseUrl + '/v1', persist), persist);
-    status = StatusApi(HttpClient(baseUrl + '/v1/Status', persist));
-    department = DepartmentApi(HttpClient(baseUrl + '/v1/Department', persist));
-    week = WeekApi(HttpClient(baseUrl + '/v1/User', persist));
-    pictogram = PictogramApi(HttpClient(baseUrl + '/v1/Pictogram', persist));
-    weekTemplate =
-        WeekTemplateApi(HttpClient(baseUrl + '/v1/WeekTemplate', persist));
-    user = UserApi(HttpClient(baseUrl + '/v1/User', persist));
+    account = AccountApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout),
+        persist);
+    status = StatusApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Status',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    department = DepartmentApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Department',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    week = WeekApi(HttpClient(
+        baseUrl: '$baseUrl/v1/User',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    pictogram = PictogramApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Pictogram',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    weekTemplate = WeekTemplateApi(HttpClient(
+        baseUrl: '$baseUrl/v1/WeekTemplate',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    user = UserApi(HttpClient(
+        baseUrl: '$baseUrl/v1/User',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
   }
 
   /// To access account endpoints

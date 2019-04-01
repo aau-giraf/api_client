@@ -1,14 +1,32 @@
 # Giraf API Client
 
+[![Build Status](https://dev.azure.com/aau-giraf/giraf/_apis/build/status/aau-giraf.api_client?branchName=master)](https://dev.azure.com/aau-giraf/giraf/_build/latest?definitionId=3&branchName=master)
+
 API client for Flutter to communicate with the Giraf web API
 
 ## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.io/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+We welcome all contributions, here's how to get started.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+### Prerequisites
+
+This project is based on Flutter, you can install flutter from here: https://flutter.dev/docs/get-started/install
+
+
+### Contributing
+
+We are using the [GitFlow](https://github.com/aau-giraf/wiki/blob/master/process_manual/code_workflow.md#essential-parts-of-gitflow) brancing pattern so all development must be done in either a feature branch or the `develop` branch.
+
+1. Clone the project
+2. Run `git checkout develop`
+3. Go to the [issues tab](https://github.com/aau-giraf/api_client/issues) to see which user stories need to be implemented
+
+### Pull Requests
+
+Pull Requests are used for code review. Before submitting a Pull Request make sure to merge `develop` into your branch, so your Pull Request can be performed automatically.
+
+## License
+
+GNU GENERAL PUBLIC LICENSE V3
+
+Copyright [2018] [Aalborg University]

@@ -2,7 +2,6 @@ import 'package:api_client/http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/giraf_user_model.dart';
-import 'package:api_client/models/response_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/persistence/persistence.dart';
 
@@ -23,15 +22,8 @@ class AccountApi {
     return _http.post('/Account/login', <String, String>{
       'username': username,
       'password': password,
-    }).flatMap((Response res) {
-      final ResponseModel<String> response =
-          ResponseModel<String>.fromJson(res.json, res.json['data']);
-
-      return Observable<bool>.fromFuture(Future<bool>(() async {
-        await _persist.set('token', response.data);
-        return response.success;
-      }));
-    });
+    }).flatMap((Response res) =>
+        Observable<bool>.fromFuture(_persist.set('token', res.json['data'])));
   }
 
   /// Register a new user
@@ -100,15 +92,8 @@ class AccountApi {
   ///
   /// [id] ID of the user
   Observable<bool> delete(String id) {
-    return _http.delete('/Account/user/$id').flatMap((Response res) {
-      final ResponseModel<String> response =
-          ResponseModel<String>.fromJson(res.json, res.json['data']);
-
-      return Observable<bool>.fromFuture(Future<bool>(() async {
-        await _persist.remove('token');
-        return response.success;
-      }));
-    });
+    return _http.delete('/Account/user/$id').flatMap((Response res) =>
+        Observable<bool>.fromFuture(_persist.remove('token')));
   }
 
   /// Logout the currently logged in user

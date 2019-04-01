@@ -1,14 +1,23 @@
 import 'dart:convert';
 
+import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/persistence/persistence.dart';
+import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:http/http.dart' as http;
 
 /// Default implementation of Http
 class HttpClient implements Http {
   /// Default constructor
-  HttpClient(this.baseUrl, this._persist, [this._tokenKey = 'token']);
+  HttpClient(
+      {@required this.baseUrl,
+      @required Persistence persist,
+      String tokenKey = 'token',
+      Duration timeout = const Duration(seconds: 5)})
+      : _persist = persist,
+        _tokenKey = tokenKey,
+        _timeout = timeout;
 
   Future<Map<String, String>> get _headers async {
     final Map<String, String> headers = <String, String>{
@@ -34,6 +43,8 @@ class HttpClient implements Http {
 
   /// The key for which, in the SharedPreferences, the token is stored
   final String _tokenKey;
+
+  final Duration _timeout;
 
   @override
   Observable<Response> get(String url) {
@@ -71,6 +82,9 @@ class HttpClient implements Http {
   }
 
   Observable<Response> _parseJson(Future<http.Response> res) {
+    // Add timeout for request
+    res = res.timeout(_timeout);
+
     return Observable<http.Response>.fromFuture(res).map((http.Response res) {
       Map<String, dynamic> json;
       // ensure all headers are in lowercase
@@ -81,6 +95,10 @@ class HttpClient implements Http {
       if (headers.containsKey('content-type') &&
           headers['content-type'].toLowerCase().contains('application/json')) {
         json = jsonDecode(res.body);
+
+        if (!json['success']) {
+          throw ApiException(Response(res, json));
+        }
       }
 
       return Response(res, json);

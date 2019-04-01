@@ -9,11 +9,11 @@ abstract class Persistence {
   Future<List<String>> getList(String key);
 
   /// Stores the [value] under the given [key]
-  Future<void> set(String key, String value);
+  Future<bool> set(String key, String value);
 
   /// Removes the [key], i.e sets token to `null`
-  Future<void> remove(String key);
+  Future<bool> remove(String key);
 
   /// Clear all entries
-  Future<void> clear();
+  Future<bool> clear();
 }

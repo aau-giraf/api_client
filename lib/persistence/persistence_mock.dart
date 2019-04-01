@@ -11,18 +11,21 @@ class PersistenceMock implements Persistence {
   }
 
   @override
-  Future<void> remove(String key) async {
+  Future<bool> remove(String key) async {
     _token = null;
+    return true;
   }
 
   @override
-  Future<void> set(String key, String value) async {
+  Future<bool> set(String key, String value) async {
     _token = value;
+    return true;
   }
 
   @override
-  Future<void> clear() async {
+  Future<bool> clear() async {
     _token = null;
+    return true;
   }
 
   @override

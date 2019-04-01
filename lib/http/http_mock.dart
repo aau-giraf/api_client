@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// HTTP Method
+// ignore: public_member_api_docs
 enum Method { get, post, put, delete, patch }
 
 /// A call to the Http

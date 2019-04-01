@@ -12,10 +12,6 @@ jobs:
         inputs:
           targetType: inline
           script: $(FlutterToolPath)/flutter analyze
-      - task: FlutterBuild@0
-        inputs:
-          target: apk
-          projectDirectory: $(projectDirectory)
       - task: FlutterTest@0
         inputs:
           projectDirectory: $(projectDirectory)

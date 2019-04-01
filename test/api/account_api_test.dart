@@ -1,3 +1,6 @@
+import 'package:api_client/api/api_exception.dart';
+import 'package:api_client/http/http.dart';
+import 'package:api_client/models/enums/error_key.dart';
 import 'package:test_api/test_api.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
@@ -31,6 +34,21 @@ void main() {
       'errorProperties': <dynamic>[],
       'errorKey': 'NoError',
     });
+  });
+
+  test('Should throw on error', () {
+    accountApi.login('username', 'password').listen((_) {},
+        onError: expectAsync1((ApiException error) {
+      expect(error.errorKey, ErrorKey.InvalidCredentials);
+    }));
+
+    httpMock
+        .expectOne(url: '/Account/login', method: Method.post)
+        .throwError(ApiException(Response(null, <String, dynamic>{
+          'success': false,
+          'errorProperties': <dynamic>[],
+          'errorKey': 'InvalidCredentials',
+        })));
   });
 
   test('Should request reset password token', () {

@@ -16,20 +16,20 @@ class PersistenceClient implements Persistence {
   }
 
   @override
-  Future<void> set(String key, String value) async {
+  Future<bool> set(String key, String value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, value);
+    return prefs.setString(key, value);
   }
 
   @override
-  Future<void> remove(String key) async {
+  Future<bool> remove(String key) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove(key);
+    return prefs.remove(key);
   }
 
   @override
-  Future<void> clear() async {
+  Future<bool> clear() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    return prefs.clear();
   }
 }
