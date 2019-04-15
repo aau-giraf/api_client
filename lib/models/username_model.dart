@@ -1,3 +1,4 @@
+import 'package:api_client/models/giraf_user_model.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
 
@@ -15,6 +16,13 @@ class UsernameModel implements Model {
     id = json['userId'];
     name = json['userName'];
     role = json['userRole'];
+  }
+
+  /// Create object from GirafUserModel
+  UsernameModel.fromGirafUser(GirafUserModel user) {
+    name = user.screenName;
+    role = user.roleName;
+    id = user.id;
   }
 
   /// The user's name
