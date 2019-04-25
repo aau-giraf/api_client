@@ -1,9 +1,9 @@
 import 'package:api_client/http/http.dart';
-import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/username_model.dart';
+import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// User endpoints
 class UserApi {
@@ -71,7 +71,7 @@ class UserApi {
       return Image.memory(res.response.bodyBytes);
     });
   }
-
+  
   Observable<bool> updateIcon() {
     // TODO(boginw): implement this
     return null;
