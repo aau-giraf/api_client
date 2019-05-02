@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
@@ -22,11 +24,11 @@ abstract class Http {
   Observable<Response> delete(String url);
 
   /// Makes an POST request to the specified [url], with the given [body]
-  Observable<Response> post(String url, [Map<String, dynamic> body]);
+  Observable<Response> post(String url, [dynamic body]);
 
   /// Makes an PUT request to the specified [url], with the given [body]
-  Observable<Response> put(String url, [Map<String, dynamic> body]);
+  Observable<Response> put(String url, [dynamic body]);
 
   /// Makes an PATCH request to the specified [url], with the given [body]
-  Observable<Response> patch(String url, [Map<String, dynamic> body]);
+  Observable<Response> patch(String url, [dynamic body]);
 }
