@@ -2,6 +2,7 @@ import 'package:api_client/api/account_api.dart';
 import 'package:api_client/api/department_api.dart';
 import 'package:api_client/http/http_client.dart';
 import 'package:api_client/api/pictogram_api.dart';
+import 'package:api_client/api/activity_api.dart';
 import 'package:api_client/api/status_api.dart';
 import 'package:api_client/api/user_api.dart';
 import 'package:api_client/api/week_api.dart';
@@ -43,6 +44,11 @@ class Api {
         persist: persist,
         tokenKey: tokenKey,
         timeout: timeout));
+    activity = ActivityApi(HttpClient(
+        baseUrl: '$baseUrl/v2/Activity',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
     weekTemplate = WeekTemplateApi(HttpClient(
         baseUrl: '$baseUrl/v1/WeekTemplate',
         persist: persist,
@@ -63,6 +69,9 @@ class Api {
 
   /// To access pictogram endpoints
   PictogramApi pictogram;
+
+  /// To access activity endpoints
+  ActivityApi activity;
 
   /// To access week endpoints
   WeekApi week;
