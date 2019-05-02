@@ -14,7 +14,7 @@ class ActivityApi {
   ///
   /// [id] Id of pictogram to get
   Observable<ActivityModel> update(ActivityModel activity) {
-    return _http.put('/update', activity.toJson()).map((Response res) {
+    return _http.post('/update', activity.toJson()).map((Response res) {
       return ActivityModel.fromJson(res.json['data']);
     });
   }
