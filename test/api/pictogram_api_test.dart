@@ -108,7 +108,7 @@ void main() {
   });
 
   test('Updates pictogram image', () {
-    final Uint8List image = Uint8List.fromList([
+    final Uint8List image = Uint8List.fromList(<int>[
       1,
       2,
       3,
