@@ -17,7 +17,7 @@ void main() {
       order: 0,
       pictogram: PictogramModel(
           id: 69,
-          title: "hi",
+          title: 'hi',
           accessLevel: AccessLevel.PUBLIC,
           lastEdit: DateTime.now(),
           imageHash: null,
