@@ -9,12 +9,15 @@ enum Method { get, post, put, delete, patch }
 /// A call to the Http
 class Call {
   /// Default constructor
-  Call(this.method, this.url) {
+  Call(this.method, this.url, [this.body]) {
     flush = PublishSubject<dynamic>();
   }
 
   /// Which method was used
   final Method method;
+
+  /// Body of the request
+  final dynamic body;
 
   /// What url was the call made on
   final String url;
@@ -61,9 +64,11 @@ class HttpMock implements Http {
   ///
   /// [method] One of delete, get, patch, post, or put.
   /// [url] The url that is expected
-  Flusher expectOne({Method method, @required String url}) {
+  Flusher expectOne({Method method, @required String url, dynamic body}) {
     final int index = _calls.indexWhere((Call call) =>
-        call.url == url && (method == null || method == call.method));
+        call.url == url &&
+        (method == null || method == call.method) &&
+        (body == null || body == call.body));
 
     if (index == -1) {
       throw Exception('Expected [$method] $url, found none');
@@ -97,22 +102,22 @@ class HttpMock implements Http {
   }
 
   @override
-  Observable<Response> patch(String url, [Map<String, dynamic> body]) {
-    return _reqToRes(Method.patch, url);
+  Observable<Response> patch(String url, [dynamic body]) {
+    return _reqToRes(Method.patch, url, body);
   }
 
   @override
-  Observable<Response> post(String url, [Map<String, dynamic> body]) {
-    return _reqToRes(Method.post, url);
+  Observable<Response> post(String url, [dynamic body]) {
+    return _reqToRes(Method.post, url, body);
   }
 
   @override
-  Observable<Response> put(String url, [Map<String, dynamic> body]) {
-    return _reqToRes(Method.put, url);
+  Observable<Response> put(String url, [dynamic body]) {
+    return _reqToRes(Method.put, url, body);
   }
 
-  Observable<Response> _reqToRes(Method method, String url) {
-    final Call call = Call(method, url);
+  Observable<Response> _reqToRes(Method method, String url, [dynamic body]) {
+    final Call call = Call(method, url, body);
     _calls.add(call);
 
     return call.flush.map((dynamic response) {
