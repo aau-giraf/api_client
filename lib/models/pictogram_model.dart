@@ -4,12 +4,12 @@ import 'package:api_client/models/model.dart';
 
 class PictogramModel implements Model {
   PictogramModel({
-    @required this.id,
-    @required this.lastEdit,
+    this.id,
+    this.lastEdit,
     @required this.title,
     @required this.accessLevel,
-    @required this.imageUrl,
-    @required this.imageHash,
+    this.imageUrl,
+    this.imageHash,
   });
 
   PictogramModel.fromJson(Map<String, dynamic> json) {
