@@ -44,13 +44,27 @@ class PictogramModel implements Model {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'id': id,
-      'lastEdit': lastEdit == null ? '' : lastEdit.toIso8601String(),
+    final Map<String, dynamic> result = <String, dynamic>{
       'title': title,
       'accessLevel': accessLevel.index + 1,
-      'imageUrl': imageUrl,
-      'imageHash': imageHash
     };
+
+    if (id != 0) {
+      result['id'] = id;
+    }
+
+    if (lastEdit != null) {
+      result['lastEdit'] = lastEdit.toIso8601String();
+    }
+
+    if (imageUrl != null) {
+      result['imageUrl'] = imageUrl;
+    }
+
+    if (imageHash != null) {
+      result['imageHash'] = imageHash;
+    }
+
+    return result;
   }
 }
