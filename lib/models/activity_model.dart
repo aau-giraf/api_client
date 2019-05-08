@@ -29,8 +29,7 @@ class ActivityModel implements Model {
     order = json['order'];
     state = ActivityState.values[(json['state']) - 1];
     isChoiceBoard = json['isChoiceBoard'];
-    //TODO SHOULD BE test etstest UNCOMMENTED WHEN BACKEND IS READY
-    // timer = TimerModel.fromJson(json['timer']);
+    timer = TimerModel.fromJson(json['timer']);
   }
 
   /// The ID of the activity.
@@ -61,8 +60,7 @@ class ActivityModel implements Model {
       'order': order,
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
-      //TODO SHOULD BE UNCOMMENTED WHEN BACKEND IS READY
-      //'timer' : timer.toJson()
+      'timer' : timer.toJson()
     };
   }
 }
