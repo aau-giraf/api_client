@@ -36,7 +36,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/update', method: Method.post)
+        .expectOne(url: '/update', method: Method.patch)
         .flush(<String, dynamic>{
       'data': mockActivity.toJson(),
       'success': true,
