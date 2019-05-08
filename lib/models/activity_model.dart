@@ -1,17 +1,23 @@
-import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/pictogram_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:meta/meta.dart';
 
+import 'enums/activity_state_enum.dart';
+
+/// The model for the activity in the api client.
 class ActivityModel implements Model {
+  /// Constructor for Activity
   ActivityModel({
     @required this.id,
     @required this.pictogram,
     @required this.order,
     @required this.state,
     @required this.isChoiceBoard,
+    this.timer
   });
 
+  /// Constructs the activityModel from json.
   ActivityModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
@@ -23,10 +29,14 @@ class ActivityModel implements Model {
     order = json['order'];
     state = ActivityState.values[(json['state']) - 1];
     isChoiceBoard = json['isChoiceBoard'];
+    //TODO SHOULD BE test etstest UNCOMMENTED WHEN BACKEND IS READY
+    // timer = TimerModel.fromJson(json['timer']);
   }
 
+  /// The ID of the activity.
   int id;
 
+  /// The pictogram for the activity.
   PictogramModel pictogram;
 
   /// The order that the activity will appear on in a weekschedule. If two has
@@ -40,6 +50,9 @@ class ActivityModel implements Model {
   /// never be set from our side
   bool isChoiceBoard;
 
+  /// The timer for the activity
+  TimerModel timer;
+
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -48,6 +61,8 @@ class ActivityModel implements Model {
       'order': order,
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
+      //TODO SHOULD BE UNCOMMENTED WHEN BACKEND IS READY
+      //'timer' : timer.toJson()
     };
   }
 }
