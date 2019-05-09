@@ -17,11 +17,10 @@ class TimerModel implements Model {
       throw const FormatException(
           '[TimerModel]: Cannot initialize from null');
     }
-      startTime = json['startTimer'];
+      startTime = DateTime.fromMillisecondsSinceEpoch(json['startTime']);
       progress = json['progress'];
       fullLength = json['fullLength'];
       paused = json['paused'];
-
   }
 
   /// The time for when the timer started.
@@ -40,7 +39,7 @@ class TimerModel implements Model {
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'startTimer': startTime.toIso8601String().toString() ?? 'null',
+      'startTime': startTime.millisecondsSinceEpoch ?? 'null',
       'progress': progress ?? 'null',
       'fullLength': fullLength ?? 'null',
       'paused': paused ?? 'null'
