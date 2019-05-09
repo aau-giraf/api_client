@@ -13,10 +13,12 @@ class TimerModel implements Model {
 
   /// Constructor for the timer from json.
   TimerModel.fromJson(Map<String, dynamic> json) {
-    startTime = json['startTimer'];
-    progress = json['progress'];
-    fullLength = json['fullLength'];
-    paused = json['paused'];
+    if (json != null) {
+      startTime = json['startTimer'];
+      progress = json['progress'];
+      fullLength = json['fullLength'];
+      paused = json['paused'];
+    }
   }
 
   /// The time for when the timer started.
