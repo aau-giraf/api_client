@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:api_client/http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
@@ -79,9 +81,14 @@ class PictogramApi {
     });
   }
 
-  Observable<PictogramModel> updateImage() {
-    // TODO(boginw): implement me
-    return null;
+  /// Updates the [image] of a pictogram with the given [id]
+  ///
+  ///  [id] Id of the pictogram for which the image should be updated
+  /// [image] List of Uint8 representing an image
+  Observable<PictogramModel> updateImage(int id, Uint8List image) {
+    return _http.put('/$id/image', image).map((Response res) {
+      return PictogramModel.fromJson(res.json['data']);
+    });
   }
 
   /// Reads the raw pictogram image. You are allowed to read all public

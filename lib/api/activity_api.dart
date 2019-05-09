@@ -12,8 +12,8 @@ class ActivityApi {
   /// Updates the activity with the specified id 
   ///
   /// [id] Activity with a id that updates values in the database
-  Observable<ActivityModel> update(ActivityModel activity) {
-    return _http.patch('/update', activity.toJson()).map((Response res) {
+  Observable<ActivityModel> update(ActivityModel activity, String userId) {
+    return _http.patch('/$userId/update', activity.toJson()).map((Response res) {
       return ActivityModel.fromJson(res.json['data']);
     });
   }
