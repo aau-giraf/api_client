@@ -22,7 +22,7 @@ class TimerModel implements Model {
       paused = null;
     } else {
       startTime = json['startTimer'];
-      progress = json['prgress'];
+      progress = json['progress'];
       fullLength = json['fullLength'];
       paused = json['paused'];
     }
