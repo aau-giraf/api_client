@@ -17,10 +17,10 @@ class TimerModel implements Model {
       throw const FormatException(
           '[ActivityModel]: Cannot initialize from null');
     } else {
-      startTime = json['startTimer'] ?? 'null';
-      progress = json['progress'] ?? 'null';
-      fullLength = json['fullLength'] ?? 'null';
-      paused = json['paused'] ?? 'null';
+      startTime = json['startTimer'];
+      progress = json['progress'];
+      fullLength = json['fullLength'];
+      paused = json['paused'];
     }
   }
 
