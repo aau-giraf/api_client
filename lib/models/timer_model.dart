@@ -44,10 +44,10 @@ class TimerModel implements Model {
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'startTimer': startTime,
-      'progress': progress,
-      'fullLength': fullLength,
-      'paused': paused
+      'startTimer': startTime != null ? startTime : 'null',
+      'progress': progress != null ? progress : 'null',
+      'fullLength': fullLength != null ? fullLength : 'null',
+      'paused': paused != null ? paused : 'null'
     };
   }
 }
