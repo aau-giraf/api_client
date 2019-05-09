@@ -16,15 +16,11 @@ class TimerModel implements Model {
     if (json == null){
       throw const FormatException(
           '[ActivityModel]: Cannot initialize from null');
-      startTime = null;
-      progress = null;
-      fullLength = null;
-      paused = null;
     } else {
-      startTime = json['startTimer'];
-      progress = json['progress'];
-      fullLength = json['fullLength'];
-      paused = json['paused'];
+      startTime = json['startTimer'] ?? 'null';
+      progress = json['progress'] ?? 'null';
+      fullLength = json['fullLength'] ?? 'null';
+      paused = json['paused'] ?? 'null';
     }
   }
 
@@ -44,10 +40,10 @@ class TimerModel implements Model {
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'startTimer': startTime != null ? startTime : 'null',
-      'progress': progress != null ? progress : 'null',
-      'fullLength': fullLength != null ? fullLength : 'null',
-      'paused': paused != null ? paused : 'null'
+      'startTimer': startTime ?? 'null',
+      'progress': progress ?? 'null',
+      'fullLength': fullLength ?? 'null',
+      'paused': paused ?? 'null'
     };
   }
 }
