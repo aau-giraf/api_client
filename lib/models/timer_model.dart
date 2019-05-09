@@ -13,15 +13,10 @@ class TimerModel implements Model {
 
   /// Constructor for the timer from json.
   TimerModel.fromJson(Map<String, dynamic> json) {
-    if (json == null){
-      throw const FormatException(
-          '[ActivityModel]: Cannot initialize from null');
-    } else {
-      startTime = json['startTimer'];
-      progress = json['progress'];
-      fullLength = json['fullLength'];
-      paused = json['paused'];
-    }
+    startTime = json['startTimer'];
+    progress = json['progress'];
+    fullLength = json['fullLength'];
+    paused = json['paused'];
   }
 
   /// The time for when the timer started.
