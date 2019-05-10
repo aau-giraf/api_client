@@ -35,7 +35,6 @@ class TimerModel implements Model {
   /// Bool if the timer is paused or not
   bool paused;
 
-
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
