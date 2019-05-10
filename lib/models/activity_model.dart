@@ -8,14 +8,13 @@ import 'enums/activity_state_enum.dart';
 /// The model for the activity in the api client.
 class ActivityModel implements Model {
   /// Constructor for Activity
-  ActivityModel({
-    @required this.id,
-    @required this.pictogram,
-    @required this.order,
-    @required this.state,
-    @required this.isChoiceBoard,
-    this.timer
-  });
+  ActivityModel(
+      {@required this.id,
+      @required this.pictogram,
+      @required this.order,
+      @required this.state,
+      @required this.isChoiceBoard,
+      this.timer});
 
   /// Constructs the activityModel from json.
   ActivityModel.fromJson(Map<String, dynamic> json) {
@@ -63,7 +62,7 @@ class ActivityModel implements Model {
       'order': order,
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
-      'timer': timer.toJson()
+      'timer': timer != null ? timer.toJson() : null
     };
   }
 }
