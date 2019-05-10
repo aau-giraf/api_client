@@ -24,7 +24,8 @@ void main() {
       'order': 0,
       'state': 1,
       'id': 1044,
-      'isChoiceBoard': false
+      'isChoiceBoard': false,
+      'timer' : null
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
@@ -54,7 +55,8 @@ void main() {
       'order': 0,
       'state': 1,
       'id': 1044,
-      'isChoiceBoard': false
+      'isChoiceBoard': false,
+      'timer' : null
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
