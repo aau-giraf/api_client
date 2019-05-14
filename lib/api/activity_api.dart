@@ -1,5 +1,6 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
+import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// Pictogram endpoints
@@ -9,12 +10,44 @@ class ActivityApi {
 
   final Http _http;
 
-  /// Updates the activity with the specified id 
+  /// Adds the specified activity
   ///
-  /// [id] Activity with a id that updates values in the database
-  Observable<ActivityModel> update(ActivityModel activity, String userId) {
-    return _http.patch('/$userId/update', activity.toJson()).map((Response res) {
+  /// [activity] Activity to add.
+  /// [userId] User ID
+  /// [weekplanName] Name of the week plan
+  /// [weekYear] Year of the week
+  /// [weekNumber] Week number of the week
+  /// [weekDay] Day of the week that the activity should be added to
+  Observable<ActivityModel> add(ActivityModel activity, String userId,
+      String weekplanName, int weekYear, int weekNumber, Weekday weekDay) {
+    return _http
+        .post(
+            '/$userId/$weekplanName/$weekYear/$weekNumber/${weekDay.index + 1}',
+            activity.toJson())
+        .map((Response res) {
       return ActivityModel.fromJson(res.json['data']);
+    });
+  }
+
+  /// Updates the activity with the specified ID
+  ///
+  /// [activity] Activity with an id that updates values in the database
+  /// [userId] User ID
+  Observable<ActivityModel> update(ActivityModel activity, String userId) {
+    return _http
+        .patch('/$userId/update', activity.toJson())
+        .map((Response res) {
+      return ActivityModel.fromJson(res.json['data']);
+    });
+  }
+
+  /// Deletes the activity with the specified ID
+  ///
+  /// [activityId] ID of the activity to delete
+  /// [userID] User ID
+  Observable<bool> delete(int activityId, String userId) {
+    return _http.delete('/$userId/delete/$activityId').map((Response res) {
+      return res.json['success'];
     });
   }
 }
