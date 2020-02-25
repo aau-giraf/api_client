@@ -33,3 +33,4 @@ class PersistenceMock implements Persistence {
     return <String>[_token];
   }
 }
+
