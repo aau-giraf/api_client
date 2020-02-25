@@ -1,6 +1,7 @@
-import 'package:test_api/test_api.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   HttpMock httpMock;
@@ -62,7 +63,7 @@ void main() {
   test('Expect one returns flusher', () {
     const String url = 'http://';
     httpMock.get(url);
-    expect(httpMock.expectOne(url: url), const TypeMatcher<Flusher>());
+    expect(httpMock.expectOne(url: url), isInstanceOf<Flusher>());
   });
 
   test('Expect one removes request from request list', () {

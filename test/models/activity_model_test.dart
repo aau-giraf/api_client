@@ -1,7 +1,7 @@
-import 'package:test_api/test_api.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws on JSON is null', () {

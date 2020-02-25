@@ -1,5 +1,5 @@
 import 'package:api_client/models/timer_model.dart';
-import 'package:test_api/test_api.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final Map<String, dynamic> response1 = <String, dynamic>{

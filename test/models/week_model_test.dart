@@ -1,4 +1,4 @@
-import 'package:test_api/test_api.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:api_client/models/week_base_model.dart';
 import 'package:api_client/models/week_model.dart';
 
