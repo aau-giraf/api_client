@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/persistence/persistence.dart';
@@ -61,24 +60,28 @@ class HttpClient implements Http {
   }
 
   @override
-  Observable<Response> post(String url, [Map<String, dynamic> body]) {
+  Observable<Response> post(String url, [dynamic body]) {
     return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) => _parseJson(http.post(baseUrl + url,
-            body: jsonEncode(body), headers: headers)));
+            body: _bodyHandler(body), headers: headers)));
   }
 
   @override
-  Observable<Response> put(String url, [Map<String, dynamic> body]) {
+  Observable<Response> put(String url, [dynamic body]) {
     return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) => _parseJson(
-            http.put(baseUrl + url, body: jsonEncode(body), headers: headers)));
+        (Map<String, String> headers) => _parseJson(http.put(baseUrl + url,
+            body: _bodyHandler(body), headers: headers)));
   }
 
   @override
-  Observable<Response> patch(String url, [Map<String, dynamic> body]) {
+  Observable<Response> patch(String url, [dynamic body]) {
     return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) => _parseJson(http.patch(baseUrl + url,
-            body: jsonEncode(body), headers: headers)));
+            body: _bodyHandler(body), headers: headers)));
+  }
+
+  dynamic _bodyHandler(dynamic body) {
+	  return body is Map ? jsonEncode(body) : body;
   }
 
   Observable<Response> _parseJson(Future<http.Response> res) {

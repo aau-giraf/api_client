@@ -4,12 +4,12 @@ import 'package:api_client/models/model.dart';
 
 class PictogramModel implements Model {
   PictogramModel({
-    @required this.id,
-    @required this.lastEdit,
+    this.id,
+    this.lastEdit,
     @required this.title,
     @required this.accessLevel,
-    @required this.imageUrl,
-    @required this.imageHash,
+    this.imageUrl,
+    this.imageHash,
   });
 
   PictogramModel.fromJson(Map<String, dynamic> json) {
@@ -20,7 +20,7 @@ class PictogramModel implements Model {
 
     id = json['id'];
     lastEdit =
-        json['lastEdit'] == null ? null : DateTime.parse(json['lastEdit']);
+      json['lastEdit'] == null ? null : DateTime.tryParse(json['lastEdit']);
     title = json['title'];
     accessLevel = AccessLevel.values[(json['accessLevel']) - 1];
     imageUrl = json['imageUrl'];
@@ -44,13 +44,27 @@ class PictogramModel implements Model {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'id': id,
-      'lastEdit': lastEdit == null ? '' : lastEdit.toIso8601String(),
+    final Map<String, dynamic> result = <String, dynamic>{
       'title': title,
       'accessLevel': accessLevel.index + 1,
-      'imageUrl': imageUrl,
-      'imageHash': imageHash
     };
+
+    if (id != 0) {
+      result['id'] = id;
+    }
+
+    if (lastEdit != null) {
+      result['lastEdit'] = lastEdit.toIso8601String();
+    }
+
+    if (imageUrl != null) {
+      result['imageUrl'] = imageUrl;
+    }
+
+    if (imageHash != null) {
+      result['imageHash'] = imageHash;
+    }
+
+    return result;
   }
 }

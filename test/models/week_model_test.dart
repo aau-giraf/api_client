@@ -41,7 +41,8 @@ void main(){
             'order': 0,
             'state': 1,
             'id': 1238,
-            'isChoiceBoard': false
+            'isChoiceBoard': false,
+            'timer' : null
           }
         ]
       },
@@ -60,7 +61,8 @@ void main(){
             'order': 0,
             'state': 4,
             'id': 1239,
-            'isChoiceBoard': false
+            'isChoiceBoard': false,
+            'timer' : null
           },
           <String, dynamic>{
             'pictogram': <String, dynamic>{
@@ -74,7 +76,8 @@ void main(){
             'order': 1,
             'state': 1,
             'id': 1240,
-            'isChoiceBoard': false
+            'isChoiceBoard': false,
+            'timer' : null
           },
           <String, dynamic>{
             'pictogram': <String, dynamic>{
@@ -88,7 +91,8 @@ void main(){
             'order': 2,
             'state': 1,
             'id': 1241,
-            'isChoiceBoard': false
+            'isChoiceBoard': false,
+            'timer' : null
           }
         ]
       },
