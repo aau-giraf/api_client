@@ -1,6 +1,5 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/http/http_mock.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
