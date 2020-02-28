@@ -1,4 +1,3 @@
-import 'package:test_api/test_api.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
@@ -12,6 +11,7 @@ import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/username_model.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   UserApi userApi;
