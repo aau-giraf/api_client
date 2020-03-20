@@ -3,8 +3,8 @@ name: CI
 on: [push]
 
 jobs:
-  build-and-test:
-    name: Android on ${{ matrix.os }}
+  lint-and-test:
+    name: Lint and test package on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
