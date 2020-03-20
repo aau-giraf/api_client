@@ -31,7 +31,7 @@ class Flusher {
   /// Default constructor
   Flusher(this._call);
 
-  Call _call;
+  final Call _call;
 
   /// Flush a body to our listener
   ///

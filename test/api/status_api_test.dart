@@ -1,6 +1,6 @@
-import 'package:test_api/test_api.dart';
 import 'package:api_client/api/status_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   StatusApi statusApi;

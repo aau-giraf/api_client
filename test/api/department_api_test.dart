@@ -1,10 +1,10 @@
-import 'package:test_api/test_api.dart';
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/username_model.dart';
 import 'package:api_client/api/department_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   HttpMock httpMock;

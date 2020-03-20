@@ -7,8 +7,8 @@ import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/username_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/weekday_model.dart';
-import 'package:test_api/test_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   HttpMock httpMock;

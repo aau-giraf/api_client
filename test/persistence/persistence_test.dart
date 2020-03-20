@@ -1,9 +1,11 @@
 import 'package:api_client/persistence/persistence_client.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:test_api/test_api.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Should store', () async {
+    WidgetsFlutterBinding.ensureInitialized();
     const MethodChannel('plugins.flutter.io/shared_preferences')
         .setMockMethodCallHandler((MethodCall methodCall) async {
       if (methodCall.method == 'getAll') {
@@ -22,6 +24,7 @@ void main() {
   });
 
   test('Should get token', () async {
+    WidgetsFlutterBinding.ensureInitialized();
     const MethodChannel('plugins.flutter.io/shared_preferences')
         .setMockMethodCallHandler((MethodCall methodCall) async {
       if (methodCall.method == 'getAll') {
