@@ -39,7 +39,7 @@ class AccountApi {
       'username': username,
       'password': password,
       'departmentId': departmentId,
-      'role': role.toString(),
+      'role': role.toString().split('.').last,
     };
 
     if (displayName != null) {
