@@ -27,7 +27,9 @@ class WeekNameModel implements Model {
   /// The year of the week.
   int weekYear;
 
-  /// The number of the week, 0 - 52 (53).
+  /// The number of the week, 0 - 52 (53). 
+  /// If the year starts on a Thursday or is a leap year that starts on a Wednesday,
+  /// that  year will have 53 numbered weeks.
   int weekNumber;
 
   @override
