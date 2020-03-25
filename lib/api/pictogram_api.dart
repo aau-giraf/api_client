@@ -96,9 +96,9 @@ class PictogramApi {
   /// the department
   ///
   /// [id] ID of the pictogram for which the image should be fetched
-  Observable<MemoryImage> getImage(int id) {
+  Observable<Image> getImage(int id) {
     return _http.get('/$id/image/raw').map((Response res) {
-      return MemoryImage(res.response.bodyBytes);
+      return Image.memory(res.response.bodyBytes);
     });
   }
 }
