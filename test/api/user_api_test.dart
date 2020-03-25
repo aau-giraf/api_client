@@ -1,6 +1,8 @@
+import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
+import 'package:api_client/models/enums/error_key.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/enums/giraf_theme_enum.dart';
@@ -105,6 +107,23 @@ void main() {
     });
   });
 
+  test('Should get an error when getting settings from user with ID', () {
+    userApi
+        .getSettings(user.id)
+        .listen((_) {}, onError: expectAsync1((ApiException error) {
+          expect(error.errorKey, ErrorKey.RoleMustBeCitizien);
+        }));
+
+    httpMock
+        .expectOne(url: '/${user.id}/settings', method: Method.get)
+        .flush(<String, dynamic>{
+      'data': null,
+      'success': false,
+      'errorProperties': <dynamic>[],
+      'errorKey': 'RoleMustBeCitizien',
+    });
+  });
+
   test('Should update settings from user with ID', () {
     userApi
         .updateSettings(user.id, settings)
@@ -119,6 +138,23 @@ void main() {
       'success': true,
       'errorProperties': <dynamic>[],
       'errorKey': 'NoError',
+    });
+  });
+
+  test('Should get an error when updating settings from user with ID', () {
+    userApi
+        .updateSettings(user.id, settings)
+        .listen((_) {}, onError: expectAsync1((ApiException error) {
+      expect(error.errorKey, ErrorKey.RoleMustBeCitizien);
+    }));
+
+    httpMock
+        .expectOne(url: '/${user.id}/settings', method: Method.put)
+        .flush(<String, dynamic>{
+      'data': null,
+      'success': false,
+      'errorProperties': <dynamic>[],
+      'errorKey': 'RoleMustBeCitizien',
     });
   });
 
