@@ -138,9 +138,9 @@ void main() {
       3,
       4,
     ]);
-    pictogramApi.getImage(grams[0].id).listen(expectAsync1((Image image) {
-      if(image.image is MemoryImage) {
-        final MemoryImage currentImage = image.image as MemoryImage;
+    pictogramApi.getImage(grams[0].id).listen(expectAsync1((Image imageWidget) {
+      if(imageWidget.image is MemoryImage) {
+        final MemoryImage currentImage = imageWidget.image as MemoryImage;
         expect(currentImage.bytes, imagebytes);
       } else {
         fail('Image is not a MemoryImage');
