@@ -97,7 +97,6 @@ class PictogramApi {
   ///
   /// [id] ID of the pictogram for which the image should be fetched
   Observable<Image> getImage(int id) {
-    // TODO(boginw): test this method
     return _http.get('/$id/image/raw').map((Response res) {
       return Image.memory(res.response.bodyBytes);
     });
