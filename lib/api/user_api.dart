@@ -1,3 +1,4 @@
+import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
@@ -43,7 +44,12 @@ class UserApi {
   Observable<SettingsModel> getSettings(String id) {
     return _http
         .get('/$id/settings')
-        .map((Response res) => SettingsModel.fromJson(res.json['data']));
+        .map((Response res){
+          if (res.json['success'] == false) {
+            throw ApiException(res);
+          }
+          return SettingsModel.fromJson(res.json['data']);
+    });
   }
 
   /// Updates the user settings for the user with the provided id
@@ -53,7 +59,12 @@ class UserApi {
   Observable<SettingsModel> updateSettings(String id, SettingsModel settings) {
     return _http
         .put('/$id/settings', settings.toJson())
-        .map((Response res) => SettingsModel.fromJson(res.json['data']));
+        .map((Response res){
+          if (res.json['success'] == false) {
+            throw ApiException(res);
+          }
+          return SettingsModel.fromJson(res.json['data']);
+    });
   }
 
   /// Deletes the user icon for a given user
