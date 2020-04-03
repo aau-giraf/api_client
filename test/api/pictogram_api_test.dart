@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:test_api/test_api.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/api/pictogram_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   PictogramApi pictogramApi;
@@ -121,13 +122,35 @@ void main() {
       expect(model.id, grams[0].id);
     }));
     httpMock
-        .expectOne(url: '/${grams[0].id}/image', method: Method.put, body: image)
+        .expectOne(
+            url: '/${grams[0].id}/image', method: Method.put, body: image)
         .flush(<String, dynamic>{
       'data': grams[0].toJson(),
       'success': true,
       'errorProperties': <dynamic>[],
       'errorKey': 'NoError',
     });
+  });
+
+  test('Get raw image', () {
+    final List<int> imagebytes = Uint8List.fromList(<int>[
+      1,
+      2,
+      3,
+      4,
+    ]);
+    pictogramApi.getImage(grams[0].id).listen(expectAsync1((Image imageWidget) {
+      if (imageWidget.image is MemoryImage) {
+        final MemoryImage currentImage = imageWidget.image;
+        expect(currentImage.bytes, imagebytes);
+      } else {
+        fail('Image is not a MemoryImage');
+      }
+    }));
+
+    httpMock
+        .expectOne(url: '/${grams[0].id}/image/raw', method: Method.get)
+        .flush(imagebytes);
   });
 
   tearDown(() {

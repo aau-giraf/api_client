@@ -1,6 +1,7 @@
 import 'package:api_client/http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:http/http.dart' as http;
 
 /// HTTP Method
 // ignore: public_member_api_docs
@@ -31,7 +32,7 @@ class Flusher {
   /// Default constructor
   Flusher(this._call);
 
-  Call _call;
+  final Call _call;
 
   /// Flush a body to our listener
   ///
@@ -124,8 +125,17 @@ class HttpMock implements Http {
       if (response is Exception) {
         throw response;
       }
+      http.Response httpResponse;
+      Map<String, dynamic> json;
 
-      return Response(null, response);
+      if(response is Map<String, dynamic>) {
+        // The response is parsed json
+        json = response;
+      } else if (response is List<int>) {
+        // The response is a binary stream
+        httpResponse = http.Response.bytes(response, 200);
+      }
+      return Response(httpResponse, json);
     });
   }
 }
