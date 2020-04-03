@@ -122,7 +122,8 @@ void main() {
       expect(model.id, grams[0].id);
     }));
     httpMock
-        .expectOne(url: '/${grams[0].id}/image', method: Method.put, body: image)
+        .expectOne(
+            url: '/${grams[0].id}/image', method: Method.put, body: image)
         .flush(<String, dynamic>{
       'data': grams[0].toJson(),
       'success': true,
@@ -139,8 +140,8 @@ void main() {
       4,
     ]);
     pictogramApi.getImage(grams[0].id).listen(expectAsync1((Image imageWidget) {
-      if(imageWidget.image is MemoryImage) {
-        final MemoryImage currentImage = imageWidget.image as MemoryImage;
+      if (imageWidget.image is MemoryImage) {
+        final MemoryImage currentImage = imageWidget.image;
         expect(currentImage.bytes, imagebytes);
       } else {
         fail('Image is not a MemoryImage');
