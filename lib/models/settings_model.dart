@@ -37,6 +37,7 @@ class SettingsModel implements Model {
     nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
     completedActivityOption = json['completedActivityOption'];
     greyscale = json['greyScale'];
+    
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
           .map(
