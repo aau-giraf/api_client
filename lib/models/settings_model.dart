@@ -18,6 +18,7 @@ class SettingsModel implements Model {
       @required this.theme,
       this.nrOfDaysToDisplay,
       this.greyscale,
+      this.completedActivityOption,
       this.weekDayColors});
 
   SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +35,7 @@ class SettingsModel implements Model {
     activitiesCount = json['activitiesCount'];
     theme = GirafTheme.values[(json['theme']) - 1];
     nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
+    completedActivityOption = json['completedActivityOption'];
     greyscale = json['greyScale'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
@@ -72,6 +74,9 @@ class SettingsModel implements Model {
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
 
+  /// defines how a completed activity is represented
+  int completedActivityOption;
+
   List<WeekdayColorModel> weekDayColors;
 
   @override
@@ -86,6 +91,7 @@ class SettingsModel implements Model {
       'theme': theme.index + 1,
       'nrOfDaysToDisplay': nrOfDaysToDisplay,
       'greyScale': greyscale,
+      'completedActivityOption': completedActivityOption,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
