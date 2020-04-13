@@ -17,7 +17,7 @@ void main() {
     'theme': 1,
     'nrOfDaysToDisplay': 7,
     'greyScale': false,
-    'completedActivityOption': 2
+    'completedActivityOption': 2,
     'weekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
