@@ -5,7 +5,6 @@ import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
-import 'package:api_client/models/enums/completed_activity_option.dart';
 import 'package:api_client/models/weekday_color_model.dart';
 
 class SettingsModel implements Model {
@@ -19,7 +18,6 @@ class SettingsModel implements Model {
       @required this.theme,
       this.nrOfDaysToDisplay,
       this.greyscale,
-      this.completedActivityOption,
       this.weekDayColors});
 
   SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -36,8 +34,6 @@ class SettingsModel implements Model {
     activitiesCount = json['activitiesCount'];
     theme = GirafTheme.values[(json['theme']) - 1];
     nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
-    completedActivityOption =
-          CompletedActivityOption.values[(json['completedActivityOption']) - 1];
     greyscale = json['greyScale'];
     
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
@@ -77,9 +73,6 @@ class SettingsModel implements Model {
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
 
-  /// Defines how a completed activity is represented
-  CompletedActivityOption completedActivityOption;
-
   List<WeekdayColorModel> weekDayColors;
 
   @override
@@ -94,7 +87,6 @@ class SettingsModel implements Model {
       'theme': theme.index + 1,
       'nrOfDaysToDisplay': nrOfDaysToDisplay,
       'greyScale': greyscale,
-      'completedActivityOption': completedActivityOption.index + 1,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
