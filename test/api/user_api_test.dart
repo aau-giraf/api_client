@@ -1,7 +1,6 @@
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
-import 'package:api_client/models/enums/completed_activity_option.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
 import 'package:api_client/models/enums/error_key.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
@@ -38,7 +37,6 @@ void main() {
       completeMark: CompleteMark.Checkmark,
       cancelMark: CancelMark.Cross,
       defaultTimer: DefaultTimer.AnalogClock,
-      completedActivityOption: CompletedActivityOption.CHECKMARK,
       theme: GirafTheme.AndroidBlue,
       weekDayColors: <WeekdayColorModel>[
         WeekdayColorModel(day: Weekday.Monday, hexColor: '#123456')
