@@ -1,4 +1,3 @@
-import 'package:api_client/models/enums/completed_activity_option.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
@@ -43,8 +42,6 @@ void main() {
     expect(settings.timerSeconds, response['timerSeconds']);
     expect(settings.activitiesCount, response['activitiesCount']);
     expect(settings.theme, GirafTheme.values[response['theme'] - 1]);
-    expect(settings.completedActivityOption,
-      CompletedActivityOption.values[response['completedActivityOption'] - 1]);
     expect(settings.greyscale, false);
     expect(settings.weekDayColors.length, 7);
     expect(settings.weekDayColors[0].toJson(), response['weekDayColors'][0]);
