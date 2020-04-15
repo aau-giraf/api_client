@@ -17,6 +17,7 @@ class SettingsModel implements Model {
       this.activitiesCount,
       @required this.theme,
       this.nrOfDaysToDisplay,
+      this.timerControl,
       this.greyscale,
       this.weekDayColors});
 
@@ -34,6 +35,7 @@ class SettingsModel implements Model {
     activitiesCount = json['activitiesCount'];
     theme = GirafTheme.values[(json['theme']) - 1];
     nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
+    timerControl = json['timerControl'];
     greyscale = json['greyScale'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
@@ -69,6 +71,9 @@ class SettingsModel implements Model {
   /// defines the number of days to display for a user in a weekschedule
   int nrOfDaysToDisplay;
 
+  /// Defines if the user can stop/pause/restart a timer once started
+  int timerControl;
+
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
 
@@ -85,6 +90,7 @@ class SettingsModel implements Model {
       'activitiesCount': activitiesCount,
       'theme': theme.index + 1,
       'nrOfDaysToDisplay': nrOfDaysToDisplay,
+      'timerControl' : timerControl,
       'greyScale': greyscale,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
