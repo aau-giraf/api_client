@@ -72,7 +72,7 @@ class SettingsModel implements Model {
   int nrOfDaysToDisplay;
 
   /// Defines if the user can stop/pause/restart a timer once started
-  int timerControl;
+  bool timerControl;
 
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
