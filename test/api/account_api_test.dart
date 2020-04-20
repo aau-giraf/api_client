@@ -73,14 +73,17 @@ void main() {
   test('Should register user', () {
     const String id = '1234';
     const String username = 'username';
+    const String displayName = 'displayname';
     const String password = 'password';
     const int departmentId = 123;
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, password, departmentId: departmentId, role: role)
+        .register(username, displayName, password, departmentId: departmentId,
+          role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);
+      expect(res.screenName, displayName);
       expect(res.department, departmentId);
       expect(res.role, role);
       expect(res.id, id);
@@ -94,7 +97,7 @@ void main() {
         'roleName': 'Citizen',
         'id': id,
         'username': username,
-        'screenName': null,
+        'screenName': 'displayname',
         'department': departmentId,
       },
       'success': true,
