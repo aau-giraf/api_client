@@ -28,7 +28,7 @@ class DbProvider {
     _db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           // Add tables here:
-          await db.execute('CREATE TABLE username(id int NOT NULL AUTO_INCREMENT, '
+          await db.execute('CREATE TABLE username(id INTEGER PRIMARY KEY AUTOINCREMENT, '
               'userId TEXT, userName TEXT, userRole TEXT)');
         });
     return _db;
