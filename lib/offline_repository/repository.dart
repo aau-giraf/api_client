@@ -41,10 +41,11 @@ class OfflineRepository implements IOfflineRepository<Model> {
 
   @override
   Future<Model> get(int id) async {
+    _db = await DbProvider.instance.database;
     final List<Map<String, dynamic>> maps = await _db.query(
       'giraf_offline',
       columns: <String>['json'],
-      where: 'id = ? AND class_name = ? AND is_deleted = ?',
+      where: 'offline_id = ? AND object = ? AND is_deleted = ?',
       whereArgs: <dynamic>[id, _tableName, false]
     );
     if (maps.isNotEmpty) {

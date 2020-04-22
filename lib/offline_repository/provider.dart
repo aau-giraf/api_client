@@ -23,7 +23,7 @@ class DbProvider {
 
   Future<Database> _init() async {
     final String databasesPath = await getDatabasesPath();
-    final String path = join(databasesPath, 'weekplanner_local.db');
+    final String path = join(databasesPath, 'eweekplanner_local.db');
 
     _db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
