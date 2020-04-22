@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -27,10 +30,22 @@ class DbProvider {
 
     _db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-          // Add tables here:
-          await db.execute('CREATE TABLE username(id INTEGER PRIMARY KEY AUTOINCREMENT, '
-              'userId TEXT, userName TEXT, userRole TEXT)');
-        });
+      // Executing of initial tables here
+      await db.execute(readInitialTablesQuery());
+    });
     return _db;
   }
+
+  /// Read the initial tables query
+  String readInitialTablesQuery() {
+    return 'CREATE TABLE IF NOT EXISTS giraf_offline('
+        'offline_id INTEGER PRIMARY KEY,'
+        'json BLOB NOT NULL,'
+        'is_online INTEGER,'
+        'is_deleted INTEGER DEFAULT 0,'
+        'object TEXT NOT NULL,'
+        'created_date TEXT NOT NULL,'
+        'modified_date TEXT NOT NULL);';
+  }
+
 }
