@@ -11,7 +11,7 @@ void main() {
 
   test('Can create from JSON map', () {
     final Map<String, dynamic> json = <String, dynamic>{
-      'userName': 'testUsername',
+      'screenName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
     };
@@ -19,12 +19,12 @@ void main() {
     final UsernameModel model = UsernameModel.fromJson(json);
     expect(model.id, json['userId']);
     expect(model.role, json['userRole']);
-    expect(model.name, json['userName']);
+    expect(model.name, json['screenName']);
   });
 
   test('Can convert to JSON map', () {
     final Map<String, dynamic> json = <String, dynamic>{
-      'userName': 'testUsername',
+      'screenName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
     };

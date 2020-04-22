@@ -10,7 +10,7 @@ void main() {
 
   test('Can create from JSON map', () {
     final Map<String, dynamic> userJson = <String, dynamic>{
-      'userName': 'testUsername',
+      'screenName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
     };
@@ -32,7 +32,7 @@ void main() {
 
   test('Can convert to JSON map', () {
     final Map<String, dynamic> userJson = <String, dynamic>{
-      'userName': 'testUsername',
+      'screenName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
     };
