@@ -1,5 +1,7 @@
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 
 class GirafUserModel implements Model {
   /// Constructor for instantiating a user inside the app.
@@ -57,5 +59,10 @@ class GirafUserModel implements Model {
       'screenName': screenName,
       'department': department
     };
+  }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((GirafUserModel).toString());
   }
 }

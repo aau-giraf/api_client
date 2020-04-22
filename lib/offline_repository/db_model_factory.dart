@@ -6,10 +6,10 @@ import 'package:api_client/models/username_model.dart';
 class ModelFactory {
 
   /// Method for getting correct model
-  static Model getModel(Map<String, dynamic> json, String tableName) {
-    if (tableName == 'username') {
+  static Model getModel(Map<String, dynamic> json, String objectName) {
+    if (objectName == (UsernameModel).toString()) {
       return UsernameModel.fromJson(json);
-    } else if (tableName == 'activity') {
+    } else if (objectName == (ActivityModel).toString()) {
       return ActivityModel.fromJson(json);
     }
     return null;

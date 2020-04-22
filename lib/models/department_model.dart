@@ -1,3 +1,5 @@
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/username_model.dart';
@@ -50,5 +52,10 @@ class DepartmentModel implements Model {
           members.map((UsernameModel member) => member.toJson()).toList(),
       'resources': resources
     };
+  }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((DepartmentModel).toString());
   }
 }

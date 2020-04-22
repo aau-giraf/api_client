@@ -1,4 +1,6 @@
 import 'package:api_client/models/model.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 
 class DepartmentNameModel implements Model {
   DepartmentNameModel({this.id, this.name});
@@ -24,4 +26,9 @@ class DepartmentNameModel implements Model {
     'id': id,
     'name': name,
   };
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((DepartmentNameModel).toString());
+  }
 }

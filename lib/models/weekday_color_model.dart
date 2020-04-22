@@ -1,5 +1,7 @@
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 
 /// Represents the weekday color
 class WeekdayColorModel implements Model {
@@ -27,4 +29,10 @@ class WeekdayColorModel implements Model {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{'hexColor': hexColor, 'day': day.index + 1};
   }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((WeekdayColorModel).toString());
+  }
+
 }

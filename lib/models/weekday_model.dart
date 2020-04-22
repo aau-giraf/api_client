@@ -1,3 +1,5 @@
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/model.dart';
@@ -37,4 +39,10 @@ class WeekdayModel implements Model {
         'activities':
             activities.map((ActivityModel val) => val.toJson()).toList(),
       };
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((WeekdayModel).toString());
+  }
+
 }

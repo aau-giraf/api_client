@@ -1,3 +1,5 @@
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
@@ -67,4 +69,10 @@ class PictogramModel implements Model {
 
     return result;
   }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((PictogramModel).toString());
+  }
+
 }

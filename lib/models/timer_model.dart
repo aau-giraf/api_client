@@ -1,4 +1,6 @@
 import 'package:api_client/models/model.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 
 /// Represents a timer for an activity
@@ -44,4 +46,10 @@ class TimerModel implements Model {
       'paused': paused ?? 'null'
     };
   }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((TimerModel).toString());
+  }
+
 }

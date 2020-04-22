@@ -1,3 +1,5 @@
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
@@ -89,5 +91,10 @@ class SettingsModel implements Model {
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
+  }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((SettingsModel).toString());
   }
 }

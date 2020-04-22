@@ -1,4 +1,6 @@
 import 'package:api_client/models/model.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 
 /// Represents the week name
 class WeekNameModel implements Model {
@@ -38,4 +40,10 @@ class WeekNameModel implements Model {
         'weekYear': weekYear,
         'weekNumber': weekNumber,
       };
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((WeekNameModel).toString());
+  }
+
 }

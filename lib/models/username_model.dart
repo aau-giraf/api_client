@@ -43,7 +43,7 @@ class UsernameModel implements Model {
 
   /// getter for repository
   static IOfflineRepository<Model> offline() {
-    return OfflineRepository('username');
+    return OfflineRepository((UsernameModel).toString());
   }
 
 }
