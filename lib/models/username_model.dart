@@ -14,13 +14,13 @@ class UsernameModel implements Model {
     }
 
     id = json['userId'];
-    name = json['screenName'];
+    name = json['displayName'];
     role = json['userRole'];
   }
 
   /// Create object from GirafUserModel
   UsernameModel.fromGirafUser(GirafUserModel user) {
-    name = user.screenName;
+    name = user.displayName;
     role = user.roleName;
     id = user.id;
   }
@@ -36,5 +36,5 @@ class UsernameModel implements Model {
 
   @override
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{'userId': id, 'screenName': name, 'userRole': role};
+      <String, dynamic>{'userId': id, 'displayName': name, 'userRole': role};
 }

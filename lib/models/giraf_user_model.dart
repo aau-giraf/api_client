@@ -8,7 +8,7 @@ class GirafUserModel implements Model {
       this.role,
       this.roleName,
       this.username,
-      this.screenName,
+      this.displayName,
       this.department});
 
   /// Constructor for instantiating a user from the backend response.
@@ -22,7 +22,7 @@ class GirafUserModel implements Model {
     role = Role.values[(json['role']) - 1];
     roleName = json['roleName'];
     username = json['username'];
-    screenName = json['screenName'];
+    displayName = json['displayName'];
     department = json['department'];
   }
 
@@ -39,7 +39,7 @@ class GirafUserModel implements Model {
   String username;
 
   /// The users desired "screen name", i.e. how the app should address the user.
-  String screenName;
+  String displayName;
 
   // This is actually a long from the .Net server, will that cause problems?
   // (try with mInt).
@@ -54,7 +54,7 @@ class GirafUserModel implements Model {
       'role': role.index + 1,
       'roleName': roleName,
       'username': username,
-      'screenName': screenName,
+      'displayName': displayName,
       'department': department
     };
   }

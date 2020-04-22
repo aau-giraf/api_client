@@ -24,7 +24,7 @@ void main() {
       department: 3,
       role: Role.Guardian,
       roleName: 'Guardian',
-      screenName: 'Kurt',
+      displayName: 'Kurt',
       username: 'SpaceLord69');
 
   final List<UsernameModel> usernames = <UsernameModel>[

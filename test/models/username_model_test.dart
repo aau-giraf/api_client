@@ -11,7 +11,7 @@ void main() {
 
   test('Can create from JSON map', () {
     final Map<String, dynamic> json = <String, dynamic>{
-      'screenName': 'testUsername',
+      'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
     };
@@ -19,12 +19,12 @@ void main() {
     final UsernameModel model = UsernameModel.fromJson(json);
     expect(model.id, json['userId']);
     expect(model.role, json['userRole']);
-    expect(model.name, json['screenName']);
+    expect(model.name, json['displayName']);
   });
 
   test('Can convert to JSON map', () {
     final Map<String, dynamic> json = <String, dynamic>{
-      'screenName': 'testUsername',
+      'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
     };
@@ -37,14 +37,14 @@ void main() {
   test('Can create from GirafUserModel', () {
     final GirafUserModel girafUser = GirafUserModel(
       roleName: Role.Guardian.toString(),
-      screenName: 'User',
+      displayName: 'User',
       id: '1',
     );
 
     final UsernameModel user = UsernameModel.fromGirafUser(girafUser);
 
     expect(user.role, girafUser.roleName);
-    expect(user.name, girafUser.screenName);
+    expect(user.name, girafUser.displayName);
     expect(user.id, girafUser.id);
   });
 

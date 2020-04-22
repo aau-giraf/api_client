@@ -83,7 +83,7 @@ void main() {
           role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);
-      expect(res.screenName, displayName);
+      expect(res.displayName, displayName);
       expect(res.department, departmentId);
       expect(res.role, role);
       expect(res.id, id);
@@ -97,7 +97,7 @@ void main() {
         'roleName': 'Citizen',
         'id': id,
         'username': username,
-        'screenName': 'displayname',
+        'displayName': 'displayname',
         'department': departmentId,
       },
       'success': true,
