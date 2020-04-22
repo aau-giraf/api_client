@@ -12,6 +12,6 @@ class ModelFactory {
     } else if (tableName == 'activity') {
       return ActivityModel.fromJson(json);
     }
+    return null;
   }
-  
 }
