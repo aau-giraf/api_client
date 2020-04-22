@@ -14,7 +14,7 @@ class UsernameModel implements Model {
     }
 
     id = json['userId'];
-    name = json['userName'];
+    name = json['screenName'];
     role = json['userRole'];
   }
 
