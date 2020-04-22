@@ -36,5 +36,5 @@ class UsernameModel implements Model {
 
   @override
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{'userId': id, 'userName': name, 'userRole': role};
+      <String, dynamic>{'userId': id, 'screenName': name, 'userRole': role};
 }
