@@ -28,6 +28,15 @@ class WeekModel extends WeekBaseModel implements Model {
   /// The week number
   int weekNumber;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> response = <String, dynamic>{

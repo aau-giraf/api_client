@@ -48,6 +48,15 @@ class GirafUserModel implements Model {
   /// The id of the users department
   int department;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   /// Converts the user object to json, inorder to send it to the backend.
   @override
   Map<String, dynamic> toJson() {

@@ -44,6 +44,15 @@ class PictogramModel implements Model {
 
   String imageHash;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> result = <String, dynamic>{

@@ -37,6 +37,15 @@ class UsernameModel implements Model {
   /// The user's ID
   String id;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   Map<String, dynamic> toJson() =>
       <String, dynamic>{'userId': id, 'userName': name, 'userRole': role};

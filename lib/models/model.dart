@@ -10,6 +10,6 @@ abstract class Model {
   }
 
   /// get offline id
-  //int getOfflineId();
+  int getOfflineId();
 
 }
