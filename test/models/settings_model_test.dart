@@ -18,6 +18,7 @@ void main() {
     'nrOfDaysToDisplay': 7,
     'lockTimerControl': false,
     'greyScale': false,
+    'pictogramText' : false,
     'weekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
@@ -43,6 +44,7 @@ void main() {
     expect(settings.activitiesCount, response['activitiesCount']);
     expect(settings.theme, GirafTheme.values[response['theme'] - 1]);
     expect(settings.lockTimerControl, false);
+    expect(settings.pictogramText, false);
     expect(settings.greyscale, false);
     expect(settings.weekDayColors.length, 7);
     expect(settings.weekDayColors[0].toJson(), response['weekDayColors'][0]);
