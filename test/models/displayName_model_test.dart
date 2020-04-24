@@ -68,4 +68,11 @@ void main() {
         role: null, id: id);
     expect(model.id, id);
   });
+
+  test('Has displayName property', () {
+    const String displayName = 'testDisplayName';
+    final DisplayNameModel model = DisplayNameModel(displayName: displayName,
+        role: null, id: 'testID');
+    expect(model.displayName, displayName);
+  });
 }
