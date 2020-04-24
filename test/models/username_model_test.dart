@@ -19,7 +19,7 @@ void main() {
     final UsernameModel model = UsernameModel.fromJson(json);
     expect(model.id, json['userId']);
     expect(model.role, json['userRole']);
-    expect(model.name, json['displayName']);
+    expect(model.displayName, json['displayName']);
   });
 
   test('Can convert to JSON map', () {
@@ -44,26 +44,26 @@ void main() {
     final UsernameModel user = UsernameModel.fromGirafUser(girafUser);
 
     expect(user.role, girafUser.roleName);
-    expect(user.name, girafUser.displayName);
+    expect(user.displayName, girafUser.displayName);
     expect(user.id, girafUser.id);
   });
 
   test('Has username property', () {
     const String username = 'testUsername';
     final UsernameModel model =
-        UsernameModel(name: username, role: null, id: null);
-    expect(model.name, username);
+        UsernameModel(displayName: username, role: null, id: null);
+    expect(model.displayName, username);
   });
 
   test('Has role property', () {
     const String role = 'testRole';
-    final UsernameModel model = UsernameModel(name: null, role: role, id: null);
+    final UsernameModel model = UsernameModel(displayName: null, role: role, id: null);
     expect(model.role, role);
   });
 
   test('Has id property', () {
     const String id = 'testId';
-    final UsernameModel model = UsernameModel(name: null, role: null, id: id);
+    final UsernameModel model = UsernameModel(displayName: null, role: null, id: id);
     expect(model.id, id);
   });
 }

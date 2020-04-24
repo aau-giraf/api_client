@@ -28,8 +28,8 @@ void main() {
       username: 'SpaceLord69');
 
   final List<UsernameModel> usernames = <UsernameModel>[
-    UsernameModel(name: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    UsernameModel(name: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+    UsernameModel(displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
+    UsernameModel(displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
   ];
 
   final SettingsModel settings = SettingsModel(

@@ -12,8 +12,8 @@ void main() {
 
   final DepartmentModel sampleDepartment =
       DepartmentModel(id: 1, name: 'Dep. of Science', members: <UsernameModel>[
-    UsernameModel(name: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    UsernameModel(name: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+    UsernameModel(displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
+    UsernameModel(displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
   ], resources: <int>[
     1,
     2,

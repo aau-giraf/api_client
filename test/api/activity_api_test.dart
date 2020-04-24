@@ -14,7 +14,7 @@ void main() {
   HttpMock httpMock;
   ActivityApi activityApi;
   final UsernameModel mockUser =
-      UsernameModel(id: '1', name: 'Test', role: 'Guardian');
+      UsernameModel(id: '1', displayName: 'Test', role: 'Guardian');
 
   final PictogramModel mockPictogram = PictogramModel(
       id: 69,

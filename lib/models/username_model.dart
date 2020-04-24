@@ -4,7 +4,7 @@ import 'package:api_client/models/model.dart';
 
 class UsernameModel implements Model {
   /// Default constructor
-  UsernameModel({@required this.name, @required this.role, @required this.id});
+  UsernameModel({@required this.displayName, @required this.role, @required this.id});
 
   /// Create object from JSON mapping
   UsernameModel.fromJson(Map<String, dynamic> json) {
@@ -14,19 +14,19 @@ class UsernameModel implements Model {
     }
 
     id = json['userId'];
-    name = json['displayName'];
+    displayName = json['displayName'];
     role = json['userRole'];
   }
 
   /// Create object from GirafUserModel
   UsernameModel.fromGirafUser(GirafUserModel user) {
-    name = user.displayName;
+    displayName = user.displayName;
     role = user.roleName;
     id = user.id;
   }
 
-  /// The user's name
-  String name;
+  /// The user's displayName
+  String displayName;
 
   /// The user's role
   String role;
@@ -36,5 +36,5 @@ class UsernameModel implements Model {
 
   @override
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{'userId': id, 'displayName': name, 'userRole': role};
+      <String, dynamic>{'userId': id, 'displayName': displayName, 'userRole': role};
 }
