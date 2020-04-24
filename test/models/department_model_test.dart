@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:api_client/models/department_model.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 
 void main() {
   test('Throws on JSON is null', () {
@@ -25,7 +25,7 @@ void main() {
     final DepartmentModel model = DepartmentModel.fromJson(json);
     expect(model.id, json['id']);
     expect(model.name, json['name']);
-    expect(model.members.map((UsernameModel val) => val.toJson()),
+    expect(model.members.map((DisplayNameModel val) => val.toJson()),
         <Map<String, dynamic>>[userJson]);
     expect(model.resources, json['resources']);
   });
