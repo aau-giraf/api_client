@@ -7,19 +7,24 @@ import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
 import 'package:api_client/models/weekday_color_model.dart';
 
+/// A model used to store settings values
 class SettingsModel implements Model {
+  /// Constructor
   SettingsModel(
       {@required this.orientation,
-      @required this.completeMark,
-      @required this.cancelMark,
-      @required this.defaultTimer,
-      this.timerSeconds,
-      this.activitiesCount,
-      @required this.theme,
-      this.nrOfDaysToDisplay,
-      this.greyscale,
-      this.weekDayColors});
+        @required this.completeMark,
+        @required this.cancelMark,
+        @required this.defaultTimer,
+        this.timerSeconds,
+        this.activitiesCount,
+        @required this.theme,
+        this.nrOfDaysToDisplay,
+        this.lockTimerControl,
+        this.pictogramText,
+        this.greyscale,
+        this.weekDayColors});
 
+  /// Another constructor used to create from json.
   SettingsModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
@@ -34,6 +39,8 @@ class SettingsModel implements Model {
     activitiesCount = json['activitiesCount'];
     theme = GirafTheme.values[(json['theme']) - 1];
     nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
+    lockTimerControl = json['lockTimerControl'];
+    pictogramText = json['pictogramText'];
     greyscale = json['greyScale'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
@@ -69,9 +76,16 @@ class SettingsModel implements Model {
   /// defines the number of days to display for a user in a weekschedule
   int nrOfDaysToDisplay;
 
+  /// Defines if the user can stop/pause/restart a timer once started
+  bool lockTimerControl;
+
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
 
+  /// Defines if text should be shown alongside the pictograms in the weekplan
+  bool pictogramText;
+
+  /// List of weekday colors shown in the weekplan
   List<WeekdayColorModel> weekDayColors;
 
   @override
@@ -85,9 +99,11 @@ class SettingsModel implements Model {
       'activitiesCount': activitiesCount,
       'theme': theme.index + 1,
       'nrOfDaysToDisplay': nrOfDaysToDisplay,
+      'lockTimerControl' : lockTimerControl,
       'greyScale': greyscale,
+      'pictogramText' : pictogramText,
       'weekDayColors':
-          weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
+      weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
   }
 }
