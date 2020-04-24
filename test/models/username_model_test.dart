@@ -57,13 +57,15 @@ void main() {
 
   test('Has role property', () {
     const String role = 'testRole';
-    final UsernameModel model = UsernameModel(displayName: null, role: role, id: null);
+    final UsernameModel model = UsernameModel(displayName: 'testRole',
+        role: role, id: null);
     expect(model.role, role);
   });
 
   test('Has id property', () {
     const String id = 'testId';
-    final UsernameModel model = UsernameModel(displayName: null, role: null, id: id);
+    final UsernameModel model = UsernameModel(displayName: 'testId',
+        role: null, id: id);
     expect(model.id, id);
   });
 }

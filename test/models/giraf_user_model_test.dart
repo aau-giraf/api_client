@@ -41,7 +41,7 @@ void main() {
       'roleName': 'Guardian',
       'id': '9ff3e3d9-07f6-4dc5-84d4-3e778aa977cc',
       'username': 'Graatand',
-      'displayName': null,
+      'displayName': "Graatand 2",
       'department': 1
     };
 
@@ -51,7 +51,7 @@ void main() {
     expect(user2.roleName, 'Guardian');
     expect(user2.id, '9ff3e3d9-07f6-4dc5-84d4-3e778aa977cc');
     expect(user2.username, 'Graatand');
-    expect(user2.displayName, isNull);
+    expect(user2.displayName, "Graatand 2");
     expect(user2.department, 1);
   });
 
