@@ -28,15 +28,6 @@ class WeekModel extends WeekBaseModel implements Model {
   /// The week number
   int weekNumber;
 
-  /// Offline id
-  int offlineId;
-
-  @override
-  /// Get offline id
-  int getOfflineId() {
-    return offlineId;
-  }
-
   @override
   /// Offline id
   int offlineId;

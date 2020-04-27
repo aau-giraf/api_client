@@ -43,15 +43,6 @@ class DepartmentModel implements Model {
   /// A list of ids of all resources owned by the department.
   List<int> resources = <int>[];
 
-  /// Offline id
-  int offlineId;
-
-  @override
-  /// Get offline id
-  int getOfflineId() {
-    return offlineId;
-  }
-
   @override
   /// Offline id
   int offlineId;
