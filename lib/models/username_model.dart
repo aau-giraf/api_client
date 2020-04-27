@@ -56,4 +56,18 @@ class UsernameModel implements Model {
     return OfflineRepository((UsernameModel).toString());
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is UsernameModel &&
+              runtimeType == other.runtimeType &&
+              name == other.name &&
+              role == other.role &&
+              id == other.id;
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      role.hashCode ^
+      id.hashCode;
 }

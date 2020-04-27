@@ -100,8 +100,28 @@ class OfflineRepository implements IOfflineRepository<Model> {
   }
 
   @override
-  Future<List<Model>> all() {
-    return null;
+  Future<List<Model>> all() async {
+    _database = await _prepareDb();
+    final List<Map<String, dynamic>> maps = await _database.query(
+      DATABASE_NAME,
+      columns: <String>['json', 'offline_id'],
+      where: 'is_deleted = ? AND object = ?',
+      whereArgs: <dynamic>[false, _tableName]
+    );
+
+    if (maps != null) {
+      final List<Model> models = <Model>[];
+      for (Map<String, dynamic> result in maps) {
+        final Model model = ModelFactory.getModel(_toJson(result), _tableName);
+        if (model != null) {
+          model.offlineId = result['offline_id'];
+          models.add(model);
+        }
+      }
+      return models;
+    } else {
+      throw OfflineDatabaseException('Result was null');
+    }
   }
 
   /// Prepare the database

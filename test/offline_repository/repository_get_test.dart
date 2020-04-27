@@ -27,7 +27,7 @@ void main() {
         whereArgs: anyNamed('whereArgs')))
         .thenAnswer((_) async =>
     [
-      <String, dynamic>{'json': '{"Hejsa": "Hjesa"}'}
+      <String, dynamic>{'json': '{"test": "test"}'}
     ]);
 
     final Model response = await repository.get(1);
