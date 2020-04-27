@@ -1,5 +1,7 @@
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 
 class GirafUserModel implements Model {
   /// Constructor for instantiating a user inside the app.
@@ -46,6 +48,15 @@ class GirafUserModel implements Model {
   /// The id of the users department
   int department;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   /// Converts the user object to json, inorder to send it to the backend.
   @override
   Map<String, dynamic> toJson() {
@@ -57,5 +68,10 @@ class GirafUserModel implements Model {
       'screenName': screenName,
       'department': department
     };
+  }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((GirafUserModel).toString());
   }
 }

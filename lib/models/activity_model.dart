@@ -54,6 +54,15 @@ class ActivityModel implements Model {
   /// The timer for the activity
   TimerModel timer;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -65,4 +74,6 @@ class ActivityModel implements Model {
       'timer': timer != null ? timer.toJson() : null
     };
   }
+
+
 }

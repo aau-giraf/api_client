@@ -1,4 +1,7 @@
 import 'package:api_client/models/giraf_user_model.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
 
@@ -34,7 +37,22 @@ class UsernameModel implements Model {
   /// The user's ID
   String id;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   Map<String, dynamic> toJson() =>
       <String, dynamic>{'userId': id, 'userName': name, 'userRole': role};
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((UsernameModel).toString());
+  }
+
 }
