@@ -36,7 +36,7 @@ void main() {
       orientation: Orientation.Landscape,
       completeMark: CompleteMark.Checkmark,
       cancelMark: CancelMark.Cross,
-      defaultTimer: DefaultTimer.AnalogClock,
+      defaultTimer: DefaultTimer.PieChart,
       theme: GirafTheme.AndroidBlue,
       weekDayColors: <WeekdayColorModel>[
         WeekdayColorModel(day: Weekday.Monday, hexColor: '#123456')
