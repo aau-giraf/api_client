@@ -14,12 +14,12 @@ void main() {
   });
 
   test('Can insert new model', () async {
-    OfflineRepository repository = OfflineRepository(
+    final OfflineRepository repository = OfflineRepository(
         'model',
         db: mockDatabase
     );
 
-    TestModel model = TestModel('testName', 'testField');
+    final TestModel model = TestModel('testName', 'testField');
 
     when(mockDatabase.insert(any, any)).thenAnswer((_) async => 1);
 

@@ -17,7 +17,7 @@ void main() {
     mockDatabase  = MockDatabase();
   });
 
-  test('When model not recognized by model factory, expect null', () async {
+  test('When model not recognized by model factory, throw exception', () async {
     repository = OfflineRepository('', db: mockDatabase);
 
     when(mockDatabase.query(any,
@@ -26,20 +26,11 @@ void main() {
         where: anyNamed('where'),
         whereArgs: anyNamed('whereArgs')))
         .thenAnswer((_) async =>
-    [
+    <Map<String, dynamic>>[
       <String, dynamic>{'json': '{"test": "test"}'}
     ]);
 
-    final Model response = await repository.get(1);
-
-    // We expect null because the factory cannot recognize ''
-    expect(response, isNull);
-    verify(mockDatabase.query(any,
-        distinct: null,
-        columns: anyNamed('columns'),
-        where: anyNamed('where'),
-        whereArgs: anyNamed('whereArgs')));
-    verifyNoMoreInteractions(mockDatabase);
+    expect(() => repository.get(1), throwsException);
   });
 
   test('When model exists and is recognized, should return model', () async {
@@ -48,12 +39,13 @@ void main() {
         db: mockDatabase
     );
 
-    UsernameModel usernameModel = UsernameModel(
+    final UsernameModel usernameModel = UsernameModel(
       name: 'name',
       role: 'role',
       id: '1',
     );
-    String usernameModelJson = json.encode(usernameModel.toJson()).toString();
+    final String usernameModelJson =
+        json.encode(usernameModel.toJson()).toString();
 
     when(mockDatabase.query(any,
         distinct: null,
@@ -61,7 +53,7 @@ void main() {
         where: anyNamed('where'),
         whereArgs: anyNamed('whereArgs')))
         .thenAnswer((_) async =>
-    [
+    <Map<String, dynamic>>[
       <String, dynamic>{'json': usernameModelJson}
     ]);
 

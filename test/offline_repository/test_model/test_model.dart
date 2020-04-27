@@ -16,6 +16,7 @@ class TestModel implements Model {
 
   String testField;
 
+  @override
   int offlineId;
 
   @override

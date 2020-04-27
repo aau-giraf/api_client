@@ -6,22 +6,22 @@ class MockDatabase extends Mock implements Database {}
 class MockDatabaseExecutor implements Database {
   @override
   Future<Function> execute(String sql, [List<dynamic> arguments]) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
   Batch batch() {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
   Future<int> delete(String table, {String where, List<dynamic> whereArgs}) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
   Future<int> rawDelete(String sql, [List<dynamic> arguments]) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
@@ -29,18 +29,18 @@ class MockDatabaseExecutor implements Database {
       {String where,
       List<dynamic> whereArgs,
       ConflictAlgorithm conflictAlgorithm}) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
   Future<int> rawUpdate(String sql, [List<dynamic> arguments]) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
   Future<List<Map<String, dynamic>>> rawQuery(String sql,
       [List<dynamic> arguments]) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
@@ -54,28 +54,34 @@ class MockDatabaseExecutor implements Database {
       String orderBy,
       int limit,
       int offset}) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
   Future<int> insert(String table, Map<String, dynamic> values,
       {String nullColumnHack, ConflictAlgorithm conflictAlgorithm}) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
   Future<int> rawInsert(String sql, [List<dynamic> arguments]) {
-    return null;
+    throw UnimplementedError();
   }
 
   @override
-  Future<Function> setVersion(int version) {}
+  Future<Function> setVersion(int version) {
+    throw UnimplementedError();
+  }
 
   @override
-  Future<int> getVersion() {}
+  Future<int> getVersion() {
+    throw UnimplementedError();
+  }
 
   @override
-  Future<Function> close() {}
+  Future<Function> close() {
+    throw UnimplementedError();
+  }
 
   @override
   Future<T> devInvokeMethod<T>(String method, [dynamic arguments]) {

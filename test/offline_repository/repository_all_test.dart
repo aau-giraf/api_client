@@ -43,7 +43,7 @@ void main() {
     final String firstUserJson = json.encode(firstUser.toJson()).toString();
     final String secondUserJson = json.encode(secondUser.toJson()).toString();
 
-    final List<Map<String, dynamic>> expectedList = [
+    final List<Map<String, dynamic>> expectedList = <Map<String, dynamic>>[
       <String, dynamic>{'json': firstUserJson, 'offline_id': 1},
       <String, dynamic>{'json': secondUserJson, 'offline_id': 2}
     ];

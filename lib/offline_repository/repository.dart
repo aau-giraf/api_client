@@ -84,7 +84,7 @@ class OfflineRepository implements IOfflineRepository<Model> {
       DATABASE_NAME,
       columns: <String>['json', 'offline_id'],
       where: 'offline_id = ? AND object = ? AND is_deleted = ?',
-      whereArgs: <dynamic>[id, _tableName, false]
+      whereArgs: <dynamic>[id, _tableName, 0]
     );
     if (maps.isNotEmpty) {
       final Model model = ModelFactory
@@ -106,7 +106,7 @@ class OfflineRepository implements IOfflineRepository<Model> {
       DATABASE_NAME,
       columns: <String>['json', 'offline_id'],
       where: 'is_deleted = ? AND object = ?',
-      whereArgs: <dynamic>[false, _tableName]
+      whereArgs: <dynamic>[0, _tableName]
     );
 
     if (maps != null) {
