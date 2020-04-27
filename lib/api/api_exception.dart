@@ -14,6 +14,12 @@ class ApiException implements Exception {
     } else {
       errorMessage = 'Something went wrong.';
     }
+    
+    if (response.json['details']) {
+      errorDetails = response.json['details'];
+    } else {
+      errorDetails = '';
+    }
   }
 
   /// Response involved in the exception
@@ -24,6 +30,9 @@ class ApiException implements Exception {
 
   /// List of the errors involved in the call
   String errorMessage;
+
+  /// The details of the error that happened, most of the time it is empty
+  String errorDetails;
 
   @override
   String toString() => '[ApiException]: ${response.json['errorKey']}';
