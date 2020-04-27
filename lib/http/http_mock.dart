@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:api_client/http/http.dart';
 import 'package:meta/meta.dart';
@@ -36,7 +35,7 @@ class Call {
 
   @override
   String toString() {
-    return "Call(${this.method}, ${this.url}, ${this.statusCode}: '${this.body}')";
+    return "Call($method, $url, $statusCode: '$body')";
   }
 }
 
@@ -70,8 +69,11 @@ class HttpMock implements Http {
   void verify() {
     if (_calls.isNotEmpty) {
       throw Exception('Expected no requests, found: \n' +
-          _calls.map((Call call) => '[${call.method} ${call.statusCode}] ${call.url}')
-                .join('\n'));
+          _calls
+              .map((Call call) => 
+                '[${call.method} ${call.statusCode}] ${call.url}'
+              )
+              .join('\n'));
     }
   }
 
@@ -79,11 +81,11 @@ class HttpMock implements Http {
   ///
   /// [method] One of delete, get, patch, post, or put.
   /// [url] The url that is expected
-  Flusher expectOne({
-    Method method,
-    @required String url,
-    dynamic body,
-    int statusCode = 200}) {
+  Flusher expectOne(
+      {Method method,
+      @required String url,
+      dynamic body,
+      int statusCode = 200}) {
     final int index = _calls.indexWhere((Call call) =>
         call.url == url &&
         (method == null || method == call.method) &&
@@ -135,7 +137,8 @@ class HttpMock implements Http {
     return _reqToRes(Method.put, url, body);
   }
 
-  Observable<Response> _reqToRes(Method method, String url, [dynamic body, int statusCode]) {
+  Observable<Response> _reqToRes(Method method, String url,
+      [dynamic body, int statusCode]) {
     final Call call = Call(method, url, body);
     _calls.add(call);
 
@@ -147,7 +150,7 @@ class HttpMock implements Http {
 
       Map<String, dynamic> json;
 
-      if(response is Map<String, dynamic>) {
+      if (response is Map<String, dynamic>) {
         // The response is parsed json
         json = response;
         httpResponse = http.Response(jsonEncode(json), statusCode ?? 200);
