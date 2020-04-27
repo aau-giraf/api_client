@@ -54,6 +54,7 @@ class ActivityModel implements Model {
   /// The timer for the activity
   TimerModel timer;
 
+  @override
   /// Offline id
   int offlineId;
 

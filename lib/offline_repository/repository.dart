@@ -10,14 +10,20 @@ import 'package:sqflite/sqflite.dart';
 class OfflineRepository implements IOfflineRepository<Model> {
 
   /// constructor
-  OfflineRepository(this._tableName) {
-    init();
+  /// The optional {DatabaseExecutor db} is for using a custom database
+  OfflineRepository(this._tableName, {Database db}) {
+    init(db: db);
   }
 
   /// Initial database connection
-  Future<Database> init() async {
-    _db = await DbProvider.instance.database;
-    return _db;
+  Future<Database> init({Database db}) async {
+    if (db != null) {
+      _db = db;
+      return db;
+    } else {
+      _db = await DbProvider.instance.database;
+      return _db;
+    }
   }
 
   final String _tableName;
@@ -25,8 +31,17 @@ class OfflineRepository implements IOfflineRepository<Model> {
   Database _db;
 
   @override
-  Future<Model> insert(Model model) {
-    return null;
+  Future<Model> insert(Model model) async {
+    final Map<String, dynamic> insertMap = <String, dynamic>{
+      'json': json.encode(model.toJson()).toString(),
+      'is_online': 0,
+      'is_deleted': 0,
+      'object': _tableName,
+      'created_date': 0,
+      'modified_date': 0
+    };
+    model.offlineId = await _db.insert('giraf_offline', insertMap);
+    return model;
   }
 
   @override
@@ -41,15 +56,18 @@ class OfflineRepository implements IOfflineRepository<Model> {
 
   @override
   Future<Model> get(int id) async {
-    _db = await DbProvider.instance.database;
     final List<Map<String, dynamic>> maps = await _db.query(
       'giraf_offline',
-      columns: <String>['json'],
+      columns: <String>['json', 'offline_id'],
       where: 'offline_id = ? AND object = ? AND is_deleted = ?',
       whereArgs: <dynamic>[id, _tableName, false]
     );
     if (maps.isNotEmpty) {
-      return ModelFactory.getModel(toJson(maps.first), _tableName);
+      final Model model = ModelFactory.getModel(toJson(maps.first), _tableName);
+      if (model != null) {
+        model.offlineId = id;
+      }
+      return model;
     } else {
       throw NotFound('Row with id ' + id.toString() + ' does not exist');
     }
@@ -60,6 +78,7 @@ class OfflineRepository implements IOfflineRepository<Model> {
     return null;
   }
 
+  /// to json method for db result
   Map<String, dynamic> toJson(Map<String, dynamic> first) {
     final String jsonString = first['json'];
     return json.decode(jsonString);

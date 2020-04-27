@@ -37,6 +37,7 @@ class TimerModel implements Model {
   /// Bool if the timer is paused or not
   bool paused;
 
+  @override
   /// Offline id
   int offlineId;
 

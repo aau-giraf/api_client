@@ -37,6 +37,7 @@ class UsernameModel implements Model {
   /// The user's ID
   String id;
 
+  @override
   /// Offline id
   int offlineId;
 

@@ -21,6 +21,7 @@ class DepartmentNameModel implements Model {
   /// The name of the department.
   String name;
 
+  @override
   /// Offline id
   int offlineId;
 

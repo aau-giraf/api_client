@@ -90,6 +90,7 @@ class SettingsModel implements Model {
   /// List of weekday colors shown in the weekplan
   List<WeekdayColorModel> weekDayColors;
 
+  @override
   /// Offline id
   int offlineId;
 

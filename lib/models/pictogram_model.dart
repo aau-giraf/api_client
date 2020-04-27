@@ -44,6 +44,7 @@ class PictogramModel implements Model {
 
   String imageHash;
 
+  @override
   /// Offline id
   int offlineId;
 
