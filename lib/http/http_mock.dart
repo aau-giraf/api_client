@@ -143,6 +143,10 @@ class HttpMock implements Http {
     _calls.add(call);
 
     return call.flush.map((dynamic response) {
+      if (response is Response) {
+        return response;
+      }
+
       if (response is Exception) {
         throw response;
       }

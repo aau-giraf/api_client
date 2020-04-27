@@ -9,13 +9,15 @@ class ApiException implements Exception {
         (ErrorKey f) => f.toString() == 'ErrorKey.' + response.json['errorKey'],
         orElse: () => null);
 
-    if (response.json['message']) {
+    final String message = response.json['message'];
+    if (message?.isNotEmpty ?? false) {
       errorMessage = response.json['message'].toString();
     } else {
       errorMessage = 'Something went wrong.';
     }
     
-    if (response.json['details']) {
+    final String details = response.json['details'];
+    if (details?.isNotEmpty ?? false) {
       errorDetails = response.json['details'];
     } else {
       errorDetails = '';
