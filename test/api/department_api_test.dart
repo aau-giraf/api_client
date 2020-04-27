@@ -11,9 +11,12 @@ void main() {
   DepartmentApi departmentApi;
 
   final DepartmentModel sampleDepartment =
-      DepartmentModel(id: 1, name: 'Dep. of Science', members: <DisplayNameModel>[
-    DisplayNameModel(displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    DisplayNameModel(displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+      DepartmentModel(id: 1, name: 'Dep. of Science',
+          members: <DisplayNameModel>[
+    DisplayNameModel(displayName: 'Kurt',
+        role: Role.SuperUser.toString(), id: '1'),
+    DisplayNameModel(displayName: 'Hüttel',
+        role: Role.SuperUser.toString(), id: '2'),
   ], resources: <int>[
     1,
     2,

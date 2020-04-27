@@ -28,8 +28,10 @@ void main() {
       username: 'SpaceLord69');
 
   final List<DisplayNameModel> usernames = <DisplayNameModel>[
-    DisplayNameModel(displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    DisplayNameModel(displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+    DisplayNameModel(displayName: 'Kurt',
+        role: Role.SuperUser.toString(), id: '1'),
+    DisplayNameModel(displayName: 'Hüttel',
+        role: Role.SuperUser.toString(), id: '2'),
   ];
 
   final SettingsModel settings = SettingsModel(
