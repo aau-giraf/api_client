@@ -34,6 +34,15 @@ class WeekNameModel implements Model {
   /// that  year will have 53 numbered weeks.
   int weekNumber;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   /// Offline id
   int offlineId;

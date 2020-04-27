@@ -24,6 +24,15 @@ class WeekTemplateNameModel implements Model {
   /// The template's ID
   int id;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   /// Offline id
   int offlineId;

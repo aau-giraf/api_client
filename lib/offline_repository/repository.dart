@@ -17,7 +17,7 @@ class OfflineRepository implements IOfflineRepository<Model> {
   OfflineRepository(this._tableName, {Database db}) {
     _externalDb = db;
   }
-  
+
   final String _tableName;
   Database _database;
   Database _externalDb;
@@ -81,10 +81,10 @@ class OfflineRepository implements IOfflineRepository<Model> {
   Future<Model> get(int id) async {
     _database = await _prepareDb();
     final List<Map<String, dynamic>> maps = await _database.query(
-      DATABASE_NAME,
-      columns: <String>['json', 'offline_id'],
-      where: 'offline_id = ? AND object = ? AND is_deleted = ?',
-      whereArgs: <dynamic>[id, _tableName, 0]
+        DATABASE_NAME,
+        columns: <String>['json', 'offline_id'],
+        where: 'offline_id = ? AND object = ? AND is_deleted = ?',
+        whereArgs: <dynamic>[id, _tableName, 0]
     );
     if (maps.isNotEmpty) {
       final Model model = ModelFactory
@@ -103,10 +103,10 @@ class OfflineRepository implements IOfflineRepository<Model> {
   Future<List<Model>> all() async {
     _database = await _prepareDb();
     final List<Map<String, dynamic>> maps = await _database.query(
-      DATABASE_NAME,
-      columns: <String>['json', 'offline_id'],
-      where: 'is_deleted = ? AND object = ?',
-      whereArgs: <dynamic>[0, _tableName]
+        DATABASE_NAME,
+        columns: <String>['json', 'offline_id'],
+        where: 'is_deleted = ? AND object = ?',
+        whereArgs: <dynamic>[0, _tableName]
     );
 
     if (maps != null) {

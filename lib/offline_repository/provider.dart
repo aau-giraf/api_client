@@ -27,9 +27,9 @@ class OfflineDbProvider {
 
     _db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-      // Executing of initial tables here
-      await db.execute(readInitialTablesQuery());
-    });
+          // Executing of initial tables here
+          await db.execute(readInitialTablesQuery());
+        });
     return _db;
   }
 

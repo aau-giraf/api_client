@@ -33,6 +33,15 @@ class WeekTemplateModel extends WeekBaseModel implements Model {
   /// This Week template's ID
   int id;
 
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
   @override
   /// Offline id
   int offlineId;
