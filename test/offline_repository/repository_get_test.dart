@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/username_model.dart';
-import 'package:api_client/offline_repository/exceptions/not_found.dart';
+import 'package:api_client/offline_repository/exceptions.dart';
 import 'package:api_client/offline_repository/repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -81,7 +81,7 @@ void main() {
         distinct: null,
         columns: anyNamed('columns'),
         where: anyNamed('where'),
-        whereArgs: anyNamed('whereArgs'))).thenThrow(NotFound(''));
+        whereArgs: anyNamed('whereArgs'))).thenThrow(NotFoundException(''));
 
     expect(repository.get(1), throwsException);
   });
