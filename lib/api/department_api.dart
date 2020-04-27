@@ -81,7 +81,7 @@ class DepartmentApi {
   Observable<bool> updateName(int id, String newName) {
     return _http.put('/$id/name', <String, String>{'name': newName}).map(
         (Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 
@@ -90,7 +90,7 @@ class DepartmentApi {
   /// [id] Identifier of Department to delete
   Observable<bool> delete(int id) {
     return _http.delete('/$id').map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 }

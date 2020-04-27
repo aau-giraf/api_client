@@ -50,7 +50,7 @@ void main() {
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
       'data': names.map((WeekTemplateNameModel name) => name.toJson()).toList(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -65,7 +65,7 @@ void main() {
     httpMock.expectOne(url: '/', method: Method.post).flush(<String, dynamic>{
       'data': weekTemplateSample.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -82,7 +82,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': weekTemplateSample.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -99,7 +99,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': weekTemplateSample.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -115,7 +115,7 @@ void main() {
         .expectOne(url: '/${weekTemplateSample.id}', method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

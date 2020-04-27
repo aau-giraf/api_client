@@ -57,7 +57,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': mockActivity.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -78,7 +78,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': mockActivity.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -96,7 +96,7 @@ void main() {
             method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

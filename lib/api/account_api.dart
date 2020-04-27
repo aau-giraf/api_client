@@ -62,7 +62,7 @@ class AccountApi {
       'oldPassword': oldPassword,
       'newPassword': newPassword,
     }).map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 
@@ -75,7 +75,7 @@ class AccountApi {
       password: password,
       token: token,
     }).map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 

@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:api_client/http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:http/http.dart' as http;
+
+import '../api/api_exception.dart';
 
 /// HTTP Method
 // ignore: public_member_api_docs
@@ -10,7 +15,7 @@ enum Method { get, post, put, delete, patch }
 /// A call to the Http
 class Call {
   /// Default constructor
-  Call(this.method, this.url, [this.body]) {
+  Call(this.method, this.url, [this.body, this.statusCode = 200]) {
     flush = PublishSubject<dynamic>();
   }
 
@@ -23,8 +28,16 @@ class Call {
   /// What url was the call made on
   final String url;
 
+  /// Statuscode of the request
+  final int statusCode;
+
   /// Flush results
   PublishSubject<dynamic> flush; // ignore: close_sinks
+
+  @override
+  String toString() {
+    return "Call(${this.method}, ${this.url}, ${this.statusCode}: '${this.body}')";
+  }
 }
 
 /// Flush results to test
@@ -57,7 +70,8 @@ class HttpMock implements Http {
   void verify() {
     if (_calls.isNotEmpty) {
       throw Exception('Expected no requests, found: \n' +
-          _calls.map((Call call) => '[${call.method}] ${call.url}').join('\n'));
+          _calls.map((Call call) => '[${call.method} ${call.statusCode}] ${call.url}')
+                .join('\n'));
     }
   }
 
@@ -65,14 +79,18 @@ class HttpMock implements Http {
   ///
   /// [method] One of delete, get, patch, post, or put.
   /// [url] The url that is expected
-  Flusher expectOne({Method method, @required String url, dynamic body}) {
+  Flusher expectOne({
+    Method method,
+    @required String url,
+    dynamic body,
+    int statusCode = 200}) {
     final int index = _calls.indexWhere((Call call) =>
         call.url == url &&
         (method == null || method == call.method) &&
         (body == null || body == call.body));
 
     if (index == -1) {
-      throw Exception('Expected [$method] $url, found none');
+      throw Exception('Expected [$method $statusCode] $url, found none');
     }
 
     final Call call = _calls[index];
@@ -94,30 +112,30 @@ class HttpMock implements Http {
 
   @override
   Observable<Response> delete(String url, {bool raw = false}) {
-    return _reqToRes(Method.delete, url);
+    return _reqToRes(Method.delete, url, null);
   }
 
   @override
   Observable<Response> get(String url, {bool raw = false}) {
-    return _reqToRes(Method.get, url);
+    return _reqToRes(Method.get, url, null);
   }
 
   @override
-  Observable<Response> patch(String url, [dynamic body]) {
+  Observable<Response> patch(String url, [dynamic body, int statusCode]) {
     return _reqToRes(Method.patch, url, body);
   }
 
   @override
-  Observable<Response> post(String url, [dynamic body]) {
+  Observable<Response> post(String url, [dynamic body, int statusCode]) {
     return _reqToRes(Method.post, url, body);
   }
 
   @override
-  Observable<Response> put(String url, [dynamic body]) {
+  Observable<Response> put(String url, [dynamic body, int statusCode]) {
     return _reqToRes(Method.put, url, body);
   }
 
-  Observable<Response> _reqToRes(Method method, String url, [dynamic body]) {
+  Observable<Response> _reqToRes(Method method, String url, [dynamic body, int statusCode]) {
     final Call call = Call(method, url, body);
     _calls.add(call);
 
@@ -126,15 +144,21 @@ class HttpMock implements Http {
         throw response;
       }
       http.Response httpResponse;
+
       Map<String, dynamic> json;
 
       if(response is Map<String, dynamic>) {
         // The response is parsed json
         json = response;
+        httpResponse = http.Response(jsonEncode(json), statusCode ?? 200);
       } else if (response is List<int>) {
         // The response is a binary stream
-        httpResponse = http.Response.bytes(response, 200);
+        httpResponse = http.Response.bytes(response, statusCode ?? 200);
       }
+      if (httpResponse.statusCode > 300) {
+        throw ApiException(Response(httpResponse, json));
+      }
+
       return Response(httpResponse, json);
     });
   }

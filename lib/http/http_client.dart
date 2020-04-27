@@ -99,7 +99,7 @@ class HttpClient implements Http {
           headers['content-type'].toLowerCase().contains('application/json')) {
         json = jsonDecode(res.body);
 
-        if (!json['success']) {
+        if (res.statusCode > 300) {
           throw ApiException(Response(res, json));
         }
       }

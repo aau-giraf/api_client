@@ -47,7 +47,7 @@ class ActivityApi {
   /// [userID] User ID
   Observable<bool> delete(int activityId, String userId) {
     return _http.delete('/$userId/delete/$activityId').map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 }

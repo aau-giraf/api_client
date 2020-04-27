@@ -9,11 +9,10 @@ class ApiException implements Exception {
         (ErrorKey f) => f.toString() == 'ErrorKey.' + response.json['errorKey'],
         orElse: () => null);
 
-    if (response.json['errorProperties'] is List) {
-      errorProperties =
-          List<String>.from(response.json['errorProperties']).toList();
+    if (response.json['message']) {
+      errorMessage = response.json['message'].toString();
     } else {
-      // TODO(TobiasPalludan): Throw appropriate error.
+      errorMessage = 'Something went wrong.';
     }
   }
 
@@ -24,7 +23,7 @@ class ApiException implements Exception {
   ErrorKey errorKey = ErrorKey.NoError;
 
   /// List of the errors involved in the call
-  List<String> errorProperties = <String>[];
+  String errorMessage;
 
   @override
   String toString() => '[ApiException]: ${response.json['errorKey']}';

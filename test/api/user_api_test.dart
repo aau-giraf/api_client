@@ -54,8 +54,7 @@ void main() {
 
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
       'data': user.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -69,8 +68,7 @@ void main() {
         .expectOne(url: '/${user.id}', method: Method.get)
         .flush(<String, dynamic>{
       'data': user.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -84,8 +82,7 @@ void main() {
         .expectOne(url: '/${user.id}', method: Method.put)
         .flush(<String, dynamic>{
       'data': user.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -101,8 +98,7 @@ void main() {
         .expectOne(url: '/${user.id}/settings', method: Method.get)
         .flush(<String, dynamic>{
       'data': settings.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -115,11 +111,10 @@ void main() {
         }));
 
     httpMock
-        .expectOne(url: '/${user.id}/settings', method: Method.get)
+        .expectOne(url: '/${user.id}/settings', method: Method.get, statusCode: 400)
         .flush(<String, dynamic>{
       'data': null,
-      'success': false,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'RoleMustBeCitizien',
     });
   });
@@ -135,8 +130,7 @@ void main() {
         .expectOne(url: '/${user.id}/settings', method: Method.put)
         .flush(<String, dynamic>{
       'data': settings.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -149,11 +143,9 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/${user.id}/settings', method: Method.put)
+        .expectOne(url: '/${user.id}/settings', method: Method.put, statusCode: 400)
         .flush(<String, dynamic>{
-      'data': null,
-      'success': false,
-      'errorProperties': <dynamic>[],
+      'message': 'hello',
       'errorKey': 'RoleMustBeCitizien',
     });
   });
@@ -170,8 +162,7 @@ void main() {
         .expectOne(url: '/${user.id}/citizens', method: Method.get)
         .flush(<String, dynamic>{
       'data': usernames.map((UsernameModel name) => name.toJson()).toList(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -188,8 +179,7 @@ void main() {
         .expectOne(url: '/${user.id}/guardians', method: Method.get)
         .flush(<String, dynamic>{
       'data': usernames.map((UsernameModel name) => name.toJson()).toList(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -206,8 +196,7 @@ void main() {
     httpMock
         .expectOne(url: '/${user.id}/citizens/$citizenId', method: Method.post)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
