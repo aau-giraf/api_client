@@ -1,3 +1,3 @@
 enum DefaultTimer{
-  Hourglass, AnalogClock
+  Hourglass, PieChart, Numeric
 }
