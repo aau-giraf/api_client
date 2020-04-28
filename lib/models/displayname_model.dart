@@ -5,31 +5,32 @@ import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
 
-class UsernameModel implements Model {
+class DisplayNameModel implements Model {
   /// Default constructor
-  UsernameModel({@required this.name, @required this.role, @required this.id});
+  DisplayNameModel({@required this.displayName,
+    @required this.role, @required this.id});
 
   /// Create object from JSON mapping
-  UsernameModel.fromJson(Map<String, dynamic> json) {
+  DisplayNameModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
           '[UsernameModel]: Cannot instantiate from null');
     }
 
     id = json['userId'];
-    name = json['userName'];
+    displayName = json['displayName'];
     role = json['userRole'];
   }
 
   /// Create object from GirafUserModel
-  UsernameModel.fromGirafUser(GirafUserModel user) {
-    name = user.screenName;
+  DisplayNameModel.fromGirafUser(GirafUserModel user) {
+    displayName = user.displayName;
     role = user.roleName;
     id = user.id;
   }
 
-  /// The user's name
-  String name;
+  /// The user's displayName
+  String displayName;
 
   /// The user's role
   String role;
@@ -48,11 +49,12 @@ class UsernameModel implements Model {
 
   @override
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{'userId': id, 'userName': name, 'userRole': role};
+      <String, dynamic>{'userId': id,
+        'displayName': displayName, 'userRole': role};
 
   /// getter for repository
   static IOfflineRepository<Model> offline() {
-    return OfflineRepository((UsernameModel).toString());
+    return OfflineRepository((DisplayNameModel).toString());
   }
 
 }

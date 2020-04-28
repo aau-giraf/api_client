@@ -34,17 +34,14 @@ class AccountApi {
   /// [departmentId] The users departmentId
   /// [role] The role of the user
   Observable<GirafUserModel> register(String username, String password,
-      {String displayName, @required int departmentId, @required Role role}) {
+      String displayName, {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
+      'displayName': displayName,
       'password': password,
       'departmentId': departmentId,
       'role': role.toString().split('.').last,
     };
-
-    if (displayName != null) {
-      body['displayName'] = displayName;
-    }
 
     return _http
         .post('/Account/register', body)

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 
 /// User endpoints
 class UserApi {
@@ -92,11 +92,11 @@ class UserApi {
   /// be a guardian
   ///
   /// [id] Identifier of the GirafUser to get citizens for
-  Observable<List<UsernameModel>> getCitizens(String id) {
+  Observable<List<DisplayNameModel>> getCitizens(String id) {
     return _http.get('/$id/citizens').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
-            .map((Map<String, dynamic> val) => UsernameModel.fromJson(val))
+            .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
             .toList();
       } else {
         return null;
@@ -108,11 +108,11 @@ class UserApi {
   /// provided id.
   ///
   /// [id] Identifier for the citizen to get guardians for
-  Observable<List<UsernameModel>> getGuardians(String id) {
+  Observable<List<DisplayNameModel>> getGuardians(String id) {
     return _http.get('/$id/guardians').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
-            .map((Map<String, dynamic> val) => UsernameModel.fromJson(val))
+            .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
             .toList();
       } else {
         return null;
