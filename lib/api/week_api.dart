@@ -60,7 +60,7 @@ class WeekApi {
   /// [weekNumber] The week-number of the week
   Observable<bool> delete(String id, int year, int weekNumber) {
     return _http.delete('/$id/week/$year/$weekNumber').map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 }

@@ -30,8 +30,7 @@ void main() {
         .expectOne(url: '/Account/login', method: Method.post)
         .flush(<String, dynamic>{
       'data': 'TestToken',
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -46,7 +45,7 @@ void main() {
         .expectOne(url: '/Account/login', method: Method.post)
         .throwError(ApiException(Response(null, <String, dynamic>{
           'success': false,
-          'errorProperties': <dynamic>[],
+          'message': '',
           'errorKey': 'InvalidCredentials',
         })));
   });
@@ -64,8 +63,7 @@ void main() {
             url: '/User/$id/Account/password-reset-token', method: Method.get)
         .flush(<String, dynamic>{
       'data': token,
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -73,14 +71,17 @@ void main() {
   test('Should register user', () {
     const String id = '1234';
     const String username = 'username';
+    const String displayName = 'displayname';
     const String password = 'password';
     const int departmentId = 123;
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, password, departmentId: departmentId, role: role)
+        .register(username, displayName, password, departmentId: departmentId,
+          role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);
+      expect(res.displayName, displayName);
       expect(res.department, departmentId);
       expect(res.role, role);
       expect(res.id, id);
@@ -94,11 +95,10 @@ void main() {
         'roleName': 'Citizen',
         'id': id,
         'username': username,
-        'screenName': null,
+        'displayName': 'displayname',
         'department': departmentId,
       },
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -117,8 +117,7 @@ void main() {
     httpMock
         .expectOne(url: '/User/$id/Account/password', method: Method.put)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -137,8 +136,7 @@ void main() {
     httpMock
         .expectOne(url: '/User/$id/Account/password', method: Method.post)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -150,10 +148,9 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/Account/user/$id', method: Method.delete)
+        .expectOne(url: '/Account/user/$id', method: Method.delete, statusCode: 400)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:api_client/api/api_exception.dart';
+import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
@@ -12,8 +15,9 @@ import 'package:api_client/api/user_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   UserApi userApi;
@@ -24,12 +28,14 @@ void main() {
       department: 3,
       role: Role.Guardian,
       roleName: 'Guardian',
-      screenName: 'Kurt',
+      displayName: 'Kurt',
       username: 'SpaceLord69');
 
-  final List<UsernameModel> usernames = <UsernameModel>[
-    UsernameModel(name: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    UsernameModel(name: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+  final List<DisplayNameModel> usernames = <DisplayNameModel>[
+    DisplayNameModel(displayName: 'Kurt',
+        role: Role.SuperUser.toString(), id: '1'),
+    DisplayNameModel(displayName: 'Hüttel',
+        role: Role.SuperUser.toString(), id: '2'),
   ];
 
   final SettingsModel settings = SettingsModel(
@@ -54,8 +60,7 @@ void main() {
 
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
       'data': user.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -69,8 +74,7 @@ void main() {
         .expectOne(url: '/${user.id}', method: Method.get)
         .flush(<String, dynamic>{
       'data': user.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -84,8 +88,7 @@ void main() {
         .expectOne(url: '/${user.id}', method: Method.put)
         .flush(<String, dynamic>{
       'data': user.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -101,8 +104,7 @@ void main() {
         .expectOne(url: '/${user.id}/settings', method: Method.get)
         .flush(<String, dynamic>{
       'data': settings.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -114,14 +116,15 @@ void main() {
           expect(error.errorKey, ErrorKey.RoleMustBeCitizien);
         }));
 
-    httpMock
-        .expectOne(url: '/${user.id}/settings', method: Method.get)
-        .flush(<String, dynamic>{
+    final Map<String, dynamic> body = <String, dynamic>{
       'data': null,
-      'success': false,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'RoleMustBeCitizien',
-    });
+    };
+
+    httpMock
+        .expectOne(url: '/${user.id}/settings', method: Method.get, statusCode: 400)
+        .flush(Response(http.Response(jsonEncode(body), 400), body));
   });
 
   test('Should update settings from user with ID', () {
@@ -135,8 +138,7 @@ void main() {
         .expectOne(url: '/${user.id}/settings', method: Method.put)
         .flush(<String, dynamic>{
       'data': settings.toJson(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -148,30 +150,29 @@ void main() {
       expect(error.errorKey, ErrorKey.RoleMustBeCitizien);
     }));
 
-    httpMock
-        .expectOne(url: '/${user.id}/settings', method: Method.put)
-        .flush(<String, dynamic>{
-      'data': null,
-      'success': false,
-      'errorProperties': <dynamic>[],
+    final Map<String, dynamic> body = <String, dynamic>{
+      'message': 'hello',
       'errorKey': 'RoleMustBeCitizien',
-    });
+    };
+
+    httpMock
+        .expectOne(url: '/${user.id}/settings', method: Method.put, statusCode: 400)
+        .flush(Response(http.Response(jsonEncode(body), 400), body));
   });
 
   test('Should get citizens from user with ID', () {
     userApi
         .getCitizens(user.id)
-        .listen(expectAsync1((List<UsernameModel> names) {
-      expect(names.map((UsernameModel name) => name.toJson()),
-          usernames.map((UsernameModel name) => name.toJson()));
+        .listen(expectAsync1((List<DisplayNameModel> names) {
+      expect(names.map((DisplayNameModel name) => name.toJson()),
+          usernames.map((DisplayNameModel name) => name.toJson()));
     }));
 
     httpMock
         .expectOne(url: '/${user.id}/citizens', method: Method.get)
         .flush(<String, dynamic>{
-      'data': usernames.map((UsernameModel name) => name.toJson()).toList(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'data': usernames.map((DisplayNameModel name) => name.toJson()).toList(),
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -179,17 +180,16 @@ void main() {
   test('Should get citizens from user with ID', () {
     userApi
         .getGuardians(user.id)
-        .listen(expectAsync1((List<UsernameModel> names) {
-      expect(names.map((UsernameModel name) => name.toJson()),
-          usernames.map((UsernameModel name) => name.toJson()));
+        .listen(expectAsync1((List<DisplayNameModel> names) {
+      expect(names.map((DisplayNameModel name) => name.toJson()),
+          usernames.map((DisplayNameModel name) => name.toJson()));
     }));
 
     httpMock
         .expectOne(url: '/${user.id}/guardians', method: Method.get)
         .flush(<String, dynamic>{
-      'data': usernames.map((UsernameModel name) => name.toJson()).toList(),
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'data': usernames.map((DisplayNameModel name) => name.toJson()).toList(),
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -206,8 +206,7 @@ void main() {
     httpMock
         .expectOne(url: '/${user.id}/citizens/$citizenId', method: Method.post)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 
 /// User endpoints
 class UserApi {
@@ -45,7 +45,7 @@ class UserApi {
     return _http
         .get('/$id/settings')
         .map((Response res){
-          if (res.json['success'] == false) {
+          if (res.success() == false) {
             throw ApiException(res);
           }
           return SettingsModel.fromJson(res.json['data']);
@@ -60,7 +60,7 @@ class UserApi {
     return _http
         .put('/$id/settings', settings.toJson())
         .map((Response res){
-          if (res.json['success'] == false) {
+          if (res.success() == false) {
             throw ApiException(res);
           }
           return SettingsModel.fromJson(res.json['data']);
@@ -71,7 +71,7 @@ class UserApi {
   ///
   /// [id] Identifier fo the user to which the icon should be deleted
   Observable<bool> deleteIcon(String id) {
-    return _http.delete('/$id/icon').map((Response res) => res.json['success']);
+    return _http.delete('/$id/icon').map((Response res) => res.statusCode() == 200);
   }
 
   /// Gets the raw user icon for a given user
@@ -92,11 +92,11 @@ class UserApi {
   /// be a guardian
   ///
   /// [id] Identifier of the GirafUser to get citizens for
-  Observable<List<UsernameModel>> getCitizens(String id) {
+  Observable<List<DisplayNameModel>> getCitizens(String id) {
     return _http.get('/$id/citizens').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
-            .map((Map<String, dynamic> val) => UsernameModel.fromJson(val))
+            .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
             .toList();
       } else {
         return null;
@@ -108,11 +108,11 @@ class UserApi {
   /// provided id.
   ///
   /// [id] Identifier for the citizen to get guardians for
-  Observable<List<UsernameModel>> getGuardians(String id) {
+  Observable<List<DisplayNameModel>> getGuardians(String id) {
     return _http.get('/$id/guardians').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
-            .map((Map<String, dynamic> val) => UsernameModel.fromJson(val))
+            .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
             .toList();
       } else {
         return null;
@@ -128,6 +128,6 @@ class UserApi {
   Observable<bool> addCitizenToGuardian(String guardianId, String citizenId) {
     return _http
         .post('/$guardianId/citizens/$citizenId')
-        .map((Response res) => res.json['success']);
+        .map((Response res) => res.statusCode() == 200);
   }
 }
