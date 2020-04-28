@@ -7,18 +7,18 @@ import 'package:sqflite/sqflite.dart';
 import 'exceptions.dart';
 
 /// Database name
-const String DATABASE_NAME = 'giraf_offline';
+const String TABLE_NAME = 'giraf_offline';
 
 /// Implementation of offline repository
 class OfflineRepository implements IOfflineRepository<Model> {
 
   /// Constructor
   /// The optional {DatabaseExecutor db} is for using a custom database
-  OfflineRepository(this._tableName, {Database db}) {
+  OfflineRepository(this._objectName, {Database db}) {
     _externalDb = db;
   }
 
-  final String _tableName;
+  final String _objectName;
   Database _database;
   Database _externalDb;
 
@@ -31,11 +31,11 @@ class OfflineRepository implements IOfflineRepository<Model> {
       'json': json.encode(model.toJson()).toString(),
       'is_online': 0,
       'is_deleted': 0,
-      'object': _tableName,
+      'object': _objectName,
       'created_date': epochNow,
       'modified_date': epochNow
     };
-    model.offlineId = await _database.insert(DATABASE_NAME, insertMap);
+    model.offlineId = await _database.insert(TABLE_NAME, insertMap);
     return model;
   }
 
@@ -68,7 +68,7 @@ class OfflineRepository implements IOfflineRepository<Model> {
 
     _database = await _prepareDb();
     await _database.update(
-        DATABASE_NAME,
+        TABLE_NAME,
         updateMap,
         where: 'offline_id = ?',
         whereArgs: <String>[model.offlineId.toString()]
@@ -81,14 +81,14 @@ class OfflineRepository implements IOfflineRepository<Model> {
   Future<Model> get(int id) async {
     _database = await _prepareDb();
     final List<Map<String, dynamic>> maps = await _database.query(
-        DATABASE_NAME,
+        TABLE_NAME,
         columns: <String>['json', 'offline_id'],
         where: 'offline_id = ? AND object = ? AND is_deleted = ?',
-        whereArgs: <dynamic>[id, _tableName, 0]
+        whereArgs: <dynamic>[id, _objectName, 0]
     );
     if (maps.isNotEmpty) {
       final Model model = ModelFactory
-          .getModel(_toJson(maps.first), _tableName);
+          .getModel(_toJson(maps.first), _objectName);
       if (model != null) {
         model.offlineId = id;
       }
@@ -103,16 +103,16 @@ class OfflineRepository implements IOfflineRepository<Model> {
   Future<List<Model>> all() async {
     _database = await _prepareDb();
     final List<Map<String, dynamic>> maps = await _database.query(
-        DATABASE_NAME,
+        TABLE_NAME,
         columns: <String>['json', 'offline_id'],
         where: 'is_deleted = ? AND object = ?',
-        whereArgs: <dynamic>[0, _tableName]
+        whereArgs: <dynamic>[0, _objectName]
     );
 
     if (maps != null) {
       final List<Model> models = <Model>[];
       for (Map<String, dynamic> result in maps) {
-        final Model model = ModelFactory.getModel(_toJson(result), _tableName);
+        final Model model = ModelFactory.getModel(_toJson(result), _objectName);
         if (model != null) {
           model.offlineId = result['offline_id'];
           models.add(model);
