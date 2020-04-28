@@ -56,7 +56,7 @@ void main() {
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
       'data': names,
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -71,7 +71,7 @@ void main() {
     httpMock.expectOne(url: '/', method: Method.post).flush(<String, dynamic>{
       'data': sampleDepartment.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -88,7 +88,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': sampleDepartment.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -110,7 +110,7 @@ void main() {
           .map((DisplayNameModel member) => member.toJson())
           .toList(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -131,7 +131,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': sampleDepartment.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -147,7 +147,7 @@ void main() {
         .expectOne(url: '/${sampleDepartment.id}/name', method: Method.put)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -163,7 +163,7 @@ void main() {
         .expectOne(url: '/${sampleDepartment.id}', method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

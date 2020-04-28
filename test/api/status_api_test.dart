@@ -22,7 +22,7 @@ void main() {
     .expectOne(url: '/', method: Method.get)
     .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError'
     });
   });
@@ -38,7 +38,7 @@ void main() {
         .expectOne(url: '/database', method: Method.get)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError'
     });
   });
@@ -57,7 +57,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': version,
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError'
     });
   });

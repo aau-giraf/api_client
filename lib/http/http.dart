@@ -11,6 +11,12 @@ class Response {
 
   /// Parsed JSON response
   final Map<String, dynamic> json;
+
+  /// HTTP StatusCode
+  int statusCode() => response.statusCode;
+
+  /// Check if response is a successful one, or errorneous one
+  bool success() => response.statusCode < 300;
 }
 
 /// Http interface

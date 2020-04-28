@@ -77,7 +77,7 @@ class PictogramApi {
   /// [id] The id of the pictogram to delete.
   Observable<bool> delete(int id) {
     return _http.delete('/$id').map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 

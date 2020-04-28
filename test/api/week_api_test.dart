@@ -39,7 +39,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': names.map((WeekNameModel name) => name.toJson()).toList(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -74,7 +74,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': week.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -109,7 +109,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': week.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -127,7 +127,7 @@ void main() {
         .expectOne(url: '/$id/week/$year/$week', method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

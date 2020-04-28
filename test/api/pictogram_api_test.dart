@@ -46,7 +46,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': grams.map((PictogramModel gram) => gram.toJson()).toList(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -61,7 +61,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': grams[0].toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -74,7 +74,7 @@ void main() {
     httpMock.expectOne(url: '/', method: Method.post).flush(<String, dynamic>{
       'data': grams[0].toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -89,7 +89,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': grams[0].toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -103,7 +103,7 @@ void main() {
         .expectOne(url: '/${grams[0].id}', method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -127,7 +127,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': grams[0].toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -149,7 +149,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/${grams[0].id}/image/raw', method: Method.get)
+        .expectOne(url: '/${grams[0].id}/image/raw', method: Method.get, statusCode: 200)
         .flush(imagebytes);
   });
 
