@@ -30,7 +30,7 @@ class ApiException implements Exception {
   /// The error key derived from the response
   ErrorKey errorKey = ErrorKey.NoError;
 
-  /// List of the errors involved in the call
+  /// The message describing the error
   String errorMessage;
 
   /// The details of the error that happened, most of the time it is empty
