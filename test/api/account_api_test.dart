@@ -30,8 +30,7 @@ void main() {
         .expectOne(url: '/Account/login', method: Method.post)
         .flush(<String, dynamic>{
       'data': 'TestToken',
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -46,7 +45,7 @@ void main() {
         .expectOne(url: '/Account/login', method: Method.post)
         .throwError(ApiException(Response(null, <String, dynamic>{
           'success': false,
-          'errorProperties': <dynamic>[],
+          'message': '',
           'errorKey': 'InvalidCredentials',
         })));
   });
@@ -64,8 +63,7 @@ void main() {
             url: '/User/$id/Account/password-reset-token', method: Method.get)
         .flush(<String, dynamic>{
       'data': token,
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -100,8 +98,7 @@ void main() {
         'displayName': 'displayname',
         'department': departmentId,
       },
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -120,8 +117,7 @@ void main() {
     httpMock
         .expectOne(url: '/User/$id/Account/password', method: Method.put)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -140,8 +136,7 @@ void main() {
     httpMock
         .expectOne(url: '/User/$id/Account/password', method: Method.post)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -153,10 +148,9 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/Account/user/$id', method: Method.delete)
+        .expectOne(url: '/Account/user/$id', method: Method.delete, statusCode: 400)
         .flush(<String, dynamic>{
-      'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

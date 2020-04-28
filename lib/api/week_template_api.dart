@@ -60,6 +60,6 @@ class WeekTemplateApi {
   ///
   /// [id] ID of the template to delete
   Observable<bool> delete(int id) {
-    return _http.delete('/$id').map((Response res) => res.json['success']);
+    return _http.delete('/$id').map((Response res) => res.success());
   }
 }

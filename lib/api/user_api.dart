@@ -45,7 +45,7 @@ class UserApi {
     return _http
         .get('/$id/settings')
         .map((Response res){
-          if (res.json['success'] == false) {
+          if (res.success() == false) {
             throw ApiException(res);
           }
           return SettingsModel.fromJson(res.json['data']);
@@ -60,7 +60,7 @@ class UserApi {
     return _http
         .put('/$id/settings', settings.toJson())
         .map((Response res){
-          if (res.json['success'] == false) {
+          if (res.success() == false) {
             throw ApiException(res);
           }
           return SettingsModel.fromJson(res.json['data']);
@@ -71,7 +71,7 @@ class UserApi {
   ///
   /// [id] Identifier fo the user to which the icon should be deleted
   Observable<bool> deleteIcon(String id) {
-    return _http.delete('/$id/icon').map((Response res) => res.json['success']);
+    return _http.delete('/$id/icon').map((Response res) => res.statusCode() == 200);
   }
 
   /// Gets the raw user icon for a given user
@@ -128,6 +128,6 @@ class UserApi {
   Observable<bool> addCitizenToGuardian(String guardianId, String citizenId) {
     return _http
         .post('/$guardianId/citizens/$citizenId')
-        .map((Response res) => res.json['success']);
+        .map((Response res) => res.statusCode() == 200);
   }
 }
