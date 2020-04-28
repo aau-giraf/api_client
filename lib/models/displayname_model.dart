@@ -49,7 +49,8 @@ class DisplayNameModel implements Model {
 
   @override
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{'userId': id, 'displayName': displayName, 'userRole': role};
+      <String, dynamic>{'userId': id,
+        'displayName': displayName, 'userRole': role};
 
   /// getter for repository
   static IOfflineRepository<Model> offline() {
