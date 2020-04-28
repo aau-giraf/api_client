@@ -1,12 +1,12 @@
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/timer_model.dart';
-import 'package:api_client/models/username_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
@@ -20,8 +20,8 @@ class ModelFactory {
 
   /// Method for getting correct model
   static Model getModel(Map<String, dynamic> json, String objectName) {
-    if (objectName == (UsernameModel).toString()) {
-      return UsernameModel.fromJson(json);
+    if (objectName == (DisplayNameModel).toString()) {
+      return DisplayNameModel.fromJson(json);
     } else if (objectName == (ActivityModel).toString()) {
       return ActivityModel.fromJson(json);
     } else if (objectName == (PictogramModel).toString()) {

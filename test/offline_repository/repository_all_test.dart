@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/model.dart';
-import 'package:api_client/models/username_model.dart';
 import 'package:api_client/offline_repository/repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -31,14 +31,14 @@ void main() {
 
   test('Can get all models', () async {
     repository = OfflineRepository(
-        (UsernameModel).toString(),
+        (DisplayNameModel).toString(),
         db: mockDatabase
     );
 
-    final UsernameModel firstUser =
-      UsernameModel(name: 'testname', role: 'testrole', id: '1');
-    final UsernameModel secondUser =
-      UsernameModel(name: 'testname2', role: 'testrole2', id: '2');
+    final DisplayNameModel firstUser =
+      DisplayNameModel(displayName: 'testname', role: 'testrole', id: '1');
+    final DisplayNameModel secondUser =
+      DisplayNameModel(displayName: 'testname2', role: 'testrole2', id: '2');
 
     final String firstUserJson = json.encode(firstUser.toJson()).toString();
     final String secondUserJson = json.encode(secondUser.toJson()).toString();
@@ -57,12 +57,12 @@ void main() {
 
     final List<Model> actualList = await repository.all();
 
-    expect(actualList, <UsernameModel>[firstUser, secondUser]);
+    expect(actualList, <DisplayNameModel>[firstUser, secondUser]);
 
     // Following only works when actualList.length == 2
     expect(actualList.length, 2);
-    final UsernameModel actualFirst = actualList.first;
-    final UsernameModel actualLast = actualList.last;
+    final DisplayNameModel actualFirst = actualList.first;
+    final DisplayNameModel actualLast = actualList.last;
     expect(actualFirst.offlineId, isNotNull);
     expect(actualLast.offlineId, isNotNull);
     expect(actualFirst.offlineId, greaterThan(0));

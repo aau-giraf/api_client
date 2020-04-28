@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/model.dart';
-import 'package:api_client/models/username_model.dart';
 import 'package:api_client/offline_repository/exceptions.dart';
 import 'package:api_client/offline_repository/repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,17 +35,17 @@ void main() {
 
   test('When model exists and is recognized, should return model', () async {
     repository = OfflineRepository(
-        (UsernameModel).toString(),
+        (DisplayNameModel).toString(),
         db: mockDatabase
     );
 
-    final UsernameModel usernameModel = UsernameModel(
-      name: 'name',
+    final DisplayNameModel displayNameModel = DisplayNameModel(
+      displayName: 'name',
       role: 'role',
       id: '1',
     );
     final String usernameModelJson =
-        json.encode(usernameModel.toJson()).toString();
+        json.encode(displayNameModel.toJson()).toString();
 
     when(mockDatabase.query(any,
         distinct: null,
@@ -60,8 +60,8 @@ void main() {
     // Test will pass for any id > 0
     final Model actualModel = await repository.get(1);
 
-    expect(actualModel, isInstanceOf<UsernameModel>());
-    expect(actualModel.toJson(), equals(usernameModel.toJson()));
+    expect(actualModel, isInstanceOf<DisplayNameModel>());
+    expect(actualModel.toJson(), equals(displayNameModel.toJson()));
     expect(actualModel.getOfflineId(), isNotNull);
     expect(actualModel.getOfflineId(), greaterThan(0));
   });

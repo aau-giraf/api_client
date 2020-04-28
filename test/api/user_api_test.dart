@@ -12,7 +12,7 @@ import 'package:api_client/api/user_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -24,12 +24,14 @@ void main() {
       department: 3,
       role: Role.Guardian,
       roleName: 'Guardian',
-      screenName: 'Kurt',
+      displayName: 'Kurt',
       username: 'SpaceLord69');
 
-  final List<UsernameModel> usernames = <UsernameModel>[
-    UsernameModel(name: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    UsernameModel(name: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+  final List<DisplayNameModel> usernames = <DisplayNameModel>[
+    DisplayNameModel(displayName: 'Kurt',
+        role: Role.SuperUser.toString(), id: '1'),
+    DisplayNameModel(displayName: 'Hüttel',
+        role: Role.SuperUser.toString(), id: '2'),
   ];
 
   final SettingsModel settings = SettingsModel(
@@ -161,15 +163,15 @@ void main() {
   test('Should get citizens from user with ID', () {
     userApi
         .getCitizens(user.id)
-        .listen(expectAsync1((List<UsernameModel> names) {
-      expect(names.map((UsernameModel name) => name.toJson()),
-          usernames.map((UsernameModel name) => name.toJson()));
+        .listen(expectAsync1((List<DisplayNameModel> names) {
+      expect(names.map((DisplayNameModel name) => name.toJson()),
+          usernames.map((DisplayNameModel name) => name.toJson()));
     }));
 
     httpMock
         .expectOne(url: '/${user.id}/citizens', method: Method.get)
         .flush(<String, dynamic>{
-      'data': usernames.map((UsernameModel name) => name.toJson()).toList(),
+      'data': usernames.map((DisplayNameModel name) => name.toJson()).toList(),
       'success': true,
       'errorProperties': <dynamic>[],
       'errorKey': 'NoError',
@@ -179,15 +181,15 @@ void main() {
   test('Should get citizens from user with ID', () {
     userApi
         .getGuardians(user.id)
-        .listen(expectAsync1((List<UsernameModel> names) {
-      expect(names.map((UsernameModel name) => name.toJson()),
-          usernames.map((UsernameModel name) => name.toJson()));
+        .listen(expectAsync1((List<DisplayNameModel> names) {
+      expect(names.map((DisplayNameModel name) => name.toJson()),
+          usernames.map((DisplayNameModel name) => name.toJson()));
     }));
 
     httpMock
         .expectOne(url: '/${user.id}/guardians', method: Method.get)
         .flush(<String, dynamic>{
-      'data': usernames.map((UsernameModel name) => name.toJson()).toList(),
+      'data': usernames.map((DisplayNameModel name) => name.toJson()).toList(),
       'success': true,
       'errorProperties': <dynamic>[],
       'errorKey': 'NoError',
