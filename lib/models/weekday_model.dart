@@ -33,6 +33,7 @@ class WeekdayModel implements Model {
   /// List of activities for the day
   List<ActivityModel> activities;
 
+  @override
   /// Offline id
   int offlineId;
 

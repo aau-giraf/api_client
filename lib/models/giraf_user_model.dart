@@ -48,6 +48,7 @@ class GirafUserModel implements Model {
   /// The id of the users department
   int department;
 
+  @override
   /// Offline id
   int offlineId;
 

@@ -38,6 +38,7 @@ class DisplayNameModel implements Model {
   /// The user's ID
   String id;
 
+  @override
   /// Offline id
   int offlineId;
 
@@ -57,4 +58,18 @@ class DisplayNameModel implements Model {
     return OfflineRepository((DisplayNameModel).toString());
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is DisplayNameModel &&
+              runtimeType == other.runtimeType &&
+              displayName == other.displayName &&
+              role == other.role &&
+              id == other.id;
+
+  @override
+  int get hashCode =>
+      displayName.hashCode ^
+      role.hashCode ^
+      id.hashCode;
 }

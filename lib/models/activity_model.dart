@@ -1,8 +1,9 @@
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/timer_model.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
-
 import 'enums/activity_state_enum.dart';
 
 /// The model for the activity in the api client.
@@ -54,6 +55,7 @@ class ActivityModel implements Model {
   /// The timer for the activity
   TimerModel timer;
 
+  @override
   /// Offline id
   int offlineId;
 
@@ -75,5 +77,9 @@ class ActivityModel implements Model {
     };
   }
 
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((ActivityModel).toString());
+  }
 
 }

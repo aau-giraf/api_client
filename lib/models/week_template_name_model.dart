@@ -24,6 +24,7 @@ class WeekTemplateNameModel implements Model {
   /// The template's ID
   int id;
 
+  @override
   /// Offline id
   int offlineId;
 

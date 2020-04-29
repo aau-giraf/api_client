@@ -2,13 +2,13 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Database Provider
-class DbProvider {
-  DbProvider._internal();
+class OfflineDbProvider {
+  OfflineDbProvider._internal();
 
-  static final DbProvider _instance = DbProvider._internal();
+  static final OfflineDbProvider _instance = OfflineDbProvider._internal();
 
   /// Getter to get the instance of the Database provider
-  static DbProvider get instance => _instance;
+  static OfflineDbProvider get instance => _instance;
 
   Database _db;
 
@@ -23,13 +23,13 @@ class DbProvider {
 
   Future<Database> _init() async {
     final String databasesPath = await getDatabasesPath();
-    final String path = join(databasesPath, 'eweekplanner_local.db');
+    final String path = join(databasesPath, 'weekplanner_local.db');
 
     _db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-      // Executing of initial tables here
-      await db.execute(readInitialTablesQuery());
-    });
+          // Executing of initial tables here
+          await db.execute(readInitialTablesQuery());
+        });
     return _db;
   }
 

@@ -25,6 +25,7 @@ class WeekdayColorModel implements Model {
   /// The day of the week
   Weekday day;
 
+  @override
   /// Offline id
   int offlineId;
 
