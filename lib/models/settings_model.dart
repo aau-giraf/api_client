@@ -8,23 +8,24 @@ import 'package:api_client/models/enums/default_timer_enum.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
 import 'package:api_client/models/weekday_color_model.dart';
+import 'enums/weekday_enum.dart';
 
 /// A model used to store settings values
 class SettingsModel implements Model {
   /// Constructor
   SettingsModel(
       {@required this.orientation,
-        @required this.completeMark,
-        @required this.cancelMark,
-        @required this.defaultTimer,
-        this.timerSeconds,
-        this.activitiesCount,
-        @required this.theme,
-        this.nrOfDaysToDisplay,
-        this.lockTimerControl,
-        this.pictogramText,
-        this.greyscale,
-        this.weekDayColors});
+      @required this.completeMark,
+      @required this.cancelMark,
+      @required this.defaultTimer,
+      this.timerSeconds,
+      this.activitiesCount,
+      @required this.theme,
+      this.nrOfDaysToDisplay,
+      this.lockTimerControl,
+      this.pictogramText,
+      this.greyscale,
+      this.weekDayColors});
 
   /// Another constructor used to create from json.
   SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -90,11 +91,26 @@ class SettingsModel implements Model {
   /// List of weekday colors shown in the weekplan
   List<WeekdayColorModel> weekDayColors;
 
+  /// Get the [WeekdayColorModel] for the given [Weekday].
+  WeekdayColorModel getWeekdayColor(Weekday weekDay) {
+    int i = weekDay.index;
+    do {
+      if (weekDayColors[i].day == weekDay) {
+        return weekDayColors[i];
+      }
+      i = ++i % weekDayColors.length;
+    } while (i != weekDay.index);
+
+    return null;
+  }
+
   @override
+
   /// Offline id
   int offlineId;
 
   @override
+
   /// Get offline id
   int getOfflineId() {
     return offlineId;
@@ -111,11 +127,11 @@ class SettingsModel implements Model {
       'activitiesCount': activitiesCount,
       'theme': theme.index + 1,
       'nrOfDaysToDisplay': nrOfDaysToDisplay,
-      'lockTimerControl' : lockTimerControl,
+      'lockTimerControl': lockTimerControl,
       'greyScale': greyscale,
-      'pictogramText' : pictogramText,
+      'pictogramText': pictogramText,
       'weekDayColors':
-      weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
+          weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
   }
 
