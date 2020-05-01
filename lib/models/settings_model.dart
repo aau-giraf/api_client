@@ -104,14 +104,12 @@ class SettingsModel implements Model {
     return null;
   }
 
-  @override
-
   /// Offline id
+  @override
   int offlineId;
 
-  @override
-
   /// Get offline id
+  @override
   int getOfflineId() {
     return offlineId;
   }
