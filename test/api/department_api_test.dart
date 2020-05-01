@@ -1,7 +1,7 @@
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/api/department_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,9 +11,12 @@ void main() {
   DepartmentApi departmentApi;
 
   final DepartmentModel sampleDepartment =
-      DepartmentModel(id: 1, name: 'Dep. of Science', members: <UsernameModel>[
-    UsernameModel(name: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    UsernameModel(name: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+      DepartmentModel(id: 1, name: 'Dep. of Science',
+          members: <DisplayNameModel>[
+    DisplayNameModel(displayName: 'Kurt',
+        role: Role.SuperUser.toString(), id: '1'),
+    DisplayNameModel(displayName: 'Hüttel',
+        role: Role.SuperUser.toString(), id: '2'),
   ], resources: <int>[
     1,
     2,
@@ -53,7 +56,7 @@ void main() {
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
       'data': names,
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -68,7 +71,7 @@ void main() {
     httpMock.expectOne(url: '/', method: Method.post).flush(<String, dynamic>{
       'data': sampleDepartment.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -85,7 +88,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': sampleDepartment.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -93,21 +96,21 @@ void main() {
   test('Should be able to fetch department users', () {
     departmentApi
         .getDepartmentUsers(sampleDepartment.id)
-        .listen(expectAsync1((List<UsernameModel> response) {
+        .listen(expectAsync1((List<DisplayNameModel> response) {
       expect(
-          response.map((UsernameModel member) => member.toJson()),
+          response.map((DisplayNameModel member) => member.toJson()),
           sampleDepartment.members
-              .map((UsernameModel member) => member.toJson()));
+              .map((DisplayNameModel member) => member.toJson()));
     }));
 
     httpMock
         .expectOne(url: '/${sampleDepartment.id}/citizens', method: Method.get)
         .flush(<String, dynamic>{
       'data': sampleDepartment.members
-          .map((UsernameModel member) => member.toJson())
+          .map((DisplayNameModel member) => member.toJson())
           .toList(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -128,7 +131,7 @@ void main() {
         .flush(<String, dynamic>{
       'data': sampleDepartment.toJson(),
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -144,7 +147,7 @@ void main() {
         .expectOne(url: '/${sampleDepartment.id}/name', method: Method.put)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });
@@ -160,7 +163,7 @@ void main() {
         .expectOne(url: '/${sampleDepartment.id}', method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
-      'errorProperties': <dynamic>[],
+      'message': '',
       'errorKey': 'NoError',
     });
   });

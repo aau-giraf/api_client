@@ -2,6 +2,8 @@ import 'package:api_client/models/model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/week_base_model.dart';
 import 'package:api_client/models/weekday_model.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 
 /// Represents a week
 class WeekModel extends WeekBaseModel implements Model {
@@ -25,6 +27,16 @@ class WeekModel extends WeekBaseModel implements Model {
 
   /// The week number
   int weekNumber;
+
+  @override
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -51,4 +63,10 @@ class WeekModel extends WeekBaseModel implements Model {
 
     return response;
   }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((WeekModel).toString());
+  }
+
 }

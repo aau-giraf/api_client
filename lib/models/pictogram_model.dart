@@ -1,3 +1,5 @@
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
@@ -43,6 +45,16 @@ class PictogramModel implements Model {
   String imageHash;
 
   @override
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
+  @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> result = <String, dynamic>{
       'title': title,
@@ -67,4 +79,10 @@ class PictogramModel implements Model {
 
     return result;
   }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((PictogramModel).toString());
+  }
+
 }

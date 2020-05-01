@@ -1,7 +1,7 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// Department endpoints
@@ -48,11 +48,11 @@ class DepartmentApi {
   /// Gets the citizen names
   ///
   /// [id] Id of Department to get citizens for
-  Observable<List<UsernameModel>> getDepartmentUsers(int id) {
+  Observable<List<DisplayNameModel>> getDepartmentUsers(int id) {
     return _http.get('/$id/citizens').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
-            .map((Map<String, dynamic> name) => UsernameModel.fromJson(name))
+            .map((Map<String, dynamic> name) => DisplayNameModel.fromJson(name))
             .toList();
       } else {
         // TODO(boginw): Throw appropriate error
@@ -81,7 +81,7 @@ class DepartmentApi {
   Observable<bool> updateName(int id, String newName) {
     return _http.put('/$id/name', <String, String>{'name': newName}).map(
         (Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 
@@ -90,7 +90,7 @@ class DepartmentApi {
   /// [id] Identifier of Department to delete
   Observable<bool> delete(int id) {
     return _http.delete('/$id').map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 }

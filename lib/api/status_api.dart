@@ -10,12 +10,12 @@ class StatusApi {
 
   /// End-point for checking if the API is running.
   Observable<bool> status() {
-    return _http.get('/').map((Response res) => res.json['success']);
+    return _http.get('/').map((Response res) => res.statusCode() == 200);
   }
 
   /// End-point for checking connection to the database.
   Observable<bool> databaseStatus() {
-    return _http.get('/database').map((Response res) => res.json['success']);
+    return _http.get('/database').map((Response res) => res.statusCode() == 200);
   }
 
   /// End-point for getting git version info, i.e. branch and commit hash

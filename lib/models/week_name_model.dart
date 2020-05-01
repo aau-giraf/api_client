@@ -1,4 +1,6 @@
 import 'package:api_client/models/model.dart';
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 
 /// Represents the week name
 class WeekNameModel implements Model {
@@ -33,9 +35,25 @@ class WeekNameModel implements Model {
   int weekNumber;
 
   @override
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
+  @override
   Map<String, dynamic> toJson() => <String, dynamic>{
         'name': name,
         'weekYear': weekYear,
         'weekNumber': weekNumber,
       };
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((WeekNameModel).toString());
+  }
+
 }

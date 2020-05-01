@@ -34,17 +34,14 @@ class AccountApi {
   /// [departmentId] The users departmentId
   /// [role] The role of the user
   Observable<GirafUserModel> register(String username, String password,
-      {String displayName, @required int departmentId, @required Role role}) {
+      String displayName, {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
+      'displayName': displayName,
       'password': password,
       'departmentId': departmentId,
       'role': role.toString().split('.').last,
     };
-
-    if (displayName != null) {
-      body['displayName'] = displayName;
-    }
 
     return _http
         .post('/Account/register', body)
@@ -62,7 +59,7 @@ class AccountApi {
       'oldPassword': oldPassword,
       'newPassword': newPassword,
     }).map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 
@@ -75,7 +72,7 @@ class AccountApi {
       password: password,
       token: token,
     }).map((Response res) {
-      return res.json['success'];
+      return res.success();
     });
   }
 

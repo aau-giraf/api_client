@@ -1,6 +1,8 @@
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
-import 'package:api_client/models/username_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 
 class DepartmentModel implements Model {
   /// Default constructor
@@ -23,7 +25,7 @@ class DepartmentModel implements Model {
     members = (json['members'] is List
             ? List<Map<String, dynamic>>.from(json['members'])
             : null)
-        .map((Map<String, dynamic> value) => UsernameModel.fromJson(value))
+        .map((Map<String, dynamic> value) => DisplayNameModel.fromJson(value))
         .toList();
     resources =
         json['resources'] is List ? List<int>.from(json['resources']) : null;
@@ -36,10 +38,20 @@ class DepartmentModel implements Model {
   String name;
 
   /// A list of the user names of all members of the department.
-  List<UsernameModel> members = <UsernameModel>[];
+  List<DisplayNameModel> members = <DisplayNameModel>[];
 
   /// A list of ids of all resources owned by the department.
   List<int> resources = <int>[];
+
+  @override
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -47,8 +59,13 @@ class DepartmentModel implements Model {
       'id': id,
       'name': name,
       'members':
-          members.map((UsernameModel member) => member.toJson()).toList(),
+          members.map((DisplayNameModel member) => member.toJson()).toList(),
       'resources': resources
     };
+  }
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((DepartmentModel).toString());
   }
 }

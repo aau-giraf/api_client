@@ -1,3 +1,5 @@
+import 'package:api_client/offline_repository/repository.dart';
+import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/model.dart';
@@ -32,9 +34,25 @@ class WeekdayModel implements Model {
   List<ActivityModel> activities;
 
   @override
+  /// Offline id
+  int offlineId;
+
+  @override
+  /// Get offline id
+  int getOfflineId() {
+    return offlineId;
+  }
+
+  @override
   Map<String, dynamic> toJson() => <String, dynamic>{
         'day': day.index + 1,
         'activities':
             activities.map((ActivityModel val) => val.toJson()).toList(),
       };
+
+  /// getter for repository
+  static IOfflineRepository<Model> offline() {
+    return OfflineRepository((WeekdayModel).toString());
+  }
+
 }
