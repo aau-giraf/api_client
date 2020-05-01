@@ -8,7 +8,7 @@ import 'package:api_client/models/enums/default_timer_enum.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
 import 'package:api_client/models/weekday_color_model.dart';
-import 'enums/weekday_enum.dart';
+import 'package:api_client/models/enums/weekday_enum.dart';
 
 /// A model used to store settings values
 class SettingsModel implements Model {
