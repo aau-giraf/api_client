@@ -1,6 +1,4 @@
 import 'package:api_client/models/giraf_user_model.dart';
-import 'package:api_client/offline_repository/repository.dart';
-import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
@@ -39,37 +37,8 @@ class DisplayNameModel implements Model {
   String id;
 
   @override
-  /// Offline id
-  int offlineId;
-
-  @override
-  /// Get offline id
-  int getOfflineId() {
-    return offlineId;
-  }
-
-  @override
   Map<String, dynamic> toJson() =>
       <String, dynamic>{'userId': id,
         'displayName': displayName, 'userRole': role};
 
-  /// getter for repository
-  static IOfflineRepository<Model> offline() {
-    return OfflineRepository((DisplayNameModel).toString());
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is DisplayNameModel &&
-              runtimeType == other.runtimeType &&
-              displayName == other.displayName &&
-              role == other.role &&
-              id == other.id;
-
-  @override
-  int get hashCode =>
-      displayName.hashCode ^
-      role.hashCode ^
-      id.hashCode;
 }
