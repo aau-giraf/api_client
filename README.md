@@ -1,6 +1,7 @@
 # Giraf API Client
 
-[![Build Status](https://dev.azure.com/aau-giraf/giraf/_apis/build/status/aau-giraf.api_client?branchName=master)](https://dev.azure.com/aau-giraf/giraf/_build/latest?definitionId=3&branchName=master)
+![Build Status](https://github.com/aau-giraf/weekplanner/workflows/CI/badge.svg?branch=master)
+[![codecov](https://codecov.io/gh/aau-giraf/weekplanner/branch/master/graph/badge.svg)](https://codecov.io/gh/aau-giraf/weekplanner)
 
 API client for Flutter to communicate with the Giraf web API
 
