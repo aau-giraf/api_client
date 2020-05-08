@@ -2,7 +2,6 @@ import 'package:api_client/http/http.dart';
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
 import 'package:api_client/models/displayname_model.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// Department endpoints
 class DepartmentApi {
@@ -12,7 +11,7 @@ class DepartmentApi {
   final Http _http;
 
   /// Get request for getting all the department names.
-  Observable<List<DepartmentNameModel>> departmentNames() {
+  Stream<List<DepartmentNameModel>> departmentNames() {
     return _http.get('/').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
@@ -30,7 +29,7 @@ class DepartmentApi {
   /// departments name
   ///
   /// [model] The department to create
-  Observable<DepartmentModel> createDepartment(DepartmentModel model) {
+  Stream<DepartmentModel> createDepartment(DepartmentModel model) {
     return _http.post('/', model.toJson()).map((Response res) {
       return DepartmentModel.fromJson(res.json['data']);
     });
@@ -39,7 +38,7 @@ class DepartmentApi {
   /// Get the department with the specified id.
   ///
   /// [id] The id of the department to retrieve.
-  Observable<DepartmentModel> getDepartment(int id) {
+  Stream<DepartmentModel> getDepartment(int id) {
     return _http.get('/$id').map((Response res) {
       return DepartmentModel.fromJson(res.json['data']);
     });
@@ -48,7 +47,7 @@ class DepartmentApi {
   /// Gets the citizen names
   ///
   /// [id] Id of Department to get citizens for
-  Observable<List<DisplayNameModel>> getDepartmentUsers(int id) {
+  Stream<List<DisplayNameModel>> getDepartmentUsers(int id) {
     return _http.get('/$id/citizens').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
@@ -67,7 +66,7 @@ class DepartmentApi {
   /// [departmentId] Identifier for the Departmentto add user to
   ///
   /// [userId] The ID of a GirafUser to be added to the department
-  Observable<DepartmentModel> addUserToDepartment(
+  Stream<DepartmentModel> addUserToDepartment(
       int departmentId, String userId) {
     return _http.post('/$departmentId/user/$userId').map((Response res) {
       return DepartmentModel.fromJson(res.json['data']);
@@ -78,7 +77,7 @@ class DepartmentApi {
   ///
   /// [id] ID of the department which should change name
   /// [newName] New name for the department
-  Observable<bool> updateName(int id, String newName) {
+  Stream<bool> updateName(int id, String newName) {
     return _http.put('/$id/name', <String, String>{'name': newName}).map(
         (Response res) {
       return res.success();
@@ -88,7 +87,7 @@ class DepartmentApi {
   /// Delete the Department with the given id
   ///
   /// [id] Identifier of Department to delete
-  Observable<bool> delete(int id) {
+  Stream<bool> delete(int id) {
     return _http.delete('/$id').map((Response res) {
       return res.success();
     });
