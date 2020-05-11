@@ -30,6 +30,9 @@ class TimerModel implements Model {
   /// The time for when the timer started.
   DateTime startTime;
 
+  ///Key for identifying the timer
+  int key;
+
   /// The progress of the timer
   int progress;
 
@@ -38,9 +41,6 @@ class TimerModel implements Model {
 
   /// Bool if the timer is paused or not
   bool paused;
-
-  /// Key for identifying the timer
-  int key;
 
   @override
   /// Offline id
@@ -59,7 +59,7 @@ class TimerModel implements Model {
       'progress': progress ?? 'null',
       'fullLength': fullLength ?? 'null',
       'paused': paused ?? 'null',
-      'key' : key ?? 'null'
+      'key' : key
     };
   }
 
