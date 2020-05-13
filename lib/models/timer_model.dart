@@ -1,6 +1,4 @@
 import 'package:api_client/models/model.dart';
-import 'package:api_client/offline_repository/repository.dart';
-import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 
 /// Represents a timer for an activity
@@ -38,16 +36,6 @@ class TimerModel implements Model {
   bool paused;
 
   @override
-  /// Offline id
-  int offlineId;
-
-  @override
-  /// Get offline id
-  int getOfflineId() {
-    return offlineId;
-  }
-
-  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'startTime': startTime.millisecondsSinceEpoch ?? 'null',
@@ -55,11 +43,6 @@ class TimerModel implements Model {
       'fullLength': fullLength ?? 'null',
       'paused': paused ?? 'null'
     };
-  }
-
-  /// getter for repository
-  static IOfflineRepository<Model> offline() {
-    return OfflineRepository((TimerModel).toString());
   }
 
 }
