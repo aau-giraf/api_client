@@ -9,6 +9,7 @@ class TimerModel implements Model {
     @required this.progress,
     @required this.fullLength,
     @required this.paused,
+    this.key,
   });
 
   /// Constructor for the timer from json.
@@ -21,10 +22,14 @@ class TimerModel implements Model {
       progress = json['progress'];
       fullLength = json['fullLength'];
       paused = json['paused'];
+      key = json['key'];
   }
 
   /// The time for when the timer started.
   DateTime startTime;
+
+  ///Key for identifying the timer
+  int key;
 
   /// The progress of the timer
   int progress;
@@ -41,7 +46,8 @@ class TimerModel implements Model {
       'startTime': startTime.millisecondsSinceEpoch ?? 'null',
       'progress': progress ?? 'null',
       'fullLength': fullLength ?? 'null',
-      'paused': paused ?? 'null'
+      'paused': paused ?? 'null',
+      'key' : key
     };
   }
 
