@@ -10,17 +10,19 @@ void main() {
   });
 
   test('Can create from JSON map', () {
-    final Map<String, dynamic> userJson =  <String, dynamic>{
-      'id': 39,
-      'lastEdit': '2018-05-17T10:58:41.241292',
-      'title': 'cat4',
-      'accessLevel': 1,
-      'imageUrl': '/v1/pictogram/39/image/raw',
-      'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
-    };
+    final List<Map<String, dynamic>> jsonPictograms = <Map<String, dynamic>>[
+      <String, dynamic>{
+        'id': 39,
+        'lastEdit': '2018-05-17T10:58:41.241292',
+        'title': 'cat4',
+        'accessLevel': 1,
+        'imageUrl': '/v1/pictogram/39/image/raw',
+        'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
+      }
+    ];
 
-    final Map<String, dynamic> json =  <String, dynamic>{
-      'pictogram': userJson,
+    final Map<String, dynamic> json = <String, dynamic>{
+      'pictograms': jsonPictograms,
       'order': 0,
       'state': 1,
       'id': 1044,
@@ -32,27 +34,29 @@ void main() {
     expect(model.order, json['order']);
     expect(model.isChoiceBoard, json['isChoiceBoard']);
     expect(model.state, ActivityState.Normal);
-    expect(
-        model.pictogram.toJson(), PictogramModel.fromJson(userJson).toJson());
+    expect(model.pictograms[0].toJson(),
+        PictogramModel.fromJson(jsonPictograms[0]).toJson());
   });
 
   test('Can convert to JSON map', () {
-    final Map<String, dynamic> userJson =  <String, dynamic>{
-      'id': 39,
-      'lastEdit': '2018-05-17T10:58:41.241292',
-      'title': 'cat4',
-      'accessLevel': 1,
-      'imageUrl': '/v1/pictogram/39/image/raw',
-      'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
-    };
+    final List<Map<String, dynamic>> jsonPictograms = <Map<String, dynamic>>[
+      <String, dynamic>{
+        'id': 39,
+        'lastEdit': '2018-05-17T10:58:41.241292',
+        'title': 'cat4',
+        'accessLevel': 1,
+        'imageUrl': '/v1/pictogram/39/image/raw',
+        'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
+      }
+    ];
 
-    final Map<String, dynamic> json =  <String, dynamic>{
-      'pictogram': userJson,
+    final Map<String, dynamic> json = <String, dynamic>{
+      'pictograms': jsonPictograms,
       'order': 0,
       'state': 1,
       'id': 1044,
       'isChoiceBoard': false,
-      'timer' : null
+      'timer': null
     };
 
     final ActivityModel model = ActivityModel.fromJson(json);
