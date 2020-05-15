@@ -54,7 +54,7 @@ void main(){
             'timer' : null
           },
           <String, dynamic>{
-            'pictograms': [
+            'pictograms': <dynamic>[
               <String, dynamic>{
                 'id': 75,
                 'lastEdit': '2019-03-04T13:14:08.853294',
