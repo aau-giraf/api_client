@@ -1,4 +1,5 @@
 import 'package:api_client/http/http.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// Status endpoints
 class StatusApi {
@@ -8,17 +9,17 @@ class StatusApi {
   final Http _http;
 
   /// End-point for checking if the API is running.
-  Stream<bool> status() {
+  Observable<bool> status() {
     return _http.get('/').map((Response res) => res.statusCode() == 200);
   }
 
   /// End-point for checking connection to the database.
-  Stream<bool> databaseStatus() {
+  Observable<bool> databaseStatus() {
     return _http.get('/database').map((Response res) => res.statusCode() == 200);
   }
 
   /// End-point for getting git version info, i.e. branch and commit hash
-  Stream<String> versionInfo() {
+  Observable<String> versionInfo() {
     return _http
         .get('/database')
         .map((Response res) => res.json['data']);
