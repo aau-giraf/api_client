@@ -9,7 +9,7 @@ class ActivityModel implements Model {
   /// Constructor for Activity
   ActivityModel(
       {@required this.id,
-      @required this.pictogram,
+      @required this.pictograms,
       @required this.order,
       @required this.state,
       @required this.isChoiceBoard,
@@ -23,7 +23,10 @@ class ActivityModel implements Model {
     }
 
     id = json['id'];
-    pictogram = PictogramModel.fromJson(json['pictogram']);
+    pictograms = <PictogramModel>[];
+    for (Map<String, dynamic> pictogram in json['pictograms']) {
+      pictograms.add(PictogramModel.fromJson(pictogram));
+    }
     order = json['order'];
     state = ActivityState.values[(json['state']) - 1];
     isChoiceBoard = json['isChoiceBoard'];
@@ -37,7 +40,7 @@ class ActivityModel implements Model {
   int id;
 
   /// The pictogram for the activity.
-  PictogramModel pictogram;
+  List<PictogramModel> pictograms;
 
   /// The order that the activity will appear on in a weekschedule. If two has
   /// same order it is a choice
@@ -57,12 +60,13 @@ class ActivityModel implements Model {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
-      'pictogram': pictogram.toJson(),
+      'pictograms': pictograms
+          .map((PictogramModel pictogram) => pictogram.toJson())
+          .toList(),
       'order': order,
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
       'timer': timer != null ? timer.toJson() : null
     };
   }
-
 }
