@@ -1,8 +1,6 @@
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/timer_model.dart';
-import 'package:api_client/offline_repository/repository.dart';
-import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'enums/activity_state_enum.dart';
 
@@ -11,7 +9,7 @@ class ActivityModel implements Model {
   /// Constructor for Activity
   ActivityModel(
       {@required this.id,
-      @required this.pictogram,
+      @required this.pictograms,
       @required this.order,
       @required this.state,
       @required this.isChoiceBoard,
@@ -25,7 +23,10 @@ class ActivityModel implements Model {
     }
 
     id = json['id'];
-    pictogram = PictogramModel.fromJson(json['pictogram']);
+    pictograms = <PictogramModel>[];
+    for (Map<String, dynamic> pictogram in json['pictograms']) {
+      pictograms.add(PictogramModel.fromJson(pictogram));
+    }
     order = json['order'];
     state = ActivityState.values[(json['state']) - 1];
     isChoiceBoard = json['isChoiceBoard'];
@@ -39,7 +40,7 @@ class ActivityModel implements Model {
   int id;
 
   /// The pictogram for the activity.
-  PictogramModel pictogram;
+  List<PictogramModel> pictograms;
 
   /// The order that the activity will appear on in a weekschedule. If two has
   /// same order it is a choice
@@ -56,30 +57,16 @@ class ActivityModel implements Model {
   TimerModel timer;
 
   @override
-  /// Offline id
-  int offlineId;
-
-  @override
-  /// Get offline id
-  int getOfflineId() {
-    return offlineId;
-  }
-
-  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
-      'pictogram': pictogram.toJson(),
+      'pictograms': pictograms
+          .map((PictogramModel pictogram) => pictogram.toJson())
+          .toList(),
       'order': order,
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
       'timer': timer != null ? timer.toJson() : null
     };
   }
-
-  /// getter for repository
-  static IOfflineRepository<Model> offline() {
-    return OfflineRepository((ActivityModel).toString());
-  }
-
 }

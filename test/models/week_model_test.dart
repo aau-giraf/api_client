@@ -30,14 +30,16 @@ void main(){
         'day': 2,
         'activities': <dynamic>[
           <String, dynamic>{
-            'pictogram': <String, dynamic>{
-              'id': 1246,
-              'lastEdit': '2014-05-14T06:29:07.000',
-              'title': 'pade',
-              'accessLevel': 1,
-              'imageUrl': '/v1/pictogram/1246/image/raw',
-              'imageHash': 'tHJWezktGh8FUxQH3Bp/0Q=='
-            },
+            'pictograms': <dynamic>[
+              <String, dynamic>{
+                'id': 1246,
+                'lastEdit': '2014-05-14T06:29:07.000',
+                'title': 'pade',
+                'accessLevel': 1,
+                'imageUrl': '/v1/pictogram/1246/image/raw',
+                'imageHash': 'tHJWezktGh8FUxQH3Bp/0Q=='
+              }
+            ],
             'order': 0,
             'state': 1,
             'id': 1238,
@@ -50,14 +52,16 @@ void main(){
         'day': 3,
         'activities': <dynamic>[
           <String, dynamic>{
-            'pictogram': <String, dynamic>{
-              'id': 5974,
-              'lastEdit': '2014-05-14T07:03:37.000',
-              'title': 'tegning',
-              'accessLevel': 1,
-              'imageUrl': '/v1/pictogram/5974/image/raw',
-              'imageHash': 'bWTcndsk24PK8ov19Q+J/A=='
-            },
+            'pictograms': <dynamic>[
+              <String, dynamic>{
+                'id': 5974,
+                'lastEdit': '2014-05-14T07:03:37.000',
+                'title': 'tegning',
+                'accessLevel': 1,
+                'imageUrl': '/v1/pictogram/5974/image/raw',
+                'imageHash': 'bWTcndsk24PK8ov19Q+J/A=='
+              }
+            ],
             'order': 0,
             'state': 4,
             'id': 1239,
@@ -65,14 +69,16 @@ void main(){
             'timer' : null
           },
           <String, dynamic>{
-            'pictogram': <String, dynamic>{
-              'id': 1199,
-              'lastEdit': '2014-05-14T06:28:46.000',
-              'title': 'målmand',
-              'accessLevel': 1,
-              'imageUrl': '/v1/pictogram/1199/image/raw',
-              'imageHash': 'OH9cCXWS4lj/n/F2asnwKA=='
-            },
+            'pictograms': <dynamic>[
+              <String, dynamic>{
+                'id': 1199,
+                'lastEdit': '2014-05-14T06:28:46.000',
+                'title': 'målmand',
+                'accessLevel': 1,
+                'imageUrl': '/v1/pictogram/1199/image/raw',
+                'imageHash': 'OH9cCXWS4lj/n/F2asnwKA=='
+              }
+            ],
             'order': 1,
             'state': 1,
             'id': 1240,
@@ -80,14 +86,16 @@ void main(){
             'timer' : null
           },
           <String, dynamic>{
-            'pictogram': <String, dynamic>{
-              'id': 2512,
-              'lastEdit': '2014-05-14T06:38:19.000',
-              'title': 'buskort',
-              'accessLevel': 1,
-              'imageUrl': '/v1/pictogram/2512/image/raw',
-              'imageHash': '/YFdskOccdy3wRFEf4rmhA=='
-            },
+            'pictograms': <dynamic>[
+              <String, dynamic>{
+                'id': 2512,
+                'lastEdit': '2014-05-14T06:38:19.000',
+                'title': 'buskort',
+                'accessLevel': 1,
+                'imageUrl': '/v1/pictogram/2512/image/raw',
+                'imageHash': '/YFdskOccdy3wRFEf4rmhA=='
+              }
+            ],
             'order': 2,
             'state': 1,
             'id': 1241,
@@ -129,7 +137,7 @@ void main(){
     weekBaseTest(week2, response2);
   });
 
-  test('Should throw exception when JSOn is null', (){
+  test('Should throw exception when JSON is null', (){
     expect(() => WeekModel.fromJson(null), throwsFormatException);
   });
 

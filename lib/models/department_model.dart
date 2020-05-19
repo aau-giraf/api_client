@@ -1,5 +1,3 @@
-import 'package:api_client/offline_repository/repository.dart';
-import 'package:api_client/offline_repository/repository_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/displayname_model.dart';
@@ -44,16 +42,6 @@ class DepartmentModel implements Model {
   List<int> resources = <int>[];
 
   @override
-  /// Offline id
-  int offlineId;
-
-  @override
-  /// Get offline id
-  int getOfflineId() {
-    return offlineId;
-  }
-
-  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
@@ -64,8 +52,4 @@ class DepartmentModel implements Model {
     };
   }
 
-  /// getter for repository
-  static IOfflineRepository<Model> offline() {
-    return OfflineRepository((DepartmentModel).toString());
-  }
 }

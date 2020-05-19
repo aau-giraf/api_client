@@ -10,17 +10,19 @@ void main() {
   });
 
   test('Can create from JSON map', () {
-    final Map<String, dynamic> pictogramJson = <String, dynamic>{
-      'id': 39,
-      'lastEdit': '2018-05-17T10:58:41.241292',
-      'title': 'cat4',
-      'accessLevel': 1,
-      'imageUrl': '/v1/pictogram/39/image/raw',
-      'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
-    };
+    final List<Map<String, dynamic>> jsonPictograms = <Map<String, dynamic>>[
+      <String, dynamic>{
+        'id': 39,
+        'lastEdit': '2018-05-17T10:58:41.241292',
+        'title': 'cat4',
+        'accessLevel': 1,
+        'imageUrl': '/v1/pictogram/39/image/raw',
+        'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
+      }
+    ];
 
     final Map<String, dynamic> activityJson = <String, dynamic>{
-      'pictogram': pictogramJson,
+      'pictograms': jsonPictograms,
       'order': 0,
       'state': 1,
       'id': 1044,
@@ -41,17 +43,19 @@ void main() {
   });
 
   test('Can convert to JSON map', () {
-    final Map<String, dynamic> pictogramJson = <String, dynamic>{
-      'id': 39,
-      'lastEdit': '2018-05-17T10:58:41.241292',
-      'title': 'cat4',
-      'accessLevel': 1,
-      'imageUrl': '/v1/pictogram/39/image/raw',
-      'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
-    };
+    final List<Map<String, dynamic>> jsonPictograms = <Map<String, dynamic>>[
+      <String, dynamic>{
+        'id': 39,
+        'lastEdit': '2018-05-17T10:58:41.241292',
+        'title': 'cat4',
+        'accessLevel': 1,
+        'imageUrl': '/v1/pictogram/39/image/raw',
+        'imageHash': 'RijAegW2HQR9zaAn8CIUHw=='
+      }
+    ];
 
     final Map<String, dynamic> activityJson = <String, dynamic>{
-      'pictogram': pictogramJson,
+      'pictograms': jsonPictograms,
       'order': 0,
       'state': 1,
       'id': 1044,
