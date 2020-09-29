@@ -67,5 +67,5 @@ class PictogramModel implements Model {
 
     return result;
   }
-
+// hej Oliver
 }
