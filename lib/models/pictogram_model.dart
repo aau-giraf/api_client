@@ -10,6 +10,7 @@ class PictogramModel implements Model {
     @required this.accessLevel,
     this.imageUrl,
     this.imageHash,
+    this.ownerId,
   });
 
   PictogramModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +26,7 @@ class PictogramModel implements Model {
     accessLevel = AccessLevel.values[(json['accessLevel']) - 1];
     imageUrl = json['imageUrl'];
     imageHash = json['imageHash'];
+    ownerId = json['ownerId'];
   }
 
   int id;
@@ -41,6 +43,8 @@ class PictogramModel implements Model {
   String imageUrl;
 
   String imageHash;
+
+  String ownerId;
 
   @override
   Map<String, dynamic> toJson() {
@@ -63,6 +67,10 @@ class PictogramModel implements Model {
 
     if (imageHash != null) {
       result['imageHash'] = imageHash;
+    }
+
+    if(ownerId != null){
+      result['ownerId'] = ownerId;
     }
 
     return result;
