@@ -2,7 +2,8 @@
 name: Task Creation Request
 about: If there is functionality that you would like added
 title: ''
-labels: ''
+labels: not prioritised
+assignees: ''
 
 ---
 
