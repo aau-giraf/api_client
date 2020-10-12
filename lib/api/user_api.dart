@@ -24,6 +24,7 @@ class UserApi {
   ///
   /// [id] ID of the user
   Observable<GirafUserModel> get(String id) {
+    
     return _http
         .get('/$id')
         .map((Response res) => GirafUserModel.fromJson(res.json['data']));
