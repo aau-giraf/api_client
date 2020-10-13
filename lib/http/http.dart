@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'package:rxdart/rxdart.dart';
 
 /// Response from HTTP
 class Response {

@@ -2,7 +2,6 @@ import 'package:api_client/http/http.dart';
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
 import 'package:api_client/models/displayname_model.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// Department endpoints
 class DepartmentApi {

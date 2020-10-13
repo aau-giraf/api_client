@@ -1,7 +1,6 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// Pictogram endpoints
 class ActivityApi {

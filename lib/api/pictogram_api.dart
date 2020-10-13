@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:api_client/http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/pictogram_model.dart';
 
 /// Pictogram endpoints

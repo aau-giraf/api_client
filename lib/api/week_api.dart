@@ -1,5 +1,4 @@
 import 'package:api_client/http/http.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 

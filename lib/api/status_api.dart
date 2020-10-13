@@ -1,5 +1,4 @@
 import 'package:api_client/http/http.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// Status endpoints
 class StatusApi {
