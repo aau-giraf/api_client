@@ -22,17 +22,17 @@ class Response {
 /// Http interface
 abstract class Http {
   /// Makes an GET request to the specified [url]
-  Observable<Response> get(String url);
+  Stream<Response> get(String url);
 
   /// Makes an DELETE request to the specified [url]
-  Observable<Response> delete(String url);
+  Stream<Response> delete(String url);
 
   /// Makes an POST request to the specified [url], with the given [body]
-  Observable<Response> post(String url, [dynamic body]);
+  Stream<Response> post(String url, [dynamic body]);
 
   /// Makes an PUT request to the specified [url], with the given [body]
-  Observable<Response> put(String url, [dynamic body]);
+  Stream<Response> put(String url, [dynamic body]);
 
   /// Makes an PATCH request to the specified [url], with the given [body]
-  Observable<Response> patch(String url, [dynamic body]);
+  Stream<Response> patch(String url, [dynamic body]);
 }

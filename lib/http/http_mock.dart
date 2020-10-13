@@ -113,31 +113,31 @@ class HttpMock implements Http {
   }
 
   @override
-  Observable<Response> delete(String url, {bool raw = false}) {
+  Stream<Response> delete(String url, {bool raw = false}) {
     return _reqToRes(Method.delete, url, null);
   }
 
   @override
-  Observable<Response> get(String url, {bool raw = false}) {
+  Stream<Response> get(String url, {bool raw = false}) {
     return _reqToRes(Method.get, url, null);
   }
 
   @override
-  Observable<Response> patch(String url, [dynamic body, int statusCode]) {
+  Stream<Response> patch(String url, [dynamic body, int statusCode]) {
     return _reqToRes(Method.patch, url, body);
   }
 
   @override
-  Observable<Response> post(String url, [dynamic body, int statusCode]) {
+  Stream<Response> post(String url, [dynamic body, int statusCode]) {
     return _reqToRes(Method.post, url, body);
   }
 
   @override
-  Observable<Response> put(String url, [dynamic body, int statusCode]) {
+  Stream<Response> put(String url, [dynamic body, int statusCode]) {
     return _reqToRes(Method.put, url, body);
   }
 
-  Observable<Response> _reqToRes(Method method, String url,
+  Stream<Response> _reqToRes(Method method, String url,
       [dynamic body, int statusCode]) {
     final Call call = Call(method, url, body);
     _calls.add(call);
