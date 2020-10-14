@@ -2,27 +2,28 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/sqlite3.dart' as sqlite3;
 
 /// OfflineDbHandler is used for communication with the offline database
 class OfflineDbHandler {
   ///Constructor for the dbhandler
   OfflineDbHandler() {
-    initDB().then((Database database) => _database = database);
+    _database = initDB();
   }
-  Database _database;
+  Future<Database> _database;
 
   /// Initiate the database
   Future<Database> initDB() async {
-    final Directory documentsDirectory =
-        await getApplicationDocumentsDirectory();
-    final String path = join(documentsDirectory.path, '/offlineGiraf.sqlite3');
-    final Database database = await openDatabase(path);
-    return database;
+    return getDatabasesPath().then((String path) {
+      return openDatabase(join(path, 'offlineGiraf.db'));
+    });
   }
 
   ///Creates all of the tables in the DB
-  void createTables() {
-    _database.transaction((Transaction txn) async {
+  Future<void> createTables() async {
+    final Database database = await _database;
+    while (database == null) {}
+    database.transaction((Transaction txn) async {
       await txn.execute('CREATE TABLE IF NOT EXISTS `Users` ('
           '`Id` varchar( 255 ) NOT NULL, '
           '`Role` varchar ( 255 ) NOT NULL, '
@@ -111,5 +112,10 @@ class OfflineDbHandler {
           '`FullLength`	integer NOT NULL, '
           '`Paused`	integer NOT NULL);');
     });
+  }
+
+  Future<void> closeDb() async {
+    final Database database = await _database;
+    await database.close();
   }
 }

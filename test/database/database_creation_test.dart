@@ -4,30 +4,28 @@ import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite/sqflite.dart' as sqflite;
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class OfflineDbHandlerMock extends OfflineDbHandler {
   @override
-  Future<sqflite.Database> initDB() async {
-    final String databasesPath = await sqflite.getDatabasesPath();
-    final String path = databasesPath + '/db.sqlite3';
-    final bool exists = await sqflite.databaseExists(path);
-    if (!exists) {
-      final ByteData data = await rootBundle.load('assets/db.sqlite3');
-      final List<int> bytes =
-          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      await Directory(databasesPath).create(recursive: true);
-      await File(path).writeAsBytes(bytes, flush: true);
-    }
-    return sqflite.openDatabase(path);
+  Future<Database> initDB() async {
+    return databaseFactoryFfi
+        .openDatabase(join(Directory.current.path, 'giraf.db'));
   }
 }
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   OfflineDbHandlerMock testDb = OfflineDbHandlerMock();
-  test('Try to create the test db', () {
+  test('Try to create the test db', () async {
     testDb.createTables();
+    if (testDb == null) {
+      print('WHYYYYYYYYYYYYYY');
+    }
     expect('true', 'true');
+    await testDb.closeDb();
   });
 }
