@@ -1,9 +1,10 @@
-import 'package:api_client/api/user_api.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
 
 class PictogramModel implements Model {
+
+  /// Constructor
   PictogramModel({
     this.id,
     this.lastEdit,
