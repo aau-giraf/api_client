@@ -28,7 +28,7 @@ class PictogramModel implements Model {
     accessLevel = AccessLevel.values[(json['accessLevel']) - 1];
     imageUrl = json['imageUrl'];
     imageHash = json['imageHash'];
-    userId = json['ownerId'];
+    userId = json['userId'];
   }
 
   int id;
