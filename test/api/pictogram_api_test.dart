@@ -18,14 +18,16 @@ void main() {
         accessLevel: AccessLevel.PUBLIC,
         imageHash: '#',
         imageUrl: 'http://any',
-        lastEdit: DateTime.now()),
+        lastEdit: DateTime.now(),
+        userId: '1'),
     PictogramModel(
         id: 2,
         title: 'Cat#2',
         accessLevel: AccessLevel.PRIVATE,
         imageHash: '#',
         imageUrl: 'http://any',
-        lastEdit: DateTime.now()),
+        lastEdit: DateTime.now(),
+        userId: '2'),
   ];
 
   setUp(() {
