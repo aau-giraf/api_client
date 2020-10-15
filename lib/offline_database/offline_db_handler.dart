@@ -135,7 +135,7 @@ class OfflineDbHandler {
   Stream<bool> deleteActivity(int activityId, String userId) {}
 
   // Pictogram API functions
-  Stream<List<PictogramModel>> getAll(
+  Stream<List<PictogramModel>> getAllPictograms(
       {String query, @required int page, @required int pageSize}) {}
 
   Stream<PictogramModel> getPictogramID(int id) {}
