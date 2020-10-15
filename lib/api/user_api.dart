@@ -1,5 +1,6 @@
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
@@ -8,9 +9,10 @@ import 'package:api_client/models/displayname_model.dart';
 /// User endpoints
 class UserApi {
   /// Default constructor
-  UserApi(this._http);
+  UserApi(this._http, this.dbHandler);
 
   final Http _http;
+  final OfflineDbHandler dbHandler;
 
   /// Find information about the currently authenticated user.
   Stream<GirafUserModel> me() {

@@ -1,15 +1,17 @@
 import 'dart:typed_data';
 
 import 'package:api_client/http/http.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:api_client/models/pictogram_model.dart';
 
 /// Pictogram endpoints
 class PictogramApi {
   /// Default constructor
-  PictogramApi(this._http);
+  PictogramApi(this._http, this.dbHandler);
 
   final Http _http;
+  final OfflineDbHandler dbHandler;
 
   /// Get all public pictograms available to the user (i.e the public pictograms
   /// and those owned by the user (PRIVATE) and his department (PROTECTED)).

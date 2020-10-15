@@ -1,20 +1,22 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 
 /// Week template endpoints
 class WeekTemplateApi {
   /// Default constructor
-  WeekTemplateApi(this._http);
+  WeekTemplateApi(this._http, this.dbHandler);
 
   final Http _http;
+  final OfflineDbHandler dbHandler;
 
   /// Gets all schedule templates for the currently authenticated user.
   /// Available to all users.
   Stream<List<WeekTemplateNameModel>> getNames() {
     return _http.get('/').map((Response res) {
       if (res.json['data'] is List) {
-        return List<Map<String,dynamic>>.from(res.json['data'])
+        return List<Map<String, dynamic>>.from(res.json['data'])
             .map((Map<String, dynamic> val) =>
                 WeekTemplateNameModel.fromJson(val))
             .toList();

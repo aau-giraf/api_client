@@ -1,13 +1,15 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 
 /// Pictogram endpoints
 class ActivityApi {
   /// Default constructor
-  ActivityApi(this._http);
+  ActivityApi(this._http, this.dbHandler);
 
   final Http _http;
+  final OfflineDbHandler dbHandler;
 
   /// Adds the specified activity
   ///

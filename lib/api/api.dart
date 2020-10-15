@@ -7,8 +7,11 @@ import 'package:api_client/api/status_api.dart';
 import 'package:api_client/api/user_api.dart';
 import 'package:api_client/api/week_api.dart';
 import 'package:api_client/api/week_template_api.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:api_client/persistence/persistence.dart';
 import 'package:api_client/persistence/persistence_client.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 /// Weekplanner API
 class Api {
@@ -17,13 +20,16 @@ class Api {
       [String tokenKey = 'token',
       Duration timeout = const Duration(seconds: 5)]) {
     final Persistence persist = PersistenceClient();
+    OfflineDbHandler dbHandler;
+    createDBHandler().then((OfflineDbHandler handler) => dbHandler = handler);
     account = AccountApi(
         HttpClient(
             baseUrl: '$baseUrl/v1',
             persist: persist,
             tokenKey: tokenKey,
             timeout: timeout),
-        persist);
+        persist,
+        dbHandler);
     status = StatusApi(HttpClient(
         baseUrl: '$baseUrl/v1/Status',
         persist: persist,
@@ -34,31 +40,46 @@ class Api {
         persist: persist,
         tokenKey: tokenKey,
         timeout: timeout));
-    week = WeekApi(HttpClient(
-        baseUrl: '$baseUrl/v1/User',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    pictogram = PictogramApi(HttpClient(
-        baseUrl: '$baseUrl/v1/Pictogram',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    activity = ActivityApi(HttpClient(
-        baseUrl: '$baseUrl/v2/Activity',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    weekTemplate = WeekTemplateApi(HttpClient(
-        baseUrl: '$baseUrl/v1/WeekTemplate',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    user = UserApi(HttpClient(
-        baseUrl: '$baseUrl/v1/User',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
+    week = WeekApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/User',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout),
+        dbHandler);
+    pictogram = PictogramApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/Pictogram',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout),
+        dbHandler);
+    activity = ActivityApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v2/Activity',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout),
+        dbHandler);
+    weekTemplate = WeekTemplateApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/WeekTemplate',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout),
+        dbHandler);
+    user = UserApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/User',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout),
+        dbHandler);
+  }
+
+  Future<OfflineDbHandler> createDBHandler() async {
+    return OfflineDbHandler(
+        await openDatabase(join(await getDatabasesPath(), 'offlineGiraf')));
   }
 
   /// To access account endpoints

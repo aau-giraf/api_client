@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/pictogram_model.dart';
@@ -7,9 +9,13 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  sqfliteFfiInit();
   WeekTemplateApi weekTemplateApi;
   HttpMock httpMock;
 
@@ -27,10 +33,11 @@ void main() {
           imageUrl: 'http://',
           imageHash: '#',
           accessLevel: AccessLevel.PUBLIC));
-
+  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
+      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    weekTemplateApi = WeekTemplateApi(httpMock);
+    weekTemplateApi = WeekTemplateApi(httpMock, testDb);
   });
 
   test('Should get names', () {

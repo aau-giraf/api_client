@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
@@ -16,10 +17,14 @@ import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/displayname_model.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  sqfliteFfiInit();
   UserApi userApi;
   HttpMock httpMock;
 
@@ -32,10 +37,10 @@ void main() {
       username: 'SpaceLord69');
 
   final List<DisplayNameModel> usernames = <DisplayNameModel>[
-    DisplayNameModel(displayName: 'Kurt',
-        role: Role.SuperUser.toString(), id: '1'),
-    DisplayNameModel(displayName: 'Hüttel',
-        role: Role.SuperUser.toString(), id: '2'),
+    DisplayNameModel(
+        displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
+    DisplayNameModel(
+        displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
   ];
 
   final SettingsModel settings = SettingsModel(
@@ -47,10 +52,11 @@ void main() {
       weekDayColors: <WeekdayColorModel>[
         WeekdayColorModel(day: Weekday.Monday, hexColor: '#123456')
       ]);
-
+  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
+      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    userApi = UserApi(httpMock);
+    userApi = UserApi(httpMock, testDb);
   });
 
   test('Should fetch authenticated user', () {
@@ -110,11 +116,10 @@ void main() {
   });
 
   test('Should get an error when getting settings from user with ID', () {
-    userApi
-        .getSettings(user.id)
-        .listen((_) {}, onError: expectAsync1((ApiException error) {
-          expect(error.errorKey, ErrorKey.RoleMustBeCitizien);
-        }));
+    userApi.getSettings(user.id).listen((_) {},
+        onError: expectAsync1((ApiException error) {
+      expect(error.errorKey, ErrorKey.RoleMustBeCitizien);
+    }));
 
     final Map<String, dynamic> body = <String, dynamic>{
       'data': null,
@@ -123,7 +128,8 @@ void main() {
     };
 
     httpMock
-        .expectOne(url: '/${user.id}/settings', method: Method.get, statusCode: 400)
+        .expectOne(
+            url: '/${user.id}/settings', method: Method.get, statusCode: 400)
         .flush(Response(http.Response(jsonEncode(body), 400), body));
   });
 
@@ -144,9 +150,8 @@ void main() {
   });
 
   test('Should get an error when updating settings from user with ID', () {
-    userApi
-        .updateSettings(user.id, settings)
-        .listen((_) {}, onError: expectAsync1((ApiException error) {
+    userApi.updateSettings(user.id, settings).listen((_) {},
+        onError: expectAsync1((ApiException error) {
       expect(error.errorKey, ErrorKey.RoleMustBeCitizien);
     }));
 
@@ -156,7 +161,8 @@ void main() {
     };
 
     httpMock
-        .expectOne(url: '/${user.id}/settings', method: Method.put, statusCode: 400)
+        .expectOne(
+            url: '/${user.id}/settings', method: Method.put, statusCode: 400)
         .flush(Response(http.Response(jsonEncode(body), 400), body));
   });
 

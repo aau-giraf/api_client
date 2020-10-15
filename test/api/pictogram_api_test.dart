@@ -1,13 +1,17 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/api/pictogram_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
   PictogramApi pictogramApi;
   HttpMock httpMock;
 
@@ -29,10 +33,12 @@ void main() {
         lastEdit: DateTime.now(),
         userId: '2'),
   ];
-
+  sqfliteFfiInit();
+  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
+      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    pictogramApi = PictogramApi(httpMock);
+    pictogramApi = PictogramApi(httpMock, testDb);
   });
 
   test('Should be able to search pictograms', () {
@@ -151,7 +157,10 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/${grams[0].id}/image/raw', method: Method.get, statusCode: 200)
+        .expectOne(
+            url: '/${grams[0].id}/image/raw',
+            method: Method.get,
+            statusCode: 200)
         .flush(imagebytes);
   });
 

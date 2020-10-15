@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/error_key.dart';
@@ -5,18 +7,23 @@ import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/api/account_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  sqfliteFfiInit();
   AccountApi accountApi;
   HttpMock httpMock;
   PersistenceMock persistenceMock;
-
+  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
+      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
     persistenceMock = PersistenceMock();
-    accountApi = AccountApi(httpMock, persistenceMock);
+    accountApi = AccountApi(httpMock, persistenceMock, testDb);
   });
 
   test('Should call login endpoint', () {
@@ -77,8 +84,8 @@ void main() {
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, displayName, password, departmentId: departmentId,
-          role: role)
+        .register(username, displayName, password,
+            departmentId: departmentId, role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);
       expect(res.displayName, displayName);
@@ -148,7 +155,8 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/Account/user/$id', method: Method.delete, statusCode: 400)
+        .expectOne(
+            url: '/Account/user/$id', method: Method.delete, statusCode: 400)
         .flush(<String, dynamic>{
       'message': '',
       'errorKey': 'NoError',

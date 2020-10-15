@@ -1,13 +1,15 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 
 /// Week endpoints
 class WeekApi {
   /// Default constructor
-  WeekApi(this._http);
+  WeekApi(this._http, this.dbHandler);
 
   final Http _http;
+  final OfflineDbHandler dbHandler;
 
   /// Get week names from the user with the given ID
   ///

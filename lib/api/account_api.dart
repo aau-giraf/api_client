@@ -1,4 +1,5 @@
 import 'package:api_client/http/http.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/giraf_user_model.dart';
@@ -8,10 +9,11 @@ import 'package:api_client/persistence/persistence.dart';
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
-  AccountApi(this._http, this._persist);
+  AccountApi(this._http, this._persist, this.dbHandler);
 
   final Http _http;
   final Persistence _persist;
+  final OfflineDbHandler dbHandler;
 
   /// This endpoint allows the user to sign in to his/her account by providing
   /// valid username and password
@@ -33,8 +35,9 @@ class AccountApi {
   /// [displayName] The users DisplayName
   /// [departmentId] The users departmentId
   /// [role] The role of the user
-  Stream<GirafUserModel> register(String username, String password,
-      String displayName, {@required int departmentId, @required Role role}) {
+  Stream<GirafUserModel> register(
+      String username, String password, String displayName,
+      {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
       'displayName': displayName,
@@ -89,8 +92,8 @@ class AccountApi {
   ///
   /// [id] ID of the user
   Stream<bool> delete(String id) {
-    return _http.delete('/Account/user/$id').flatMap((Response res) =>
-        Stream<bool>.fromFuture(_persist.remove('token')));
+    return _http.delete('/Account/user/$id').flatMap(
+        (Response res) => Stream<bool>.fromFuture(_persist.remove('token')));
   }
 
   /// Logout the currently logged in user
