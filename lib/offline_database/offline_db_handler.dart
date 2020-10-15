@@ -1,3 +1,4 @@
+import 'package:api_client/models/giraf_user_model.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 
 /// OfflineDbHandler is used for communication with the offline database
@@ -5,8 +6,10 @@ class OfflineDbHandler {
   ///Constructor for the dbhandler
   OfflineDbHandler(Database db) {
     _database = db;
+    createTables();
   }
   Database _database;
+  GirafUserModel _me;
 
   /// Initiate the database
 
@@ -104,6 +107,14 @@ class OfflineDbHandler {
     return res;
   }
 
+  Future<GirafUserModel> registerAccount(Map<String, dynamic> body) {}
+
+  /// Gets the version of the currently running db
+  Future<int> getCurrentDBVersion() {
+    return _database.getVersion();
+  }
+
+  /// Force close the db
   Future<void> closeDb() {
     _database.close();
   }

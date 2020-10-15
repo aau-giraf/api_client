@@ -6,18 +6,14 @@ import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
   sqfliteFfiInit();
+  OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
+      .openDatabase(join(Directory.current.path, 'girafTest.db')));
   test('Try to create the test db', () async {
-    Database test = await databaseFactoryFfi
-        .openDatabase(join(Directory.current.path, 'girafTest.db'));
-    OfflineDbHandler testDb = OfflineDbHandler(test);
-
-    if (testDb == null) {
-      print('WHYYYYYYYYYYYYYY');
-    }
-    await testDb.createTables();
-    expect('true', 'true');
+    expect(await testDb.getCurrentDBVersion(), 0);
+    // We might need this if somthing is wrong
+    // in the tests and it doesn't close itself
     //testDb.closeDb();
   });
 }
