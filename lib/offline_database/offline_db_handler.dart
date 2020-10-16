@@ -121,39 +121,66 @@ class OfflineDbHandler {
   // Account API functions
   /// register an account for a user
   GirafUserModel registerAccount(Map<String, dynamic> body) {
-    /*Map<String, dynamic> insertQuery = <String, dynamic>{
-      ''
+    /*int roleID;
+    switch (body['role']) {
+      case 'Citizen':
+        roleID = 0;
+        break;
+      case 'Depatment':
+        roleID = 1;
+        break;
+      case 'Guardian':
+        roleID = 2;
+        break;
+      case 'SuperUser':
+        roleID = 3;
+        break;
+      default:
+        roleID = 0;
     }
-    _database.insert('Users', body);
-     _database.rawQuery('SELECT * FROM `Users` WHERE username')*/
+    Map<String, dynamic> insertQuery = <String, dynamic>{
+      'Role': roleID,
+      'RoleName': body['role'],
+      'UserName': body['username'],
+      'DisplayName': body['displayname'],
+      'Department': body['departmentId'],
+    };
+    _database.insert('Users', insertQuery);
+    _database
+        .rawQuery(
+            'SELECT * FROM `Users` WHERE `UserName` == ${body['username']}')
+        .asStream().
+        .listen((List<Map<String, dynamic>> event) {
+      return GirafUserModel.fromJson(event[0]);
+    });*/
   }
 
-  bool deleteAccount(String id) {}
+  Future<bool> deleteAccount(String id) {}
 
   // Activity API functions
   /// Add and activity to DB
-  ActivityModel addActivity(ActivityModel activity, String userId,
+  Future<ActivityModel> addActivity(ActivityModel activity, String userId,
       String weekplanName, int weekYear, int weekNumber, Weekday weekDay) {}
 
-  ActivityModel updateActivity(ActivityModel activity, String userId) {}
+  Future<ActivityModel> updateActivity(ActivityModel activity, String userId) {}
 
-  bool deleteActivity(int activityId, String userId) {}
+  Future<bool> deleteActivity(int activityId, String userId) {}
 
   // Pictogram API functions
-  List<PictogramModel> getAllPictograms(
+  Future<List<PictogramModel>> getAllPictograms(
       {String query, @required int page, @required int pageSize}) {}
 
-  PictogramModel getPictogramID(int id) {}
+  Future<PictogramModel> getPictogramID(int id) {}
 
-  PictogramModel createPictogram(PictogramModel pictogram) {}
+  Future<PictogramModel> createPictogram(PictogramModel pictogram) {}
 
-  PictogramModel updatePictogram(PictogramModel pictogram) {}
+  Future<PictogramModel> updatePictogram(PictogramModel pictogram) {}
 
-  bool deletePictogram(int id) {}
+  Future<bool> deletePictogram(int id) {}
 
-  PictogramModel updateImageInPictogram(int id, Uint8List image) {}
+  Future<PictogramModel> updateImageInPictogram(int id, Uint8List image) {}
 
-  Image getPictogramImage(int id) {}
+  Future<Image> getPictogramImage(int id) {}
 
   // User API functions
   GirafUserModel getMe() {
@@ -164,47 +191,48 @@ class OfflineDbHandler {
     _me = model;
   }
 
-  GirafUserModel getUser(String id) {}
+  Future<GirafUserModel> getUser(String id) {}
 
-  GirafUserModel updateUser(GirafUserModel user) {}
+  Future<GirafUserModel> updateUser(GirafUserModel user) {}
 
-  SettingsModel getUserSettings(String id) {}
+  Future<SettingsModel> getUserSettings(String id) {}
 
-  SettingsModel updateUserSettings(String id, SettingsModel settings) {}
+  Future<SettingsModel> updateUserSettings(String id, SettingsModel settings) {}
 
-  bool deleteUserIcon(String id) {}
+  Future<bool> deleteUserIcon(String id) {}
 
-  Image getUserIcon(String id) {}
+  Future<Image> getUserIcon(String id) {}
 
-  bool updateUserIcon() {}
+  Future<bool> updateUserIcon() {}
 
-  List<DisplayNameModel> getCitizens(String id) {}
+  Future<List<DisplayNameModel>> getCitizens(String id) {}
 
-  List<DisplayNameModel> getGuardians(String id) {}
+  Future<List<DisplayNameModel>> getGuardians(String id) {}
 
-  bool addCitizenToGuardian(String guardianId, String citizenId) {}
+  Future<bool> addCitizenToGuardian(String guardianId, String citizenId) {}
 
   // Week API functions
 
-  List<WeekNameModel> getWeekNames(String id) {}
+  Future<List<WeekNameModel>> getWeekNames(String id) {}
 
-  WeekModel getWeek(String id, int year, int weekNumber) {}
+  Future<WeekModel> getWeek(String id, int year, int weekNumber) {}
 
-  WeekModel updateWeek(String id, int year, int weekNumber, WeekModel week) {}
+  Future<WeekModel> updateWeek(
+      String id, int year, int weekNumber, WeekModel week) {}
 
-  bool deleteWeek(String id, int year, int weekNumber) {}
+  Future<bool> deleteWeek(String id, int year, int weekNumber) {}
 
   // Week Template API functions
 
-  List<WeekTemplateNameModel> getTemplateNames() {}
+  Future<List<WeekTemplateNameModel>> getTemplateNames() {}
 
-  WeekTemplateModel createTemplate(WeekTemplateModel template) {}
+  Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) {}
 
-  WeekTemplateModel getTemplate(int id) {}
+  Future<WeekTemplateModel> getTemplate(int id) {}
 
-  WeekTemplateModel updateTemplate(WeekTemplateModel template) {}
+  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) {}
 
-  bool deleteTemplate(int id) {}
+  Future<bool> deleteTemplate(int id) {}
 
   /// Gets the version of the currently running db
   Future<int> getCurrentDBVersion() {
