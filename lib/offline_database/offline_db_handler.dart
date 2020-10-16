@@ -29,24 +29,24 @@ class OfflineDbHandler {
   Future<void> createTables() async {
     await _database.transaction((Transaction txn) async {
       await txn.execute('CREATE TABLE IF NOT EXISTS `Users` ('
-          '`Id` varchar( 255 ) NOT NULL, '
+          '`OfflineId` varchar( 255 ) NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`Role` varchar ( 255 ) NOT NULL, '
           '`RoleName` varchar ( 256 ) DEFAULT NULL, '
           '`Username` varchar ( 256 ) DEFAULT NULL, '
           '`DisplayName` longtext NOT NULL, '
           '`Department` integer DEFAULT NULL, '
-          'UNIQUE(`Id`,`UserName`), '
-          'PRIMARY KEY(`Id`));');
+          '`Id` integer'
+          'UNIQUE(`UserName`, `Id`));');
       await txn.execute('CREATE TABLE IF NOT EXISTS `GuardianRelations` ('
-          '`Id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
+          '`OfflineId`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`CitizenId`	varchar ( 255 ) NOT NULL, '
           '`GuardianId`	varchar ( 255 ) NOT NULL, '
           'CONSTRAINT `FK_GuardianRelations_Users_CitizenId` '
           'FOREIGN KEY(`CitizenId`) '
-          'REFERENCES `AspNetUsers`(`Id`) ON DELETE CASCADE, '
+          'REFERENCES `Users`(`OfflineId`) ON DELETE CASCADE, '
           'CONSTRAINT `FK_GuardianRelations_Users_GuardianId` '
           'FOREIGN KEY(`GuardianId`) '
-          'REFERENCES `AspNetUsers`(`Id`) ON DELETE CASCADE);');
+          'REFERENCES `Users`(`OfflineId`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekTemplates` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`Name`	longtext COLLATE BINARY, '
@@ -63,7 +63,7 @@ class OfflineDbHandler {
           '`WeekYear`	integer NOT NULL,'
           'CONSTRAINT `FK_Weeks_AspNetUsers_GirafUserId` '
           'FOREIGN KEY(`GirafUserId`) '
-          'REFERENCES `AspNetUsers`(`Id`) ON DELETE CASCADE,'
+          'REFERENCES `Users`(`OfflineId`) ON DELETE CASCADE,'
           'CONSTRAINT `FK_Weeks_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`ThumbnailKey`) '
           'REFERENCES `Pictograms`(`id`) ON DELETE CASCADE);');
@@ -120,34 +120,40 @@ class OfflineDbHandler {
 
   // Account API functions
   /// register an account for a user
-  Stream<GirafUserModel> registerAccount(Map<String, dynamic> body) {}
+  GirafUserModel registerAccount(Map<String, dynamic> body) {
+    /*Map<String, dynamic> insertQuery = <String, dynamic>{
+      ''
+    }
+    _database.insert('Users', body);
+     _database.rawQuery('SELECT * FROM `Users` WHERE username')*/
+  }
 
-  Stream<bool> deleteAccount(String id) {}
+  bool deleteAccount(String id) {}
 
   // Activity API functions
   /// Add and activity to DB
-  Stream<ActivityModel> addActivity(ActivityModel activity, String userId,
+  ActivityModel addActivity(ActivityModel activity, String userId,
       String weekplanName, int weekYear, int weekNumber, Weekday weekDay) {}
 
-  Stream<ActivityModel> updateActivity(ActivityModel activity, String userId) {}
+  ActivityModel updateActivity(ActivityModel activity, String userId) {}
 
-  Stream<bool> deleteActivity(int activityId, String userId) {}
+  bool deleteActivity(int activityId, String userId) {}
 
   // Pictogram API functions
-  Stream<List<PictogramModel>> getAllPictograms(
+  List<PictogramModel> getAllPictograms(
       {String query, @required int page, @required int pageSize}) {}
 
-  Stream<PictogramModel> getPictogramID(int id) {}
+  PictogramModel getPictogramID(int id) {}
 
-  Stream<PictogramModel> createPictogram(PictogramModel pictogram) {}
+  PictogramModel createPictogram(PictogramModel pictogram) {}
 
-  Stream<PictogramModel> updatePictogram(PictogramModel pictogram) {}
+  PictogramModel updatePictogram(PictogramModel pictogram) {}
 
-  Stream<bool> deletePictogram(int id) {}
+  bool deletePictogram(int id) {}
 
-  Stream<PictogramModel> updateImageInPictogram(int id, Uint8List image) {}
+  PictogramModel updateImageInPictogram(int id, Uint8List image) {}
 
-  Stream<Image> getPictogramImage(int id) {}
+  Image getPictogramImage(int id) {}
 
   // User API functions
   GirafUserModel getMe() {
@@ -158,48 +164,47 @@ class OfflineDbHandler {
     _me = model;
   }
 
-  Stream<GirafUserModel> getUser(String id) {}
+  GirafUserModel getUser(String id) {}
 
-  Stream<GirafUserModel> updateUser(GirafUserModel user) {}
+  GirafUserModel updateUser(GirafUserModel user) {}
 
-  Stream<SettingsModel> getUserSettings(String id) {}
+  SettingsModel getUserSettings(String id) {}
 
-  Stream<SettingsModel> updateUserSettings(String id, SettingsModel settings) {}
+  SettingsModel updateUserSettings(String id, SettingsModel settings) {}
 
-  Stream<bool> deleteUserIcon(String id) {}
+  bool deleteUserIcon(String id) {}
 
-  Stream<Image> getUserIcon(String id) {}
+  Image getUserIcon(String id) {}
 
-  Stream<bool> updateUserIcon() {}
+  bool updateUserIcon() {}
 
-  Stream<List<DisplayNameModel>> getCitizens(String id) {}
+  List<DisplayNameModel> getCitizens(String id) {}
 
-  Stream<List<DisplayNameModel>> getGuardians(String id) {}
+  List<DisplayNameModel> getGuardians(String id) {}
 
-  Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) {}
+  bool addCitizenToGuardian(String guardianId, String citizenId) {}
 
   // Week API functions
 
-  Stream<List<WeekNameModel>> getWeekNames(String id) {}
+  List<WeekNameModel> getWeekNames(String id) {}
 
-  Stream<WeekModel> getWeek(String id, int year, int weekNumber) {}
+  WeekModel getWeek(String id, int year, int weekNumber) {}
 
-  Stream<WeekModel> updateWeek(
-      String id, int year, int weekNumber, WeekModel week) {}
+  WeekModel updateWeek(String id, int year, int weekNumber, WeekModel week) {}
 
-  Stream<bool> deleteWeek(String id, int year, int weekNumber) {}
+  bool deleteWeek(String id, int year, int weekNumber) {}
 
   // Week Template API functions
 
-  Stream<List<WeekTemplateNameModel>> getTemplateNames() {}
+  List<WeekTemplateNameModel> getTemplateNames() {}
 
-  Stream<WeekTemplateModel> createTemplate(WeekTemplateModel template) {}
+  WeekTemplateModel createTemplate(WeekTemplateModel template) {}
 
-  Stream<WeekTemplateModel> getTemplate(int id) {}
+  WeekTemplateModel getTemplate(int id) {}
 
-  Stream<WeekTemplateModel> updateTemplate(WeekTemplateModel template) {}
+  WeekTemplateModel updateTemplate(WeekTemplateModel template) {}
 
-  Stream<bool> delete(int id) {}
+  bool deleteTemplate(int id) {}
 
   /// Gets the version of the currently running db
   Future<int> getCurrentDBVersion() {
