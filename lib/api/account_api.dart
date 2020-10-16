@@ -47,10 +47,15 @@ class AccountApi {
     };
 
     ///return body to local db
-    dbHandler.registerAccount(body);
-    return _http
-        .post('/Account/register', body)
-        .map((Response res) => GirafUserModel.fromJson(res.json['data']));
+
+    return _http.post('/Account/register', body).map((Response res) {
+      if (res.success()) {
+        dbHandler.registerAccount(body);
+        return GirafUserModel.fromJson(res.json['data']);
+      } else {
+        return dbHandler.registerAccount(body);
+      }
+    });
   }
 
   /// Allows the user to change his password if they know their old password.
