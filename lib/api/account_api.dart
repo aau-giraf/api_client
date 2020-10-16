@@ -45,6 +45,7 @@ class AccountApi {
       'departmentId': departmentId,
       'role': role.toString().split('.').last,
     };
+
     ///return body to local db
     dbHandler.registerAccount(body);
     return _http
@@ -94,10 +95,9 @@ class AccountApi {
   /// [id] ID of the user
   Stream<bool> delete(String id) {
     ///delete from local db
-    dbHandler.deleteAccount(String id);
+    dbHandler.deleteAccount(id);
     return _http.delete('/Account/user/$id').flatMap(
         (Response res) => Stream<bool>.fromFuture(_persist.remove('token')));
-
   }
 
   /// Logout the currently logged in user
