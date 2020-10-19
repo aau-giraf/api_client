@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:api_client/http/http.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:meta/meta.dart';
@@ -47,10 +49,11 @@ class AccountApi {
     };
 
     ///return body to local db
-
-    return _http.post('/Account/register', body).map((Response res) {
+    return _http.post('/Account/register', body).asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.registerAccount(body);
+        dbHandler.registerAccount(
+          body,
+        );
         return GirafUserModel.fromJson(res.json['data']);
       } else {
         return dbHandler.registerAccount(body);

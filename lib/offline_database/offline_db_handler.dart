@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:api_client/models/activity_model.dart';
@@ -120,13 +121,13 @@ class OfflineDbHandler {
 
   // Account API functions
   /// register an account for a user
-  GirafUserModel registerAccount(Map<String, dynamic> body) {
-    /*int roleID;
+  Future<GirafUserModel> registerAccount(Map<String, dynamic> body) async {
+    int roleID;
     switch (body['role']) {
       case 'Citizen':
         roleID = 0;
         break;
-      case 'Depatment':
+      case 'Department':
         roleID = 1;
         break;
       case 'Guardian':
@@ -146,13 +147,9 @@ class OfflineDbHandler {
       'Department': body['departmentId'],
     };
     _database.insert('Users', insertQuery);
-    _database
-        .rawQuery(
-            'SELECT * FROM `Users` WHERE `UserName` == ${body['username']}')
-        .asStream().
-        .listen((List<Map<String, dynamic>> event) {
-      return GirafUserModel.fromJson(event[0]);
-    });*/
+    final List<Map<String, dynamic>> res = await _database.rawQuery(
+        'SELECT * FROM `Users` WHERE `UserName` == ${body['username']}');
+    return GirafUserModel.fromJson(res[0]);
   }
 
   Future<bool> deleteAccount(String id) {}
