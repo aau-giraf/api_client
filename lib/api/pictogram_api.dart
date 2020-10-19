@@ -29,8 +29,9 @@ class PictogramApi {
       'pageSize': pageSize.toString(),
     });
 
-    return _http.get(uri.toString()).map((Response res) {
-      if (res.json['data'] is List) {
+    return _http.get(uri.toString()).asyncMap((Response res) {
+      if(res.success()){
+      if (res.json['data'] is List && res.success()) {
         return List<Map<String, dynamic>>.from(res.json['data'])
             .map((Map<String, dynamic> map) {
           return PictogramModel.fromJson(map);
@@ -39,6 +40,10 @@ class PictogramApi {
         // TODO(boginw): throw appropriate error
         return null;
       }
+    }
+    else{
+      return dbHandler.getAllPictograms(query: query, page: page, pageSize: pageSize) ;
+        }
     });
   }
 
@@ -47,8 +52,14 @@ class PictogramApi {
   ///
   /// [id] Id of pictogram to get
   Stream<PictogramModel> get(int id) {
-    return _http.get('/$id').map((Response res) {
-      return PictogramModel.fromJson(res.json['data']);
+    return _http.get('/$id').asyncMap((Response res) {
+      if(res.success()){
+        ///online database
+        return PictogramModel.fromJson(res.json['data']);
+      }else{
+        ///offline database
+        return dbHandler.getPictogramID(id);
+      }
     });
   }
 
@@ -56,8 +67,16 @@ class PictogramApi {
   ///
   /// [pictogram] Pictogram to create
   Stream<PictogramModel> create(PictogramModel pictogram) {
-    return _http.post('/', pictogram.toJson()).map((Response res) {
-      return PictogramModel.fromJson(res.json['data']);
+    return _http.post('/', pictogram.toJson()).asyncMap((Response res) {
+      if(res.success()) {
+        ///create pictogram offline database
+        dbHandler.createPictogram(pictogram);
+        ///create pictogram online database
+        return PictogramModel.fromJson(res.json['data']);
+      }else{
+        ///if not succed online create in offline database
+        return dbHandler.createPictogram(pictogram);
+      }
     });
   }
 
@@ -68,8 +87,16 @@ class PictogramApi {
   Stream<PictogramModel> update(PictogramModel pictogram) {
     return _http
         .put('/${pictogram.id}', pictogram.toJson())
-        .map((Response res) {
-      return PictogramModel.fromJson(res.json['data']);
+        .asyncMap((Response res) {
+          if(res.success()) {
+            ///send to offline db
+            dbHandler.updatePictogram(pictogram);
+            ///send to online db
+            return PictogramModel.fromJson(res.json['data']);
+          }else{
+            ///send to offline db
+            return dbHandler.updatePictogram(pictogram);
+          }
     });
   }
 
@@ -77,8 +104,16 @@ class PictogramApi {
   ///
   /// [id] The id of the pictogram to delete.
   Stream<bool> delete(int id) {
-    return _http.delete('/$id').map((Response res) {
-      return res.success();
+    return _http.delete('/$id').asyncMap((Response res) {
+      if(res.success()){
+        ///offline db
+        dbHandler.deletePictogram(id);
+        ///online db
+        return res.success();
+        }else {
+        ///offline db
+        return dbHandler.deletePictogram(id);
+      }
     });
   }
 
@@ -87,8 +122,17 @@ class PictogramApi {
   ///  [id] Id of the pictogram for which the image should be updated
   /// [image] List of Uint8 representing an image
   Stream<PictogramModel> updateImage(int id, Uint8List image) {
-    return _http.put('/$id/image', image).map((Response res) {
-      return PictogramModel.fromJson(res.json['data']);
+    return _http.put('/$id/image', image).asyncMap((Response res) {
+      if(res.success()){
+        ///offline db
+        dbHandler.updateImageInPictogram(id, image);
+        ///online db
+        return PictogramModel.fromJson(res.json['data']);
+      }else{
+        ///offline db
+        return dbHandler.updateImageInPictogram(id, image);
+      }
+
     });
   }
 
@@ -98,8 +142,17 @@ class PictogramApi {
   ///
   /// [id] ID of the pictogram for which the image should be fetched
   Stream<Image> getImage(int id) {
-    return _http.get('/$id/image/raw').map((Response res) {
-      return Image.memory(res.response.bodyBytes);
+    return _http.get('/$id/image/raw').asyncMap((Response res) {
+      if(res.success()){
+        ///offline db
+       dbHandler.getPictogramImage(id);
+       ///online db
+        return Image.memory(res.response.bodyBytes);
+      }else{
+        ///offline db
+        return dbHandler.getPictogramImage(id);
+      }
+
     });
   }
 }

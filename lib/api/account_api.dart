@@ -51,9 +51,7 @@ class AccountApi {
     ///return body to local db
     return _http.post('/Account/register', body).asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.registerAccount(
-          body,
-        );
+        dbHandler.registerAccount(body);
         return GirafUserModel.fromJson(res.json['data']);
       } else {
         return dbHandler.registerAccount(body);
@@ -102,10 +100,19 @@ class AccountApi {
   ///
   /// [id] ID of the user
   Stream<bool> delete(String id) {
-    ///delete from local db
-    dbHandler.deleteAccount(id);
+
     return _http.delete('/Account/user/$id').flatMap(
-        (Response res) => Stream<bool>.fromFuture(_persist.remove('token')));
+        (Response res){
+          if(res.success()){
+            ///delete from local db
+            Stream<bool>.fromFuture(dbHandler.deleteAccount(id));
+            ///delete online
+            return Stream<bool>.fromFuture(_persist.remove('token'));
+          }else{
+            ///delete from local db
+            return Stream<bool>.fromFuture(dbHandler.deleteAccount(id));
+          }
+        });
   }
 
   /// Logout the currently logged in user
