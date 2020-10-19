@@ -44,6 +44,7 @@ void main(){
             'state': 1,
             'id': 1238,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
@@ -66,6 +67,7 @@ void main(){
             'state': 4,
             'id': 1239,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -83,6 +85,7 @@ void main(){
             'state': 1,
             'id': 1240,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -100,6 +103,7 @@ void main(){
             'state': 1,
             'id': 1241,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
