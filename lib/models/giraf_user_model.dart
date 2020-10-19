@@ -1,6 +1,7 @@
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 
+/// Model for users
 class GirafUserModel implements Model {
   /// Constructor for instantiating a user inside the app.
   GirafUserModel(
@@ -9,7 +10,8 @@ class GirafUserModel implements Model {
       this.roleName,
       this.username,
       this.displayName,
-      this.department});
+      this.department,
+      this.offlineId});
 
   /// Constructor for instantiating a user from the backend response.
   GirafUserModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,9 @@ class GirafUserModel implements Model {
   // (try with mInt).
   /// The id of the users department
   int department;
+
+  /// offlineId is the id used in the offline database
+  int offlineId;
 
   /// Converts the user object to json, inorder to send it to the backend.
   @override

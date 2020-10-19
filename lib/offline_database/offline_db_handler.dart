@@ -152,10 +152,12 @@ class OfflineDbHandler {
     return GirafUserModel.fromJson(res[0]);
   }
 
-  Future<bool> deleteAccount(String id) {}
+  Future<bool> deleteAccount(String id) {
+    _database.rawDelete('DELETE * FROM `Users` WHERE id == $id');
+  }
 
   // Activity API functions
-  /// Add and activity to DB
+  /// Add an activity to DB
   Future<ActivityModel> addActivity(ActivityModel activity, String userId,
       String weekplanName, int weekYear, int weekNumber, Weekday weekDay) {}
 
