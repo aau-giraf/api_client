@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:typed_data';
-
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
@@ -139,7 +139,7 @@ class OfflineDbHandler {
       default:
         roleID = 0;
     }
-    Map<String, dynamic> insertQuery = <String, dynamic>{
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Role': roleID,
       'RoleName': body['role'],
       'UserName': body['username'],
@@ -152,30 +152,179 @@ class OfflineDbHandler {
     return GirafUserModel.fromJson(res[0]);
   }
 
-  Future<bool> deleteAccount(String id) {
-    _database.rawDelete('DELETE * FROM `Users` WHERE id == $id');
+  /// Delete a user from the offline database
+  Future<bool> deleteAccount(String id) async {
+    final int res =
+        await _database.rawDelete('DELETE * FROM `Users` WHERE `id` == $id');
+    return res == 1;
   }
 
   // Activity API functions
   /// Add an activity to DB
-  Future<ActivityModel> addActivity(ActivityModel activity, String userId,
-      String weekplanName, int weekYear, int weekNumber, Weekday weekDay) {}
+  Future<ActivityModel> addActivity(
+      ActivityModel activity,
+      String userId,
+      String weekplanName,
+      int weekYear,
+      int weekNumber,
+      Weekday weekDay) async {
+    final Map<String, dynamic> insertActivityQuery = <String, dynamic>{
+      'Key': activity.id,
+      'Order': activity.order,
+      'OtherKey': weekNumber,
+      'State': activity.state,
+      'TimerKey': activity.timer.key,
+      'IsChoiceBoard': activity.isChoiceBoard,
+    };
+    final Map<String, dynamic> insertTimerQuery = <String, dynamic>{
+      'Key': activity.timer.key,
+      'StartTime': activity.timer.startTime,
+      'Progress': activity.timer.progress,
+      'FullLength': activity.timer.fullLength,
+      'Paused': activity.timer.paused,
+    };
+    _database.transaction((Transaction txn) async {
+      for (PictogramModel pictogram in activity.pictograms) {
+        await txn.insert('PictogramRelations', <String, dynamic>{
+          'ActivityId': activity.id,
+          'PictogramId': pictogram.id
+        });
+      }
+    });
+    await _database.insert('Activities', insertActivityQuery);
+    await _database.insert('Timers', insertTimerQuery);
+    return _getActivity(activity.id);
+  }
 
-  Future<ActivityModel> updateActivity(ActivityModel activity, String userId) {}
+  Future<ActivityModel> _getActivity(int key) async {
+    final List<Map<String, dynamic>> listResult = await _database
+        .rawQuery('SELECT * FROM `Activities` WHERE `Key` == $key');
+    final Map<String, dynamic> result = listResult[0];
+    final TimerModel timerModel = await _getTimer(result['TimerKey']);
+    final List<PictogramModel> pictoList = await _getActivityPictograms(key);
+    return ActivityModel.fromDatabase(result, timerModel, pictoList);
+  }
 
-  Future<bool> deleteActivity(int activityId, String userId) {}
+  Future<List<PictogramModel>> _getActivityPictograms(int pictogramKey) async {
+    final List<Map<String, dynamic>> res =
+        await _database.rawQuery('SELECT * FROM `Pictogram` '
+            'WHERE `Key` == (SELECT `PictogramId` FROM `PictogramRelations` '
+            'WHERE `ActivityId` == $pictogramKey)');
+    List<PictogramModel> result;
+    for (Map<String, dynamic> pictogram in res) {
+      result.add(PictogramModel.fromDatabase(pictogram));
+    }
+    return result;
+  }
+
+  Future<TimerModel> _getTimer(int key) async {
+    final List<Map<String, dynamic>> res =
+        await _database.rawQuery('SELECT * FROM `Timers` WHERE `Key` == $key');
+    return TimerModel.fromDatabase(res[0]);
+  }
+
+  ///Update an [activity] from its id
+  Future<ActivityModel> updateActivity(
+      ActivityModel activity, String userId) async {
+    await _database.rawUpdate('UPDATE `Activities` SET '
+        'Order = ${activity.order}, '
+        'State = ${activity.state}, '
+        'TimerKey = ${activity.timer.key}, '
+        'IsChoiceBoard = ${activity.isChoiceBoard} '
+        'WHERE `Key` == $activity');
+    await _database.rawUpdate('UPDATE `Timers` SET '
+        'StartTime = ${activity.timer.startTime}, '
+        'Progress = ${activity.timer.progress}, '
+        'FullLength = ${activity.timer.fullLength}, '
+        'Paused = ${activity.timer.paused} '
+        'WHERE Key == ${activity.timer.key}');
+    _database.transaction((Transaction txn) async {
+      await txn.rawDelete('DELETE FROM `PictogramRelations` '
+          'WHERE ActivityId = ${activity.id}');
+      for (PictogramModel pictogram in activity.pictograms) {
+        await txn.insert('PictogramRelations', <String, dynamic>{
+          'ActivityId': activity.id,
+          'PictogramId': pictogram.id
+        });
+      }
+    });
+    return _getActivity(activity.id);
+  }
+
+  ///Delete an activity with the id [activityId]
+  Future<bool> deleteActivity(int activityId, String userId) async {
+    final List<Map<String, dynamic>> res = await _database
+        .rawQuery('SELECT TimerKey FROM `Activities` WHERE Key == $activityId');
+    final int timerKey = res[0]['TimerKey'];
+    final int activityChanged = await _database
+        .rawDelete('DELETE FROM `Activities` WHERE Key == $activityId');
+    final int timersChanged = await _database
+        .rawDelete('DELETE FROM `Timers` WHERE Key == $timerKey');
+    final int relationsChanged = await _database.rawDelete(
+        'DELETE FROM `PictogramRelations` WHERE ActivityId == $activityId');
+    return activityChanged == 1 && timersChanged == 1 && relationsChanged >= 1;
+  }
 
   // Pictogram API functions
+  ///Get [pageSize] pictograms by adding all pictograms to a list
+  ///and split them into lists with size [pageSize] and then choose
+  ///list number [page]
   Future<List<PictogramModel>> getAllPictograms(
-      {String query, @required int page, @required int pageSize}) {}
+      {String query, @required int page, @required int pageSize}) async {
+    final List<Map<String, dynamic>> res =
+        await _database.rawQuery('SELECT * FROM `Pictograms` '
+            'WHERE Title LIKE %$query%');
+    List<PictogramModel> allPictograms;
+    for (Map<String, dynamic> pictogram in res) {
+      allPictograms.add(PictogramModel.fromDatabase(pictogram));
+    }
+    List<List<PictogramModel>> possibleResults;
+    for (int i = 0; i < allPictograms.length; i += pageSize) {
+      possibleResults.add(allPictograms.sublist(
+          i,
+          i + pageSize > allPictograms.length
+              ? allPictograms.length
+              : i + pageSize));
+    }
+    return possibleResults[page];
+  }
 
-  Future<PictogramModel> getPictogramID(int id) {}
+  ///Get the pictogram with the id [id]
+  Future<PictogramModel> getPictogramID(int id) async {
+    final List<Map<String, dynamic>> res =
+        await _database.rawQuery('SELECT * FROM `Pictograms` WHERE id == $id');
+    return PictogramModel.fromDatabase(res[0]);
+  }
 
-  Future<PictogramModel> createPictogram(PictogramModel pictogram) {}
+  ///Add a pictogram to the offline database
+  Future<PictogramModel> createPictogram(PictogramModel pictogram) {
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'id': pictogram.id,
+      'AccessLevel': pictogram.accessLevel,
+      'LastEdit': pictogram.lastEdit,
+      'Title': pictogram.title,
+      'Imagehash': pictogram.imageHash,
+    };
+    _database.insert('Pictograms', insertQuery);
+    return getPictogramID(pictogram.id);
+  }
 
-  Future<PictogramModel> updatePictogram(PictogramModel pictogram) {}
+  ///Update a given pictogram
+  Future<PictogramModel> updatePictogram(PictogramModel pictogram) async {
+    await _database.rawUpdate('UPDATE `Pictograms` SET '
+        'AccessLevel = ${pictogram.accessLevel}, '
+        'LastEdit = ${pictogram.lastEdit}, '
+        'Title = ${pictogram.title}, '
+        'ImageHash = ${pictogram.imageHash} '
+        'WHERE id == ${pictogram.id}');
+    return getPictogramID(pictogram.id);
+  }
 
-  Future<bool> deletePictogram(int id) {}
+  Future<bool> deletePictogram(int id) async {
+    final int pictogramsDeleted =
+        await _database.rawDelete('DELETE FROM `Pictograms` WHERE id == $id');
+    return pictogramsDeleted == 1;
+  }
 
   Future<PictogramModel> updateImageInPictogram(int id, Uint8List image) {}
 
@@ -239,7 +388,7 @@ class OfflineDbHandler {
   }
 
   /// Force close the db
-  Future<void> closeDb() {
-    _database.close();
+  Future<void> closeDb() async {
+    await _database.close();
   }
 }

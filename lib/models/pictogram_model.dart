@@ -3,7 +3,6 @@ import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
 
 class PictogramModel implements Model {
-
   /// Constructor
   PictogramModel({
     this.id,
@@ -23,12 +22,25 @@ class PictogramModel implements Model {
 
     id = json['id'];
     lastEdit =
-      json['lastEdit'] == null ? null : DateTime.tryParse(json['lastEdit']);
+        json['lastEdit'] == null ? null : DateTime.tryParse(json['lastEdit']);
     title = json['title'];
     accessLevel = AccessLevel.values[(json['accessLevel']) - 1];
     imageUrl = json['imageUrl'];
     imageHash = json['imageHash'];
     userId = json['userId'];
+  }
+  PictogramModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[PictogramModel]: Cannot initialize from null');
+    }
+
+    id = json['id'];
+    lastEdit =
+        json['LastEdit'] == null ? null : DateTime.tryParse(json['LastEdit']);
+    title = json['Title'];
+    accessLevel = AccessLevel.values[(json['AccessLevel']) - 1];
+    imageHash = json['ImageHash'];
   }
 
   int id;
@@ -71,7 +83,7 @@ class PictogramModel implements Model {
       result['imageHash'] = imageHash;
     }
 
-    if(userId != null){
+    if (userId != null) {
       result['userId'] = userId;
     }
 
