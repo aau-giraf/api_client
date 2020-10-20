@@ -36,6 +36,19 @@ class ActivityModel implements Model {
     }
   }
 
+  /// Constructer from jason for the offlineDb
+  ActivityModel.fromDatabase(
+      Map<String, dynamic> json, this.timer, this.pictograms) {
+    if (json == null) {
+      throw const FormatException(
+          '[ActivityModel]: Cannot initialize from null');
+    }
+    id = json['Key'];
+    order = json['Order'];
+    state = ActivityState.values[(json['State']) - 1];
+    isChoiceBoard = json['IsChoiceBoard'];
+  }
+
   /// The ID of the activity.
   int id;
 

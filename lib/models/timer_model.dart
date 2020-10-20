@@ -24,6 +24,17 @@ class TimerModel implements Model {
     key = json['key'];
   }
 
+  TimerModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException('[TimerModel]: Cannot initialize from null');
+    }
+    startTime = DateTime.fromMillisecondsSinceEpoch(json['StartTime']);
+    progress = json['Progress'];
+    fullLength = json['FullLength'];
+    paused = json['Paused'];
+    key = json['Key'];
+  }
+
   /// The time for when the timer started.
   DateTime startTime;
 
