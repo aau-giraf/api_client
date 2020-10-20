@@ -202,4 +202,9 @@ class UserApi {
           return dbHandler.addCitizenToGuardian(guardianId, citizenId);
         }});
   }
+
+  Future<void>hydrateOfflineDbUser(GirafUserModel getUser, String id)async{
+    
+
+  }
 }
