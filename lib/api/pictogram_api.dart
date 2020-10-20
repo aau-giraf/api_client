@@ -71,7 +71,7 @@ class PictogramApi {
       if(res.success()) {
         ///create pictogram offline database
         dbHandler.createPictogram(pictogram);
-        ///create pictogram online database
+        ///create pictogram online databaseweekNameModelOffline
         return PictogramModel.fromJson(res.json['data']);
       }else{
         ///if not succed online create in offline database
