@@ -32,8 +32,13 @@ class WeekTemplateApi {
   /// [template] After successful execution, a new week template will be created
   /// with the same values as this DTO.
   Stream<WeekTemplateModel> create(WeekTemplateModel template) {
-    return _http.post('/', template.toJson()).map((Response res) {
-      return WeekTemplateModel.fromJson(res.json['data']);
+    return _http.post('/', template.toJson()).asyncMap((Response res) {
+      if (res.success()) {
+        dbHandler.createTemplate(template);
+        return WeekTemplateModel.fromJson(res.json['data']);
+      } else {
+        return dbHandler.createTemplate(template);
+      }
     });
   }
 
@@ -51,8 +56,15 @@ class WeekTemplateApi {
   ///
   /// [template] The new template value
   Stream<WeekTemplateModel> update(WeekTemplateModel template) {
-    return _http.put('/${template.id}', template.toJson()).map((Response res) {
-      return WeekTemplateModel.fromJson(res.json['data']);
+    return _http
+        .put('/${template.id}', template.toJson())
+        .asyncMap((Response res) {
+      if (res.success()) {
+        dbHandler.updateTemplate(template);
+        return WeekTemplateModel.fromJson(res.json['data']);
+      } else {
+        return dbHandler.updateTemplate(template);
+      }
     });
   }
 
@@ -61,6 +73,13 @@ class WeekTemplateApi {
   ///
   /// [id] ID of the template to delete
   Stream<bool> delete(int id) {
-    return _http.delete('/$id').map((Response res) => res.success());
+    return _http.delete('/$id').asyncMap((Response res) {
+      if (res.success()) {
+        dbHandler.deleteTemplate(id);
+        return res.success();
+      } else {
+        return dbHandler.deleteTemplate(id);
+      }
+    });
   }
 }
