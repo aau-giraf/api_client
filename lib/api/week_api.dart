@@ -75,8 +75,16 @@ class WeekApi {
       String id, int year, int weekNumber, WeekModel week) {
     return _http
         .put('/$id/week/$year/$weekNumber', week.toJson())
-        .map((Response res) {
-      return WeekModel.fromJson(res.json['data']);
+        .asyncMap((Response res) {
+          if(res.success()){
+            ///update week in offline database
+            dbHandler.updateWeek(id, year, weekNumber, week);
+            return WeekModel.fromJson(res.json['data']);
+          }else{
+            ///offline database
+            return dbHandler.updateWeek(id, year, weekNumber, week);
+          }
+
     });
   }
 
