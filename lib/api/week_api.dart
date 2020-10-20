@@ -26,6 +26,22 @@ class WeekApi {
     });
   }
 
+///
+  Future<void> hydrateOfflineDb(WeekModel inputWeekModel,
+      String id, int year, int weekNumber) async{
+    WeekModel weekModelOffline = await dbHandler.getWeek(id, year, weekNumber);
+    //Compare weekmodels online with offline
+    if(inputWeekModel.name == weekModelOffline.name &&
+        inputWeekModel.weekNumber == weekModelOffline.weekNumber &&
+        inputWeekModel.weekYear == weekModelOffline.weekYear){
+
+    }else{
+      //add week to offline database
+      dbHandler.updateWeek(id, year, weekNumber, inputWeekModel);
+    }
+
+  }
+
   /// Gets the Week with the specified week number and year for the user with
   /// the given id.
   ///
@@ -33,8 +49,17 @@ class WeekApi {
   /// [year] Year the week is in
   /// [weekNumber] The week-number of the week
   Stream<WeekModel> get(String id, int year, int weekNumber) {
-    return _http.get('/$id/week/$year/$weekNumber').map((Response res) {
-      return WeekModel.fromJson(res.json['data']);
+    return _http.get('/$id/week/$year/$weekNumber').asyncMap((Response res) {
+      //if http get success
+      if (res.success()) {
+        WeekModel weekModelInput = WeekModel.fromJson(res.json['data']);
+      //hydrate offline database with week data
+        hydrateOfflineDb(weekModelInput, id, year, weekNumber);
+        return weekModelInput;
+      }else{
+        // get week from offline database
+        return dbHandler.getWeek(id, year, weekNumber);
+      }
     });
   }
 
