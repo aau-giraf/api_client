@@ -53,7 +53,7 @@ class PictogramModel implements Model {
 
   /// The alternative title of the pictogram, in relation to the citizen.
   List<Tuple2<String, String>> alternativeTitleRelations =
-                        List<Tuple2<String, String>>.empty(growable: true);
+                        <Tuple2<String, String>>[];
 
 
 
