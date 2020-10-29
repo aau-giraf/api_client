@@ -34,11 +34,9 @@ Future<void> main() async {
         userId: '2'),
   ];
   sqfliteFfiInit();
-  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
-      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    pictogramApi = PictogramApi(httpMock, testDb);
+    pictogramApi = PictogramApi(httpMock);
   });
 
   test('Should be able to search pictograms', () {

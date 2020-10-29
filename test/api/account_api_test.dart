@@ -18,12 +18,10 @@ Future<void> main() async {
   AccountApi accountApi;
   HttpMock httpMock;
   PersistenceMock persistenceMock;
-  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
-      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
     persistenceMock = PersistenceMock();
-    accountApi = AccountApi(httpMock, persistenceMock, testDb);
+    accountApi = AccountApi(httpMock, persistenceMock);
   });
 
   test('Should call login endpoint', () {

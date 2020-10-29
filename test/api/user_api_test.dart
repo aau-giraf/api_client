@@ -52,11 +52,9 @@ Future<void> main() async {
       weekDayColors: <WeekdayColorModel>[
         WeekdayColorModel(day: Weekday.Monday, hexColor: '#123456')
       ]);
-  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
-      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    userApi = UserApi(httpMock, testDb);
+    userApi = UserApi(httpMock);
   });
 
   test('Should fetch authenticated user', () {

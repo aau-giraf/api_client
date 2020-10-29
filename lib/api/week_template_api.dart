@@ -6,10 +6,9 @@ import 'package:api_client/offline_database/offline_db_handler.dart';
 /// Week template endpoints
 class WeekTemplateApi {
   /// Default constructor
-  WeekTemplateApi(this._http, this.dbHandler);
+  WeekTemplateApi(this._http);
 
   final Http _http;
-  final OfflineDbHandler dbHandler;
 
   /// Gets all schedule templates for the currently authenticated user.
   /// Available to all users.
@@ -34,10 +33,10 @@ class WeekTemplateApi {
   Stream<WeekTemplateModel> create(WeekTemplateModel template) {
     return _http.post('/', template.toJson()).asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.createTemplate(template);
+        OfflineDbHandler.instance.createTemplate(template);
         return WeekTemplateModel.fromJson(res.json['data']);
       } else {
-        return dbHandler.createTemplate(template);
+        return OfflineDbHandler.instance.createTemplate(template);
       }
     });
   }
@@ -60,10 +59,10 @@ class WeekTemplateApi {
         .put('/${template.id}', template.toJson())
         .asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.updateTemplate(template);
+        OfflineDbHandler.instance.updateTemplate(template);
         return WeekTemplateModel.fromJson(res.json['data']);
       } else {
-        return dbHandler.updateTemplate(template);
+        return OfflineDbHandler.instance.updateTemplate(template);
       }
     });
   }
@@ -75,10 +74,10 @@ class WeekTemplateApi {
   Stream<bool> delete(int id) {
     return _http.delete('/$id').asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.deleteTemplate(id);
+        OfflineDbHandler.instance.deleteTemplate(id);
         return res.success();
       } else {
-        return dbHandler.deleteTemplate(id);
+        return OfflineDbHandler.instance.deleteTemplate(id);
       }
     });
   }

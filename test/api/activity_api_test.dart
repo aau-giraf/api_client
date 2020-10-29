@@ -45,11 +45,9 @@ Future<void> main() async {
       days: <WeekdayModel>[
         WeekdayModel(day: Weekday.Sunday, activities: <ActivityModel>[])
       ]);
-  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
-      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    activityApi = ActivityApi(httpMock, testDb);
+    activityApi = ActivityApi(httpMock);
   });
 
   test('Should update an activity state', () {

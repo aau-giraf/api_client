@@ -11,11 +11,10 @@ import 'package:api_client/persistence/persistence.dart';
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
-  AccountApi(this._http, this._persist, this.dbHandler);
+  AccountApi(this._http, this._persist);
 
   final Http _http;
   final Persistence _persist;
-  final OfflineDbHandler dbHandler;
 
   /// This endpoint allows the user to sign in to his/her account by providing
   /// valid username and password
@@ -50,12 +49,7 @@ class AccountApi {
 
     ///return body to local db
     return _http.post('/Account/register', body).asyncMap((Response res) {
-      if (res.success()) {
-        dbHandler.registerAccount(body);
-        return GirafUserModel.fromJson(res.json['data']);
-      } else {
-        return dbHandler.registerAccount(body);
-      }
+      return GirafUserModel.fromJson(res.json['data']);
     });
   }
 
@@ -100,19 +94,19 @@ class AccountApi {
   ///
   /// [id] ID of the user
   Stream<bool> delete(String id) {
+    return _http.delete('/Account/user/$id').flatMap((Response res) {
+      if (res.success()) {
+        ///delete from local db
+        Stream<bool>.fromFuture(OfflineDbHandler.instance.deleteAccount(id));
 
-    return _http.delete('/Account/user/$id').flatMap(
-        (Response res){
-          if(res.success()){
-            ///delete from local db
-            Stream<bool>.fromFuture(dbHandler.deleteAccount(id));
-            ///delete online
-            return Stream<bool>.fromFuture(_persist.remove('token'));
-          }else{
-            ///delete from local db
-            return Stream<bool>.fromFuture(dbHandler.deleteAccount(id));
-          }
-        });
+        ///delete online
+        return Stream<bool>.fromFuture(_persist.remove('token'));
+      } else {
+        ///delete from local db
+        return Stream<bool>.fromFuture(
+            OfflineDbHandler.instance.deleteAccount(id));
+      }
+    });
   }
 
   /// Logout the currently logged in user

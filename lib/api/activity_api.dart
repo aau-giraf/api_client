@@ -6,10 +6,9 @@ import 'package:api_client/offline_database/offline_db_handler.dart';
 /// Pictogram endpoints
 class ActivityApi {
   /// Default constructor
-  ActivityApi(this._http, this.dbHandler);
+  ActivityApi(this._http);
 
   final Http _http;
-  final OfflineDbHandler dbHandler;
 
   /// Adds the specified activity
   ///
@@ -27,11 +26,11 @@ class ActivityApi {
             activity.toJson())
         .asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.addActivity(
+        OfflineDbHandler.instance.addActivity(
             activity, userId, weekplanName, weekYear, weekNumber, weekDay);
         return ActivityModel.fromJson(res.json['data']);
       } else {
-        return dbHandler.addActivity(
+        return OfflineDbHandler.instance.addActivity(
             activity, userId, weekplanName, weekYear, weekNumber, weekDay);
       }
     });
@@ -46,10 +45,10 @@ class ActivityApi {
         .patch('/$userId/update', activity.toJson())
         .asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.updateActivity(activity, userId);
+        OfflineDbHandler.instance.updateActivity(activity, userId);
         return ActivityModel.fromJson(res.json['data']);
       } else {
-        return dbHandler.updateActivity(activity, userId);
+        return OfflineDbHandler.instance.updateActivity(activity, userId);
       }
     });
   }
@@ -61,10 +60,10 @@ class ActivityApi {
   Stream<bool> delete(int activityId, String userId) {
     return _http.delete('/$userId/delete/$activityId').asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.deleteActivity(activityId, userId);
+        OfflineDbHandler.instance.deleteActivity(activityId, userId);
         return res.success();
       } else {
-        return dbHandler.deleteActivity(activityId, userId);
+        return OfflineDbHandler.instance.deleteActivity(activityId, userId);
       }
     });
   }

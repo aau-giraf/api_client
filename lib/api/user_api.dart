@@ -16,23 +16,22 @@ import 'package:api_client/models/enums/orientation_enum.dart' as orientation;
 /// User endpoints
 class UserApi {
   /// Default constructor
-  UserApi(this._http, this.dbHandler);
+  UserApi(this._http);
 
   final Http _http;
-  final OfflineDbHandler dbHandler;
 
   /// Find information about the currently authenticated user.
   Stream<GirafUserModel> me() {
-    if (dbHandler.getMe() == null) {
+    if (OfflineDbHandler.instance.getMe() == null) {
       return _http.get('/').map((Response res) {
         final GirafUserModel currentMe =
             GirafUserModel.fromJson(res.json['data']);
-        dbHandler.setMe(currentMe);
+        OfflineDbHandler.instance.setMe(currentMe);
         return currentMe;
       });
     } else {
       Stream<GirafUserModel>.fromFuture(
-          Future<GirafUserModel>.value(dbHandler.getMe()));
+          Future<GirafUserModel>.value(OfflineDbHandler.instance.getMe()));
     }
   }
 
@@ -44,7 +43,7 @@ class UserApi {
       if (res.success()) {
         return GirafUserModel.fromJson(res.json['data']);
       } else {
-        return dbHandler.getUser(id);
+        return OfflineDbHandler.instance.getUser(id);
       }
     });
   }
@@ -55,10 +54,10 @@ class UserApi {
   Stream<GirafUserModel> update(GirafUserModel user) {
     return _http.put('/${user.id}', user.toJson()).asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.updateUser(user);
+        OfflineDbHandler.instance.updateUser(user);
         return GirafUserModel.fromJson(res.json['data']);
       } else {
-        return dbHandler.updateUser(user);
+        return OfflineDbHandler.instance.updateUser(user);
       }
     });
   }
@@ -105,13 +104,13 @@ class UserApi {
         .put('/$id/settings', settings.toJson())
         .asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.updateUserSettings(id, settings);
+        OfflineDbHandler.instance.updateUserSettings(id, settings);
         if (res.success() == false) {
           throw ApiException(res);
         }
         return SettingsModel.fromJson(res.json['data']);
       } else {
-        dbHandler.updateUserSettings(id, settings);
+        OfflineDbHandler.instance.updateUserSettings(id, settings);
       }
     });
   }
@@ -122,10 +121,10 @@ class UserApi {
   Stream<bool> deleteIcon(String id) {
     return _http.delete('/$id/icon').asyncMap((Response res) {
       if (res.statusCode() == 200) {
-        dbHandler.deleteUserIcon(id);
+        OfflineDbHandler.instance.deleteUserIcon(id);
         return true;
       } else {
-        return dbHandler.deleteUserIcon(id);
+        return OfflineDbHandler.instance.deleteUserIcon(id);
       }
     });
   }
@@ -136,10 +135,10 @@ class UserApi {
   Stream<Image> getIcon(String id) {
     return _http.get('/$id/icon/raw').asyncMap((Response res) {
       if (res.success()) {
-        dbHandler.getUserIcon(id);
+        OfflineDbHandler.instance.getUserIcon(id);
         return Image.memory(res.response.bodyBytes);
       } else {
-        return dbHandler.getUserIcon(id);
+        return OfflineDbHandler.instance.getUserIcon(id);
       }
     });
   }
@@ -161,7 +160,7 @@ class UserApi {
               .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
               .toList();
         } else {
-          return dbHandler.getCitizens(id);
+          return OfflineDbHandler.instance.getCitizens(id);
         }
       }
     });
@@ -179,7 +178,7 @@ class UserApi {
               .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
               .toList();
         } else {
-          return dbHandler.getGuardians(id);
+          return OfflineDbHandler.instance.getGuardians(id);
         }
       }
     });
@@ -193,18 +192,16 @@ class UserApi {
   Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) {
     return _http
         .post('/$guardianId/citizens/$citizenId')
-        .asyncMap((Response res){
-        if(res.statusCode() == 200){
-          dbHandler.addCitizenToGuardian('guardianId', citizenId);
-          return true;
-        }
-        else{
-          return dbHandler.addCitizenToGuardian(guardianId, citizenId);
-        }});
+        .asyncMap((Response res) {
+      if (res.statusCode() == 200) {
+        OfflineDbHandler.instance.addCitizenToGuardian('guardianId', citizenId);
+        return true;
+      } else {
+        return OfflineDbHandler.instance
+            .addCitizenToGuardian(guardianId, citizenId);
+      }
+    });
   }
 
-  Future<void>hydrateOfflineDbUser(GirafUserModel getUser, String id)async{
-    
-
-  }
+  Future<void> hydrateOfflineDbUser(GirafUserModel getUser, String id) async {}
 }

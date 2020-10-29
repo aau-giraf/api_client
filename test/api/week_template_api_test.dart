@@ -33,11 +33,9 @@ Future<void> main() async {
           imageUrl: 'http://',
           imageHash: '#',
           accessLevel: AccessLevel.PUBLIC));
-  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
-      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    weekTemplateApi = WeekTemplateApi(httpMock, testDb);
+    weekTemplateApi = WeekTemplateApi(httpMock);
   });
 
   test('Should get names', () {

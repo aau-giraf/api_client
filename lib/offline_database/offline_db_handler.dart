@@ -12,31 +12,46 @@ import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// OfflineDbHandler is used for communication with the offline database
 class OfflineDbHandler {
   ///Constructor for the dbhandler
-  OfflineDbHandler(Database db) {
-    _database = db;
-    createTables();
-  }
-  Database _database;
+  @visibleForTesting
+  OfflineDbHandler();
+
+  static final OfflineDbHandler instance = OfflineDbHandler();
+  static Database _database;
+
   GirafUserModel _me;
 
+  Future<Database> get database async {
+    if (_database == null) {
+      return initializeDatabase();
+    }
+    return _database;
+  }
+
   /// Initiate the database
+  Future<Database> initializeDatabase() async {
+    return openDatabase(join(await getDatabasesPath(), 'offlineGiraf'),
+        version: 1, onCreate: (Database db, int version) async {
+      createTables(db);
+    });
+  }
 
   ///Creates all of the tables in the DB
-  Future<void> createTables() async {
-    await _database.transaction((Transaction txn) async {
+  Future<void> createTables(Database db) async {
+    await db.transaction((Transaction txn) async {
       await txn.execute('CREATE TABLE IF NOT EXISTS `Users` ('
-          '`OfflineId` varchar( 255 ) NOT NULL PRIMARY KEY AUTOINCREMENT, '
+          '`OfflineId` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`Role` varchar ( 255 ) NOT NULL, '
-          '`RoleName` varchar ( 256 ) DEFAULT NULL, '
-          '`Username` varchar ( 256 ) DEFAULT NULL, '
+          '`RoleName` varchar ( 255 ) DEFAULT NULL, '
+          '`Username` varchar ( 255 ) DEFAULT NULL, '
           '`DisplayName` longtext NOT NULL, '
           '`Department` integer DEFAULT NULL, '
-          '`Id` integer'
+          '`Id` integer, '
           'UNIQUE(`UserName`, `Id`));');
       await txn.execute('CREATE TABLE IF NOT EXISTS `GuardianRelations` ('
           '`OfflineId`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
@@ -116,6 +131,9 @@ class OfflineDbHandler {
           '`Progress`	integer NOT NULL, '
           '`FullLength`	integer NOT NULL, '
           '`Paused`	integer NOT NULL);');
+      /*await txn
+          .execute('CREATE TABLE IF NOT EXISTS `FailedOnlineTransactions` ('
+              '`Type` ');*/
     });
   }
 
@@ -146,7 +164,8 @@ class OfflineDbHandler {
       'DisplayName': body['displayname'],
       'Department': body['departmentId'],
     };
-    _database.insert('Users', insertQuery);
+    final Database db = await database;
+    db.insert('Users', insertQuery);
     final List<Map<String, dynamic>> res = await _database.rawQuery(
         'SELECT * FROM `Users` WHERE `UserName` == ${body['username']}');
     return GirafUserModel.fromJson(res[0]);
@@ -154,8 +173,9 @@ class OfflineDbHandler {
 
   /// Delete a user from the offline database
   Future<bool> deleteAccount(String id) async {
+    final Database db = await database;
     final int res =
-        await _database.rawDelete('DELETE * FROM `Users` WHERE `id` == $id');
+        await db.rawDelete('DELETE * FROM `Users` WHERE `id` == $id');
     return res == 1;
   }
 
@@ -183,7 +203,8 @@ class OfflineDbHandler {
       'FullLength': activity.timer.fullLength,
       'Paused': activity.timer.paused,
     };
-    _database.transaction((Transaction txn) async {
+    final Database db = await database;
+    db.transaction((Transaction txn) async {
       for (PictogramModel pictogram in activity.pictograms) {
         await txn.insert('PictogramRelations', <String, dynamic>{
           'ActivityId': activity.id,
@@ -191,14 +212,15 @@ class OfflineDbHandler {
         });
       }
     });
-    await _database.insert('Activities', insertActivityQuery);
-    await _database.insert('Timers', insertTimerQuery);
+    await db.insert('Activities', insertActivityQuery);
+    await db.insert('Timers', insertTimerQuery);
     return _getActivity(activity.id);
   }
 
   Future<ActivityModel> _getActivity(int key) async {
-    final List<Map<String, dynamic>> listResult = await _database
-        .rawQuery('SELECT * FROM `Activities` WHERE `Key` == $key');
+    final Database db = await database;
+    final List<Map<String, dynamic>> listResult =
+        await db.rawQuery('SELECT * FROM `Activities` WHERE `Key` == $key');
     final Map<String, dynamic> result = listResult[0];
     final TimerModel timerModel = await _getTimer(result['TimerKey']);
     final List<PictogramModel> pictoList = await _getActivityPictograms(key);
@@ -206,8 +228,9 @@ class OfflineDbHandler {
   }
 
   Future<List<PictogramModel>> _getActivityPictograms(int pictogramKey) async {
+    final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await _database.rawQuery('SELECT * FROM `Pictogram` '
+        await db.rawQuery('SELECT * FROM `Pictogram` '
             'WHERE `Key` == (SELECT `PictogramId` FROM `PictogramRelations` '
             'WHERE `ActivityId` == $pictogramKey)');
     List<PictogramModel> result;
@@ -218,27 +241,29 @@ class OfflineDbHandler {
   }
 
   Future<TimerModel> _getTimer(int key) async {
+    final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await _database.rawQuery('SELECT * FROM `Timers` WHERE `Key` == $key');
+        await db.rawQuery('SELECT * FROM `Timers` WHERE `Key` == $key');
     return TimerModel.fromDatabase(res[0]);
   }
 
   ///Update an [activity] from its id
   Future<ActivityModel> updateActivity(
       ActivityModel activity, String userId) async {
-    await _database.rawUpdate('UPDATE `Activities` SET '
+    final Database db = await database;
+    await db.rawUpdate('UPDATE `Activities` SET '
         'Order = ${activity.order}, '
         'State = ${activity.state}, '
         'TimerKey = ${activity.timer.key}, '
         'IsChoiceBoard = ${activity.isChoiceBoard} '
         'WHERE `Key` == $activity');
-    await _database.rawUpdate('UPDATE `Timers` SET '
+    await db.rawUpdate('UPDATE `Timers` SET '
         'StartTime = ${activity.timer.startTime}, '
         'Progress = ${activity.timer.progress}, '
         'FullLength = ${activity.timer.fullLength}, '
         'Paused = ${activity.timer.paused} '
         'WHERE Key == ${activity.timer.key}');
-    _database.transaction((Transaction txn) async {
+    db.transaction((Transaction txn) async {
       await txn.rawDelete('DELETE FROM `PictogramRelations` '
           'WHERE ActivityId = ${activity.id}');
       for (PictogramModel pictogram in activity.pictograms) {
@@ -253,14 +278,15 @@ class OfflineDbHandler {
 
   ///Delete an activity with the id [activityId]
   Future<bool> deleteActivity(int activityId, String userId) async {
-    final List<Map<String, dynamic>> res = await _database
+    final Database db = await database;
+    final List<Map<String, dynamic>> res = await db
         .rawQuery('SELECT TimerKey FROM `Activities` WHERE Key == $activityId');
     final int timerKey = res[0]['TimerKey'];
-    final int activityChanged = await _database
-        .rawDelete('DELETE FROM `Activities` WHERE Key == $activityId');
-    final int timersChanged = await _database
-        .rawDelete('DELETE FROM `Timers` WHERE Key == $timerKey');
-    final int relationsChanged = await _database.rawDelete(
+    final int activityChanged =
+        await db.rawDelete('DELETE FROM `Activities` WHERE Key == $activityId');
+    final int timersChanged =
+        await db.rawDelete('DELETE FROM `Timers` WHERE Key == $timerKey');
+    final int relationsChanged = await db.rawDelete(
         'DELETE FROM `PictogramRelations` WHERE ActivityId == $activityId');
     return activityChanged == 1 && timersChanged == 1 && relationsChanged >= 1;
   }
@@ -271,8 +297,9 @@ class OfflineDbHandler {
   ///list number [page]
   Future<List<PictogramModel>> getAllPictograms(
       {String query, @required int page, @required int pageSize}) async {
+    final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await _database.rawQuery('SELECT * FROM `Pictograms` '
+        await db.rawQuery('SELECT * FROM `Pictograms` '
             'WHERE Title LIKE %$query%');
     List<PictogramModel> allPictograms;
     for (Map<String, dynamic> pictogram in res) {
@@ -291,13 +318,15 @@ class OfflineDbHandler {
 
   ///Get the pictogram with the id [id]
   Future<PictogramModel> getPictogramID(int id) async {
+    final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await _database.rawQuery('SELECT * FROM `Pictograms` WHERE id == $id');
+        await db.rawQuery('SELECT * FROM `Pictograms` WHERE id == $id');
     return PictogramModel.fromDatabase(res[0]);
   }
 
   ///Add a pictogram to the offline database
-  Future<PictogramModel> createPictogram(PictogramModel pictogram) {
+  Future<PictogramModel> createPictogram(PictogramModel pictogram) async {
+    final Database db = await database;
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'id': pictogram.id,
       'AccessLevel': pictogram.accessLevel,
@@ -305,13 +334,14 @@ class OfflineDbHandler {
       'Title': pictogram.title,
       'Imagehash': pictogram.imageHash,
     };
-    _database.insert('Pictograms', insertQuery);
+    await db.insert('Pictograms', insertQuery);
     return getPictogramID(pictogram.id);
   }
 
   ///Update a given pictogram
   Future<PictogramModel> updatePictogram(PictogramModel pictogram) async {
-    await _database.rawUpdate('UPDATE `Pictograms` SET '
+    final Database db = await database;
+    await db.rawUpdate('UPDATE `Pictograms` SET '
         'AccessLevel = ${pictogram.accessLevel}, '
         'LastEdit = ${pictogram.lastEdit}, '
         'Title = ${pictogram.title}, '
@@ -320,9 +350,11 @@ class OfflineDbHandler {
     return getPictogramID(pictogram.id);
   }
 
+  /// Delete a pictogram with the id [id]
   Future<bool> deletePictogram(int id) async {
+    final Database db = await database;
     final int pictogramsDeleted =
-        await _database.rawDelete('DELETE FROM `Pictograms` WHERE id == $id');
+        await db.rawDelete('DELETE FROM `Pictograms` WHERE id == $id');
     return pictogramsDeleted == 1;
   }
 
@@ -383,12 +415,14 @@ class OfflineDbHandler {
   Future<bool> deleteTemplate(int id) {}
 
   /// Gets the version of the currently running db
-  Future<int> getCurrentDBVersion() {
-    return _database.getVersion();
+  Future<int> getCurrentDBVersion() async {
+    final Database db = await database;
+    return db.getVersion();
   }
 
   /// Force close the db
   Future<void> closeDb() async {
-    await _database.close();
+    final Database db = await database;
+    await db.close();
   }
 }

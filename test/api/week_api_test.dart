@@ -17,11 +17,9 @@ Future<void> main() async {
   WeekApi weekApi;
   HttpMock httpMock;
 
-  final OfflineDbHandler testDb = OfflineDbHandler(await databaseFactoryFfi
-      .openDatabase(join(Directory.current.path, 'database', 'girafTest.db')));
   setUp(() {
     httpMock = HttpMock();
-    weekApi = WeekApi(httpMock, testDb);
+    weekApi = WeekApi(httpMock);
   });
 
   test('Should fetch names', () {

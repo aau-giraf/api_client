@@ -3,14 +3,12 @@ import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 
-
 /// Week endpoints
 class WeekApi {
   /// Default constructor
-  WeekApi(this._http, this.dbHandler);
+  WeekApi(this._http);
 
   final Http _http;
-  final OfflineDbHandler dbHandler;
 
   /// Get week names from the user with the given ID
   ///
@@ -29,19 +27,19 @@ class WeekApi {
 
   ///Compares a [inputWeekModel] with the offline database and adds
   /// the weekmodel to the offline database if it exists.
-  Future<void> hydrateOfflineDbweek(WeekModel inputWeekModel,
-      String id, int year, int weekNumber) async{
-    WeekModel weekModelOffline = await dbHandler.getWeek(id, year, weekNumber);
+  Future<void> hydrateOfflineDbweek(
+      WeekModel inputWeekModel, String id, int year, int weekNumber) async {
+    WeekModel weekModelOffline =
+        await OfflineDbHandler.instance.getWeek(id, year, weekNumber);
     //Compare weekmodels online with offline
-    if(inputWeekModel.name == weekModelOffline.name &&
+    if (inputWeekModel.name == weekModelOffline.name &&
         inputWeekModel.weekNumber == weekModelOffline.weekNumber &&
-        inputWeekModel.weekYear == weekModelOffline.weekYear){
-
-    }else{
+        inputWeekModel.weekYear == weekModelOffline.weekYear) {
+    } else {
       //add week to offline database
-      dbHandler.updateWeek(id, year, weekNumber, inputWeekModel);
+      OfflineDbHandler.instance
+          .updateWeek(id, year, weekNumber, inputWeekModel);
     }
-
   }
 
   /// Gets the Week with the specified week number and year for the user with
@@ -55,12 +53,12 @@ class WeekApi {
       //if http get success
       if (res.success()) {
         WeekModel weekModelInput = WeekModel.fromJson(res.json['data']);
-      //hydrate offline database with week data
+        //hydrate offline database with week data
         hydrateOfflineDbweek(weekModelInput, id, year, weekNumber);
         return weekModelInput;
-      }else{
+      } else {
         // get week from offline database
-        return dbHandler.getWeek(id, year, weekNumber);
+        return OfflineDbHandler.instance.getWeek(id, year, weekNumber);
       }
     });
   }
@@ -76,15 +74,14 @@ class WeekApi {
     return _http
         .put('/$id/week/$year/$weekNumber', week.toJson())
         .asyncMap((Response res) {
-          if(res.success()){
-            ///update week in offline database
-            dbHandler.updateWeek(id, year, weekNumber, week);
-            return WeekModel.fromJson(res.json['data']);
-          }else{
-            ///offline database
-            return dbHandler.updateWeek(id, year, weekNumber, week);
-          }
-
+      if (res.success()) {
+        ///update week in offline database
+        OfflineDbHandler.instance.updateWeek(id, year, weekNumber, week);
+        return WeekModel.fromJson(res.json['data']);
+      } else {
+        ///offline database
+        return OfflineDbHandler.instance.updateWeek(id, year, weekNumber, week);
+      }
     });
   }
 
