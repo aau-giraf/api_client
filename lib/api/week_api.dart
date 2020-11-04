@@ -51,6 +51,15 @@ class WeekApi {
     });
   }
 
+  Stream<WeekModel> patch(
+      String id, int year, int weekNumber, WeekModel week) {
+    return _http
+        .patch('/$id/week/$year/$weekNumber', week.toJson())
+        .map((Response res) {
+      return WeekModel.fromJson(res.json['data']);
+    });
+  }
+
   /// Deletes all information for the entire week with the given year and week
   /// number.
   ///
