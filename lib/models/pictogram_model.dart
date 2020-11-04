@@ -3,6 +3,7 @@ import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
 import 'package:tuple/tuple.dart';
 
+
 class PictogramModel implements Model {
 
   /// Constructor
@@ -52,7 +53,8 @@ class PictogramModel implements Model {
   String userId;
 
   /// The alternative title of the pictogram, in relation to the citizen.
-  List<int> alternativeTitleRelations = <int>[];
+  List<Tuple2<String,String>> alternativeTitleRelations
+  = <Tuple2<String, String>>[];
 
 
 
