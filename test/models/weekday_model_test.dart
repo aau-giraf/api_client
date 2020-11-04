@@ -27,6 +27,7 @@ void main() {
       'state': 1,
       'id': 1044,
       'isChoiceBoard': false,
+      'choiceBoardName': null,
       'timer' : null
     };
 
@@ -60,6 +61,7 @@ void main() {
       'state': 1,
       'id': 1044,
       'isChoiceBoard': false,
+      'choiceBoardName': null,
       'timer' : null
     };
 

@@ -3,6 +3,8 @@ import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
 
 class PictogramModel implements Model {
+
+  /// Constructor
   PictogramModel({
     this.id,
     this.lastEdit,
@@ -10,6 +12,7 @@ class PictogramModel implements Model {
     @required this.accessLevel,
     this.imageUrl,
     this.imageHash,
+    this.userId,
   });
 
   PictogramModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +28,7 @@ class PictogramModel implements Model {
     accessLevel = AccessLevel.values[(json['accessLevel']) - 1];
     imageUrl = json['imageUrl'];
     imageHash = json['imageHash'];
+    userId = json['userId'];
   }
 
   int id;
@@ -41,6 +45,8 @@ class PictogramModel implements Model {
   String imageUrl;
 
   String imageHash;
+
+  String userId;
 
   @override
   Map<String, dynamic> toJson() {
@@ -65,7 +71,10 @@ class PictogramModel implements Model {
       result['imageHash'] = imageHash;
     }
 
+    if(userId != null){
+      result['userId'] = userId;
+    }
+
     return result;
   }
-
 }

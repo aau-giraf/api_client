@@ -1,5 +1,4 @@
 import 'package:api_client/http/http.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 
@@ -12,7 +11,7 @@ class WeekTemplateApi {
 
   /// Gets all schedule templates for the currently authenticated user.
   /// Available to all users.
-  Observable<List<WeekTemplateNameModel>> getNames() {
+  Stream<List<WeekTemplateNameModel>> getNames() {
     return _http.get('/').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String,dynamic>>.from(res.json['data'])
@@ -30,7 +29,7 @@ class WeekTemplateApi {
   ///
   /// [template] After successful execution, a new week template will be created
   /// with the same values as this DTO.
-  Observable<WeekTemplateModel> create(WeekTemplateModel template) {
+  Stream<WeekTemplateModel> create(WeekTemplateModel template) {
     return _http.post('/', template.toJson()).map((Response res) {
       return WeekTemplateModel.fromJson(res.json['data']);
     });
@@ -39,7 +38,7 @@ class WeekTemplateApi {
   /// Gets the week template with the specified id. Available to all users.
   ///
   /// [id] ID of the week to get
-  Observable<WeekTemplateModel> get(int id) {
+  Stream<WeekTemplateModel> get(int id) {
     return _http.get('/$id').map((Response res) {
       return WeekTemplateModel.fromJson(res.json['data']);
     });
@@ -49,7 +48,7 @@ class WeekTemplateApi {
   /// to Departments and Guardians of the same department as the template.
   ///
   /// [template] The new template value
-  Observable<WeekTemplateModel> update(WeekTemplateModel template) {
+  Stream<WeekTemplateModel> update(WeekTemplateModel template) {
     return _http.put('/${template.id}', template.toJson()).map((Response res) {
       return WeekTemplateModel.fromJson(res.json['data']);
     });
@@ -59,7 +58,7 @@ class WeekTemplateApi {
   /// Departments and Guardians of the same department as the template.
   ///
   /// [id] ID of the template to delete
-  Observable<bool> delete(int id) {
+  Stream<bool> delete(int id) {
     return _http.delete('/$id').map((Response res) => res.success());
   }
 }

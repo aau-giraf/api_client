@@ -9,11 +9,12 @@ class ActivityModel implements Model {
   /// Constructor for Activity
   ActivityModel(
       {@required this.id,
-      @required this.pictograms,
-      @required this.order,
-      @required this.state,
-      @required this.isChoiceBoard,
-      this.timer});
+        @required this.pictograms,
+        @required this.order,
+        @required this.state,
+        @required this.isChoiceBoard,
+        this.choiceBoardName,
+        this.timer});
 
   /// Constructs the activityModel from json.
   ActivityModel.fromJson(Map<String, dynamic> json) {
@@ -30,7 +31,7 @@ class ActivityModel implements Model {
     order = json['order'];
     state = ActivityState.values[(json['state']) - 1];
     isChoiceBoard = json['isChoiceBoard'];
-
+    choiceBoardName = json['choiceBoardName'];
     if (json['timer'] != null) {
       timer = TimerModel.fromJson(json['timer']);
     }
@@ -53,6 +54,9 @@ class ActivityModel implements Model {
   /// never be set from our side
   bool isChoiceBoard;
 
+  /// name of the choiceboard
+  String choiceBoardName;
+
   /// The timer for the activity
   TimerModel timer;
 
@@ -66,6 +70,7 @@ class ActivityModel implements Model {
       'order': order,
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
+      'choiceBoardName': choiceBoardName,
       'timer': timer != null ? timer.toJson() : null
     };
   }
