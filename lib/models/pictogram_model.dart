@@ -1,7 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
-import 'package:tuple/tuple.dart';
 
 
 class PictogramModel implements Model {
@@ -15,7 +14,6 @@ class PictogramModel implements Model {
     this.imageUrl,
     this.imageHash,
     this.userId,
-    this.alternativeTitleRelations,
   });
 
   PictogramModel.fromJson(Map<String, dynamic> json) {
@@ -32,7 +30,6 @@ class PictogramModel implements Model {
     imageUrl = json['imageUrl'];
     imageHash = json['imageHash'];
     userId = json['userId'];
-    alternativeTitleRelations = json['alternativeTitleRelations'];
   }
 
   int id;
@@ -51,10 +48,6 @@ class PictogramModel implements Model {
   String imageHash;
 
   String userId;
-
-  /// The alternative title of the pictogram, in relation to the citizen.
-  List<Tuple2<String,String>> alternativeTitleRelations
-  = <Tuple2<String, String>>[];
 
 
 
@@ -83,10 +76,6 @@ class PictogramModel implements Model {
 
     if(userId != null){
       result['userId'] = userId;
-    }
-
-    if(alternativeTitleRelations != null){
-      result['alternativeTitleRelations'] = alternativeTitleRelations;
     }
 
     return result;
