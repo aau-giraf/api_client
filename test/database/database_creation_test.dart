@@ -42,7 +42,14 @@ Future<void> main() async {
         username: testUsername,
         displayName: 'Bob Jensen',
         department: 1);
-    dbHandler.registerAccount(fakeAccount.toJson());
+    final Map<String, dynamic> body = <String, dynamic>{
+      'username': fakeAccount.username,
+      'displayName': fakeAccount.displayName,
+      'password': 'TestPassword123',
+      'departmentId': fakeAccount.department,
+      'role': fakeAccount.role.toString().split('.').last,
+    };
+    dbHandler.registerAccount(body);
     final Database db = await dbHandler.database;
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `Users`');

@@ -1,10 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:api_client/api_client.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
+import 'package:api_client/models/enums/cancel_mark_enum.dart';
+import 'package:api_client/models/enums/complete_mark_enum.dart';
+import 'package:api_client/models/enums/default_timer_enum.dart';
+import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
@@ -14,11 +19,13 @@ import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
+import 'package:api_client/models/weekday_color_model.dart';
 import 'package:api_client/persistence/persistence_client.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:crypto/crypto.dart';
 
 /// OfflineDbHandler is used for communication with the offline database
 class OfflineDbHandler {
@@ -67,8 +74,13 @@ class OfflineDbHandler {
           '`Username` varchar ( 255 ) DEFAULT NULL, '
           '`DisplayName` longtext NOT NULL, '
           '`Department` integer DEFAULT NULL, '
+          '`Password` char(128) NOT NULL, '
+          '`SettingsKey`	integer DEFAULT NULL, '
           '`Id` integer, '
-          'UNIQUE(`UserName`, `Id`));');
+          'UNIQUE(`UserName`, `Id`)'
+          'CONSTRAINT `FK_AspNetUsers_Setting_SettingsKey` '
+          'FOREIGN KEY(`SettingsKey`) '
+          'REFERENCES `Setting`(`Key`) ON DELETE RESTRICT);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `GuardianRelations` ('
           '`OfflineId`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`CitizenId`	varchar ( 255 ) NOT NULL, '
@@ -152,6 +164,29 @@ class OfflineDbHandler {
               '`Type` varchar (7) NOT NULL, '
               '`Url` varchar (255) NOT NULL, '
               '`Body` varchar (255));');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
+          '`Id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
+          '`Day`	integer NOT NULL,'
+          '`HexColor`	longtext COLLATE BINARY,'
+          '`SettingId`	integer NOT NULL,'
+          '	CONSTRAINT `FK_WeekDayColors_Setting_SettingId` '
+          'FOREIGN KEY(`SettingId`) '
+          'REFERENCES `Setting`(`Key`) ON DELETE CASCADE'
+          ');');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `Setting` ('
+          '`Key`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
+          '`ActivitiesCount`	integer DEFAULT NULL,'
+          '`CancelMark`	integer NOT NULL,'
+          '`CompleteMark`	integer NOT NULL,'
+          '`DefaultTimer`	integer NOT NULL,'
+          '`GreyScale`	integer NOT NULL,'
+          '`NrOfDaysToDisplay`	integer DEFAULT NULL,'
+          '`Orientation`	integer NOT NULL,'
+          '`Theme`	integer NOT NULL,'
+          '`TimerSeconds`	integer DEFAULT NULL,'
+          "`LockTimerControl`	integer NOT NULL DEFAULT '0',"
+          "`PictogramText`	integer NOT NULL DEFAULT '0'"
+          ');');
     });
   }
 
@@ -230,8 +265,71 @@ class OfflineDbHandler {
   }
 
   // Account API functions
+  /// Returns [true] if [password] matches the password saved for [username]
+  Future<bool> login(String username, String password) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res = await db
+        .rawQuery('SELECT Password FROM `User` WHERE Username == $username');
+    return sha512.convert(utf8.encode(password)).toString() ==
+        res[0]['Password'];
+  }
+
   /// register an account for a user
   Future<GirafUserModel> registerAccount(Map<String, dynamic> body) async {
+    final Database db = await database;
+    Map<String, dynamic> settings = <String, dynamic>{
+      'ActivitiesCount': 0,
+      'CancelMark': CancelMark.Cross,
+      'CompleteMark': CompleteMark.Checkmark,
+      'DefaultTimer': DefaultTimer.PieChart,
+      'GreyScale': false,
+      'NrOfDaysToDisplay': 7,
+      'Orientation': Orientation.portrait,
+      'Theme': GirafTheme.GirafYellow,
+      'TimerSeconds': 900,
+      'LockTimerControl': false,
+      'PictogramText': false
+    };
+    await db.insert('Setting', settings);
+    List<Map<String, dynamic>> settingsIdRes =
+        await db.rawQuery('SELECT `Key` FROM `Setting` WHERE ´Key´ NOT IN '
+            '(SELECT `SettingsKey` FROM `User`)');
+    final int settingsId = settingsIdRes[0]['Key'];
+    await db.insert('WeekDayColors', <String, dynamic>{
+      'Day': Weekday.Monday,
+      'HexColor': '#08a045',
+      'SettingId': settingsId
+    });
+    await db.insert('WeekDayColors', <String, dynamic>{
+      'Day': Weekday.Tuesday,
+      'HexColor': '#540d6e',
+      'SettingId': settingsId
+    });
+    await db.insert('WeekDayColors', <String, dynamic>{
+      'Day': Weekday.Wednesday,
+      'HexColor': '#f77f00',
+      'SettingId': settingsId
+    });
+    await db.insert('WeekDayColors', <String, dynamic>{
+      'Day': Weekday.Thursday,
+      'HexColor': '#004777',
+      'SettingId': settingsId
+    });
+    await db.insert('WeekDayColors', <String, dynamic>{
+      'Day': Weekday.Friday,
+      'HexColor': '#f9c80e',
+      'SettingId': settingsId
+    });
+    await db.insert('WeekDayColors', <String, dynamic>{
+      'Day': Weekday.Saturday,
+      'HexColor': '#db2b39',
+      'SettingId': settingsId
+    });
+    await db.insert('WeekDayColors', <String, dynamic>{
+      'Day': Weekday.Sunday,
+      'HexColor': '#ffffff',
+      'SettingId': settingsId
+    });
     int roleID;
     switch (body['role']) {
       case 'Citizen':
@@ -255,12 +353,23 @@ class OfflineDbHandler {
       'Username': body['username'],
       'DisplayName': body['displayName'],
       'Department': body['department'],
+      'SettingsKey': settingsId,
+      'password': sha512.convert(utf8.encode(body['password'])).toString()
     };
-    final Database db = await database;
     await db.insert('Users', insertQuery);
     final List<Map<String, dynamic>> res = await db.rawQuery(
         'SELECT * FROM `Users` WHERE `Username` == ${body['username']}');
     return GirafUserModel.fromJson(res[0]);
+  }
+
+  /// Do not call this function without ensuring that the password is
+  /// successfully changed online
+  /// change a password
+  Future<bool> changePassword(String id, String newPassword) async {
+    final Database db = await database;
+    final int rowsChanged = await db
+        .rawUpdate('UPDATE `User` SET Password = $newPassword WHERE Id == $id');
+    return rowsChanged == 1;
   }
 
   /// Delete a user from the offline database
@@ -492,11 +601,60 @@ class OfflineDbHandler {
     return GirafUserModel.fromDatabase(res[0]);
   }
 
-  Future<GirafUserModel> updateUser(GirafUserModel user) {}
+  /// Update a user based on [user.id] with the values from [user]
+  Future<GirafUserModel> updateUser(GirafUserModel user) async {
+    final Database db = await database;
+    await db.rawUpdate('UPDATE `Users` SET '
+        'Role = ${user.role}, '
+        'RoleName = ${user.roleName}, '
+        'Username = ${user.username}, '
+        'DisplayName = ${user.displayName}, '
+        'Department = ${user.department} '
+        'WHERE Id == ${user.id}');
+    return getUser(user.id);
+  }
 
-  Future<SettingsModel> getUserSettings(String id) {}
+  /// Get a the relevant settings for a user with the id: [id]
+  Future<SettingsModel> getUserSettings(String id) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> resSettings =
+        await db.rawQuery('SELECT * FROM `Setting` WHERE '
+            '`Key` == (SELECT `SettingsKey` FROM `User` WHERE `Id` == $id)');
+    final List<Map<String, dynamic>> resWeekdayColors = await db.rawQuery(
+        'SELECT * FROM `WeekDayColors` WHERE `Id` == ${resSettings[0]['Key']}');
+    return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
+  }
 
-  Future<SettingsModel> updateUserSettings(String id, SettingsModel settings) {}
+  /// Update the settings for a Girafuser with the id: [id]
+  Future<SettingsModel> updateUserSettings(
+      String id, SettingsModel settings) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT `SettingsKey` FROM `User` '
+            'WHERE `Id` == $id');
+    final String settingsKey = res[0]['SettingsKey'];
+    db.rawUpdate('UPDATE `Setting` SET '
+        '`ActivitiesCount` = ${settings.activitiesCount}, '
+        '`CancelMark` = ${settings.cancelMark}, '
+        '`CompleteMark` = ${settings.completeMark}, '
+        '`DefaultTimer` = ${settings.defaultTimer}, '
+        '`GreyScale` = ${settings.greyscale}, '
+        '`NrOfDaysToDisplay` = ${settings.nrOfDaysToDisplay}, '
+        '`Orientation` = ${settings.orientation}, '
+        '`Theme` = ${settings.theme}, '
+        '`TimerSeconds` = ${settings.timerSeconds}, '
+        '`LockTimerControl` = ${settings.lockTimerControl}, '
+        '`PictogramText` = ${settings.pictogramText} WHERE '
+        '`Key` = $settingsKey');
+    for (WeekdayColorModel dayColor in settings.weekDayColors) {
+      final int day = dayColor.day.index;
+      db.rawUpdate('UPDATE `WeekDayColors` SET '
+          '`HexColor` = ${dayColor.hexColor} WHERE '
+          '`SettingsId` == $settingsKey AND '
+          '`Day` == $day');
+    }
+    return getUserSettings(id);
+  }
 
   Future<bool> deleteUserIcon(String id) {}
 
