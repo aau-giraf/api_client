@@ -40,11 +40,11 @@ class Api {
         persist: persist,
         tokenKey: tokenKey,
         timeout: timeout));
-    /*pictogram = PictogramApi(HttpClient(
+    pictogram = PictogramApi(HttpClient(
         baseUrl: '$baseUrl/v1/Pictogram',
         persist: persist,
         tokenKey: tokenKey,
-        timeout: timeout));*/
+        timeout: timeout));
     activity = ActivityApi(HttpClient(
         baseUrl: '$baseUrl/v2/Activity',
         persist: persist,
@@ -74,7 +74,7 @@ class Api {
   DepartmentApi department;
 
   /// To access pictogram endpoints
-  //PictogramApi pictogram;
+  PictogramApi pictogram;
 
   /// To access activity endpoints
   ActivityApi activity;
