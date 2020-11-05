@@ -13,7 +13,7 @@ class WeekApi {
   ///
   /// [id] User ID
   Stream<List<WeekNameModel>> getNames(String id) {
-    return _http.get('/$id/week').map((Response res) {
+    return _http.get('/$id/weekName').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
             .map((Map<String, dynamic> json) => WeekNameModel.fromJson(json))
