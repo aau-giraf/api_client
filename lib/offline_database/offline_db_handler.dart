@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:api_client/api_client.dart';
+import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
@@ -11,8 +14,10 @@ import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
+import 'package:api_client/persistence/persistence_client.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// OfflineDbHandler is used for communication with the offline database
@@ -21,16 +26,27 @@ class OfflineDbHandler {
   @visibleForTesting
   OfflineDbHandler();
 
+  /// The current running instance of the database
   static final OfflineDbHandler instance = OfflineDbHandler();
   static Database _database;
 
   GirafUserModel _me;
 
+  /// Get the database, if it doesnt exist create it
   Future<Database> get database async {
     if (_database == null) {
       return initializeDatabase();
     }
     return _database;
+  }
+
+  /// Return the directory where pictograms are saved
+  Future<String> get getPictogramDirectory async {
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final Directory imageDirectory =
+        Directory(join(directory.path, 'pictograms'));
+    imageDirectory.createSync();
+    return imageDirectory.path;
   }
 
   /// Initiate the database
@@ -131,10 +147,86 @@ class OfflineDbHandler {
           '`Progress`	integer NOT NULL, '
           '`FullLength`	integer NOT NULL, '
           '`Paused`	integer NOT NULL);');
-      /*await txn
+      await txn
           .execute('CREATE TABLE IF NOT EXISTS `FailedOnlineTransactions` ('
-              '`Type` ');*/
+              '`Type` varchar (7) NOT NULL, '
+              '`Url` varchar (255) NOT NULL, '
+              '`Body` varchar (255));');
     });
+  }
+
+  // offline to online functions
+  /// Save failed online transactions
+  Future<void> saveFailedTransactions(String type, String baseUrl, String url,
+      {Map<String, dynamic> body}) async {
+    final Database db = await database;
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'Type': type,
+      'Url': url,
+      'Body': body.toString()
+    };
+    db.insert('`FailedOnlineTransactions`', insertQuery);
+  }
+
+  /// Retry sending the failed changes to the online database
+  Future<void> retryFailedTransactions() async {
+    final Database db = await database;
+
+    final List<Map<String, dynamic>> dbRes =
+        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions`');
+    if (dbRes.isNotEmpty) {
+      final Http _http = HttpClient(baseUrl: '', persist: PersistenceClient());
+      for (Map<String, dynamic> transaction in dbRes) {
+        switch (transaction['Type']) {
+          case 'DELETE':
+            _http.delete(transaction['Url']).listen((Response res) {
+              if (res.success()) {
+                removeFailedTransaction(transaction);
+              }
+            });
+            break;
+          case 'POST':
+            _http
+                .post(transaction['Url'], transaction['Body'])
+                .listen((Response res) {
+              if (res.success()) {
+                removeFailedTransaction(transaction);
+              }
+            });
+            break;
+          case 'PATCH':
+            _http
+                .patch(transaction['Url'], transaction['Body'])
+                .listen((Response res) {
+              if (res.success()) {
+                removeFailedTransaction(transaction);
+              }
+            });
+            break;
+          case 'PUT':
+            _http
+                .put(transaction['Url'], transaction['Body'])
+                .listen((Response res) {
+              if (res.success()) {
+                removeFailedTransaction(transaction);
+              }
+            });
+            break;
+          default:
+            throw const HttpException('invalid request type');
+        }
+      }
+    }
+  }
+
+  /// Remove a previously failed transaction from the
+  /// offline database when it succeeds
+  Future<void> removeFailedTransaction(Map<String, dynamic> transaction) async {
+    final Database db = await database;
+    db.rawDelete('DELETE * FROM `FailedOnlineTransactions` WHERE '
+        'Type == ${transaction['Type']} AND '
+        'Url == ${transaction['Url']} AND '
+        'Body == ${transaction['Body']}');
   }
 
   // Account API functions
@@ -160,14 +252,14 @@ class OfflineDbHandler {
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Role': roleID,
       'RoleName': body['role'],
-      'UserName': body['username'],
-      'DisplayName': body['displayname'],
-      'Department': body['departmentId'],
+      'Username': body['username'],
+      'DisplayName': body['displayName'],
+      'Department': body['department'],
     };
     final Database db = await database;
-    db.insert('Users', insertQuery);
-    final List<Map<String, dynamic>> res = await _database.rawQuery(
-        'SELECT * FROM `Users` WHERE `UserName` == ${body['username']}');
+    await db.insert('Users', insertQuery);
+    final List<Map<String, dynamic>> res = await db.rawQuery(
+        'SELECT * FROM `Users` WHERE `Username` == ${body['username']}');
     return GirafUserModel.fromJson(res[0]);
   }
 
@@ -175,7 +267,7 @@ class OfflineDbHandler {
   Future<bool> deleteAccount(String id) async {
     final Database db = await database;
     final int res =
-        await db.rawDelete('DELETE * FROM `Users` WHERE `id` == $id');
+        await db.rawDelete('DELETE * FROM `Users` WHERE `Id` == $id');
     return res == 1;
   }
 
@@ -332,7 +424,7 @@ class OfflineDbHandler {
       'AccessLevel': pictogram.accessLevel,
       'LastEdit': pictogram.lastEdit,
       'Title': pictogram.title,
-      'Imagehash': pictogram.imageHash,
+      'ImageHash': pictogram.imageHash,
     };
     await db.insert('Pictograms', insertQuery);
     return getPictogramID(pictogram.id);
@@ -355,23 +447,50 @@ class OfflineDbHandler {
     final Database db = await database;
     final int pictogramsDeleted =
         await db.rawDelete('DELETE FROM `Pictograms` WHERE id == $id');
+    final String pictogramDirectoryPath = await getPictogramDirectory;
+    File(join(pictogramDirectoryPath, '$id.png')).delete();
     return pictogramsDeleted == 1;
   }
 
-  Future<PictogramModel> updateImageInPictogram(int id, Uint8List image) {}
+  /// Update a image in the pictogram table
+  Future<PictogramModel> updateImageInPictogram(int id, Uint8List image) async {
+    final Database db = await database;
+    final File newImage = File.fromRawPath(image);
+    final String pictogramDirectoryPath = await getPictogramDirectory;
+    newImage.copy(join(pictogramDirectoryPath, '$id.png'));
+    final String newImageHash = Image.memory(image).hashCode.toString();
+    db.rawUpdate(
+        'UPDATE `Pictogram` SET ImageHash = $newImageHash WHERE id == $id');
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `Pictogram` WHERE id == $id');
+    return PictogramModel.fromDatabase(res[0]);
+  }
 
-  Future<Image> getPictogramImage(int id) {}
+  /// Get an image from the local pictogram directory
+  Future<Image> getPictogramImage(int id) async {
+    final String pictogramDirectoryPath = await getPictogramDirectory;
+    final File pictogramFile = File(join(pictogramDirectoryPath, '$id.png'));
+    return Image.file(pictogramFile);
+  }
 
   // User API functions
+  /// return the me value
   GirafUserModel getMe() {
     return _me;
   }
 
+  /// Set the me value
   void setMe(GirafUserModel model) {
     _me = model;
   }
 
-  Future<GirafUserModel> getUser(String id) {}
+  /// Get a user
+  Future<GirafUserModel> getUser(String id) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * `Users` WHERE id == $id');
+    return GirafUserModel.fromDatabase(res[0]);
+  }
 
   Future<GirafUserModel> updateUser(GirafUserModel user) {}
 

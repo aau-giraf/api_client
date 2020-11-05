@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:api_client/models/enums/role_enum.dart';
+import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,5 +32,21 @@ Future<void> main() async {
     // We might need this if somthing is wrong
     // in the tests and it doesn't close itself
     //testDb.closeDb();
+  });
+  test('Register an account in the offline db', () async {
+    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    //create fake account
+    const String testUsername = 'BobJensen123';
+    final GirafUserModel fakeAccount = GirafUserModel(
+        role: Role.Citizen,
+        username: testUsername,
+        displayName: 'Bob Jensen',
+        department: 1);
+    dbHandler.registerAccount(fakeAccount.toJson());
+    final Database db = await dbHandler.database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `Users`');
+    expect(res[0]['Username'], testUsername);
+    dbHandler.deleteAccount(res[0]['Id']);
   });
 }

@@ -28,6 +28,22 @@ class GirafUserModel implements Model {
     department = json['department'];
   }
 
+  /// Create a girafusermodel with json from sqflite
+  GirafUserModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[GirafUserModel]: Cannot initialize from null');
+    }
+
+    id = json['Id'];
+    role = Role.values[(json['Role']) - 1];
+    roleName = json['RoleName'];
+    username = json['Username'];
+    displayName = json['DisplayName'];
+    department = json['Department'];
+    offlineId = json['OfflineId'];
+  }
+
   /// The id of the user
   String id;
 
