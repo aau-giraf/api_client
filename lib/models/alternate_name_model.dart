@@ -1,5 +1,3 @@
-import 'package:api_client/models/giraf_user_model.dart';
-import 'package:api_client/models/pictogram_model.dart';
 import 'package:meta/meta.dart';
 
 import 'model.dart';
@@ -31,7 +29,7 @@ class AlternateNameModel implements Model {
   int id;
 
   /// Related citizen
-  int citizen;
+  String citizen;
 
   /// Related pictogram
   int pictogram;
