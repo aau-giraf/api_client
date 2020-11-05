@@ -1,4 +1,5 @@
 import 'package:api_client/api/account_api.dart';
+import 'package:api_client/api/alternate_name_api.dart';
 import 'package:api_client/api/department_api.dart';
 import 'package:api_client/http/http_client.dart';
 import 'package:api_client/api/pictogram_api.dart';
@@ -59,6 +60,11 @@ class Api {
         persist: persist,
         tokenKey: tokenKey,
         timeout: timeout));
+    alternateName = AlternateNameApi(HttpClient(
+      baseUrl: '$baseUrl/v2/AlternateName',
+      persist: persist,
+      tokenKey: tokenKey,
+      timeout: timeout));
   }
 
   /// To access account endpoints
@@ -84,6 +90,9 @@ class Api {
 
   /// To access user endpoints
   UserApi user;
+
+  /// To access alternateName endpoints
+  AlternateNameApi alternateName;
 
   /// The base of all requests.
   ///
