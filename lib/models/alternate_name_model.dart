@@ -31,10 +31,10 @@ class AlternateNameModel implements Model {
   int id;
 
   /// Related citizen
-  GirafUserModel citizen;
+  int citizen;
 
   /// Related pictogram
-  PictogramModel pictogram;
+  int pictogram;
 
   /// Alternative name
   String name;
