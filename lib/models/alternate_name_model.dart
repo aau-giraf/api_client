@@ -19,10 +19,10 @@ class AlternateNameModel implements Model {
       throw const FormatException(
           '[AlternateNameModel]: Cannot initialize from null');
     }
-    id = json['id'];
-    citizen = json['citizen'];
-    pictogram = json['pictogram'];
-    name = json['name'];
+    id = json['Id'];
+    citizen = json['Citizen'];
+    pictogram = json['Pictogram'];
+    name = json['Name'];
   }
 
   /// Unique id
@@ -41,10 +41,10 @@ class AlternateNameModel implements Model {
   ///Transform model to JSON
   Map<String, dynamic> toJson() {
     return <String, dynamic> {
-      'id' : id,
-      'citizen' : citizen,
-      'pictogram' : pictogram,
-      'name' : name
+      'Id' : id,
+      'Citizen' : citizen,
+      'Pictogram' : pictogram,
+      'Name' : name
     };
   }
 
