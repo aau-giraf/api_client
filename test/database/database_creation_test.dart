@@ -49,11 +49,13 @@ Future<void> main() async {
       'departmentId': fakeAccount.department,
       'role': fakeAccount.role.toString().split('.').last,
     };
-    dbHandler.registerAccount(body);
-    final Database db = await dbHandler.database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Users`');
-    expect(res[0]['Username'], testUsername);
-    db.rawDelete('DELETE * FROM `users`');
+    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+    expect(fakeUserRes.username, testUsername);
+    expect(fakeUserRes.role, Role.Citizen);
   });
+}
+
+Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
+  final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `Users`');
 }

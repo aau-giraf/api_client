@@ -36,7 +36,7 @@ class GirafUserModel implements Model {
     }
 
     id = json['Id'];
-    role = Role.values[(json['Role']) - 1];
+    role = Role.values[json['Role']];
     roleName = json['RoleName'];
     username = json['Username'];
     displayName = json['DisplayName'];
