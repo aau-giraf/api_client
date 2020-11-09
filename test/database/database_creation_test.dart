@@ -54,6 +54,6 @@ Future<void> main() async {
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `Users`');
     expect(res[0]['Username'], testUsername);
-    dbHandler.deleteAccount(res[0]['Id']);
+    db.rawDelete('DELETE * FROM `users`');
   });
 }
