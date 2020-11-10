@@ -78,7 +78,49 @@ test('performs a account register', () async {
       await cleanUsers(dbHandler);
     }
   });
+  test('performs a successfull change of password ', () async {
+    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    const String testUsername = 'ChrisAaen11';
+    final GirafUserModel changepassword = GirafUserModel(
+      role: Role.Citizen,
+      username: testUsername,
+      displayName: 'Chris Aaen',
+      department: 1);
+        final Map<String, dynamic> body = <String, dynamic>{
+      'username': changepassword.username,
+      'displayName': changepassword.displayName,
+      'password': 'TestPassword123',
+      'departmentId': changepassword.department,
+      'role': changepassword.role.toString().split('.').last,
+  };
+  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+ await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+ final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
+ expect(res, true);
+});
+
+  test('performs a falied change of password ', () async {
+    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    const String testUsername = 'BrianJohnson44';
+    final GirafUserModel changepassword = GirafUserModel(
+      role: Role.Citizen,
+      username: testUsername,
+      displayName: 'Brian Johnson',
+      department: 1);
+        final Map<String, dynamic> body = <String, dynamic>{
+      'username': changepassword.username,
+      'displayName': changepassword.displayName,
+      'password': 'TestPassword123',
+      'departmentId': changepassword.department,
+      'role': changepassword.role.toString().split('.').last,
+  };
+  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+ await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+ final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
+ expect(res, false);
+});
 }
+
 
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
