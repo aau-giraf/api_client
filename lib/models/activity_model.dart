@@ -13,6 +13,7 @@ class ActivityModel implements Model {
       @required this.order,
       @required this.state,
       @required this.isChoiceBoard,
+      @required this.title,
       this.timer});
 
   /// Constructs the activityModel from json.
@@ -34,6 +35,7 @@ class ActivityModel implements Model {
     if (json['timer'] != null) {
       timer = TimerModel.fromJson(json['timer']);
     }
+    title = json['title'];
   }
 
   /// The ID of the activity.
@@ -56,6 +58,9 @@ class ActivityModel implements Model {
   /// The timer for the activity
   TimerModel timer;
 
+  ///The title of the activity
+  String title;
+
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -66,7 +71,8 @@ class ActivityModel implements Model {
       'order': order,
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
-      'timer': timer != null ? timer.toJson() : null
+      'timer': timer != null ? timer.toJson() : null,
+      'title': title
     };
   }
 }
