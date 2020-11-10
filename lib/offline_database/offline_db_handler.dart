@@ -198,7 +198,7 @@ class OfflineDbHandler {
     final Database db = await database;
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Type': type,
-      'Url': url,
+      'Url': baseUrl + url,
       'Body': body.toString()
     };
     db.insert('`FailedOnlineTransactions`', insertQuery);
@@ -254,6 +254,13 @@ class OfflineDbHandler {
       }
     }
   }
+
+  /// Update the an Id in the database with a new one from the online database,
+  /// once the online is done creating them. The [json] contains the key, and
+  /// [url] might be needed to determine what should be updated.
+  /// If the url for the database ever changes this will need to be updated as
+  /// well, or it will break
+  Future<void> updateIdInOfflineDb(Map<String, dynamic> json, String url) {}
 
   /// Remove a previously failed transaction from the
   /// offline database when it succeeds
