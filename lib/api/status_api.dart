@@ -14,13 +14,13 @@ class StatusApi {
 
   /// End-point for checking connection to the database.
   Stream<bool> databaseStatus() {
-    return _http.get('/database').map((Response res) => res.statusCode() == 200);
+    return _http
+        .get('/database')
+        .map((Response res) => res.statusCode() == 200);
   }
 
   /// End-point for getting git version info, i.e. branch and commit hash
   Stream<String> versionInfo() {
-    return _http
-        .get('/database')
-        .map((Response res) => res.json['data']);
+    return _http.get('/version-info').map((Response res) => res.json['data']);
   }
 }
