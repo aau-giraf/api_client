@@ -11,7 +11,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
-  @override
+
   static final MockOfflineDbHandler instance = MockOfflineDbHandler._();
   @override
   Future<Database> initializeDatabase() async {
