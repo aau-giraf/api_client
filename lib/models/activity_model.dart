@@ -13,7 +13,6 @@ class ActivityModel implements Model {
       @required this.order,
       @required this.state,
       @required this.isChoiceBoard,
-      @required this.title,
       this.timer});
 
   /// Constructs the activityModel from json.
