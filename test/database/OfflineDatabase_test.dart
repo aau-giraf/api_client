@@ -59,3 +59,47 @@ Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
   db.rawDelete('DELETE * FROM `Users`');
 }
+Future<void>cleanSettings(OfflineDbHandler dbHandler)async{
+  final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `Setting`');
+}
+Future<void>cleanGaurdianRelations(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `GuardianRelations`');
+}
+Future<void>cleaWeekTemplates(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `WeekTemplates`');
+}
+Future<void>cleanWeek(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `Weeks`');
+}
+Future<void>cleanWeekdays(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `Weekdays`');
+}
+Future<void>cleanPictograms(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `Pictograms`');
+}
+Future<void>cleanActivities(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `Activities`');
+}
+Future<void>cleanPictogramRelations(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `PictogramRelations`');
+}
+Future<void>cleanTimers(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `Timers`');
+}
+Future<void>cleanFailedOnlineTransactions(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `FailedOnlineTransactions`');
+}
+Future<void>cleanWeekDayColors(OfflineDbHandler dbHandler)async{
+final Database db = await dbHandler.database;
+  db.rawDelete('DELETE * FROM `WeekDayColors`');
+}
