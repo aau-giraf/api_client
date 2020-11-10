@@ -14,5 +14,19 @@ class AlternateNameApi {
       return AlternateNameModel.fromJson(res.json['data']);
     });
   }
-  
+
+  ///Get Alternate name from user and pictogram
+  Stream<AlternateNameModel> get(String userId, int picId){
+    return _http.get('/$userId/$picId').map((Response res) {
+      return AlternateNameModel.fromJson(res.json['data']);
+    });
+  }
+
+  ///Edit alternate name
+  Stream<AlternateNameModel> put(int id, AlternateNameModel an){
+    return _http.put('/$id', an.toJson()).map((Response res) {
+      return AlternateNameModel.fromJson(res.json['data']);
+    });
+  }
+
 }
