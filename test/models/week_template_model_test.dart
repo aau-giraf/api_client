@@ -34,6 +34,7 @@ void main(){
             'state': 2,
             'id': 25,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -51,6 +52,7 @@ void main(){
             'state': 2,
             'id': 46,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -68,6 +70,7 @@ void main(){
             'state': 2,
             'id': 45,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -85,6 +88,7 @@ void main(){
             'state': 2,
             'id': 44,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -102,6 +106,7 @@ void main(){
             'state': 2,
             'id': 43,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
@@ -124,6 +129,7 @@ void main(){
             'state': 2,
             'id': 42,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -141,6 +147,7 @@ void main(){
             'state': 2,
             'id': 41,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -158,6 +165,7 @@ void main(){
             'state': 2,
             'id': 40,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -175,6 +183,7 @@ void main(){
             'state': 2,
             'id': 39,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
@@ -197,6 +206,7 @@ void main(){
             'state': 2,
             'id': 38,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -214,6 +224,7 @@ void main(){
             'state': 2,
             'id': 37,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -231,6 +242,7 @@ void main(){
             'state': 2,
             'id': 36,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -248,6 +260,7 @@ void main(){
             'state': 2,
             'id': 35,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -265,6 +278,7 @@ void main(){
             'state': 2,
             'id': 34,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
@@ -287,6 +301,7 @@ void main(){
             'state': 2,
             'id': 33,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -304,6 +319,7 @@ void main(){
             'state': 2,
             'id': 32,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -321,6 +337,7 @@ void main(){
             'state': 2,
             'id': 31,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -338,6 +355,7 @@ void main(){
             'state': 2,
             'id': 30,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
@@ -360,6 +378,7 @@ void main(){
             'state': 2,
             'id': 29,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -377,6 +396,7 @@ void main(){
             'state': 2,
             'id': 28,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
@@ -399,6 +419,7 @@ void main(){
             'state': 2,
             'id': 27,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -416,6 +437,7 @@ void main(){
             'state': 2,
             'id': 26,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]
@@ -438,6 +460,7 @@ void main(){
             'state': 2,
             'id': 47,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           },
           <String, dynamic>{
@@ -455,6 +478,7 @@ void main(){
             'state': 2,
             'id': 48,
             'isChoiceBoard': false,
+            'choiceBoardName': null,
             'timer' : null
           }
         ]

@@ -41,7 +41,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/$id/week', method: Method.get)
+        .expectOne(url: '/$id/weekName', method: Method.get)
         .flush(<String, dynamic>{
       'data': names.map((WeekNameModel name) => name.toJson()).toList(),
       'success': true,
@@ -75,8 +75,7 @@ Future<void> main() async {
 
     httpMock
         .expectOne(
-            url: '/$id/week/${week.weekYear}/${week.weekNumber}',
-            method: Method.get)
+            url: '/$id/${week.weekYear}/${week.weekNumber}', method: Method.get)
         .flush(<String, dynamic>{
       'data': week.toJson(),
       'success': true,
@@ -110,8 +109,7 @@ Future<void> main() async {
 
     httpMock
         .expectOne(
-            url: '/$id/week/${week.weekYear}/${week.weekNumber}',
-            method: Method.put)
+            url: '/$id/${week.weekYear}/${week.weekNumber}', method: Method.put)
         .flush(<String, dynamic>{
       'data': week.toJson(),
       'success': true,
@@ -130,7 +128,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/$id/week/$year/$week', method: Method.delete)
+        .expectOne(url: '/$id/$year/$week', method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
       'message': '',

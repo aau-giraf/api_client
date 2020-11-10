@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/error_key.dart';
@@ -7,10 +5,8 @@ import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/api/account_api.dart';
 import 'package:api_client/http/http_mock.dart';
-import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
@@ -32,7 +28,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/Account/login', method: Method.post)
+        .expectOne(url: '/login', method: Method.post)
         .flush(<String, dynamic>{
       'data': 'TestToken',
       'message': '',
@@ -47,7 +43,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/Account/login', method: Method.post)
+        .expectOne(url: '/login', method: Method.post)
         .throwError(ApiException(Response(null, <String, dynamic>{
           'success': false,
           'message': '',
@@ -64,8 +60,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(
-            url: '/User/$id/Account/password-reset-token', method: Method.get)
+        .expectOne(url: '/password-reset-token/$id', method: Method.get)
         .flush(<String, dynamic>{
       'data': token,
       'message': '',
@@ -93,7 +88,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/Account/register', method: Method.post)
+        .expectOne(url: '/register', method: Method.post)
         .flush(<String, dynamic>{
       'data': <String, dynamic>{
         'role': 1,
@@ -120,7 +115,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/User/$id/Account/password', method: Method.put)
+        .expectOne(url: '/password/$id', method: Method.put)
         .flush(<String, dynamic>{
       'message': '',
       'errorKey': 'NoError',
@@ -139,7 +134,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/User/$id/Account/password', method: Method.post)
+        .expectOne(url: '/password/$id', method: Method.post)
         .flush(<String, dynamic>{
       'message': '',
       'errorKey': 'NoError',
@@ -153,8 +148,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(
-            url: '/Account/user/$id', method: Method.delete, statusCode: 400)
+        .expectOne(url: '/user/$id', method: Method.delete, statusCode: 400)
         .flush(<String, dynamic>{
       'message': '',
       'errorKey': 'NoError',

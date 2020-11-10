@@ -22,7 +22,7 @@ class AccountApi {
   /// [username] The users username
   /// [password] The users password
   Stream<bool> login(String username, String password) {
-    return _http.post('/Account/login', <String, String>{
+    return _http.post('/login', <String, String>{
       'username': username,
       'password': password,
     }).flatMap((Response res) =>
@@ -47,10 +47,9 @@ class AccountApi {
       'role': role.toString().split('.').last,
     };
 
-    ///return body to local db
-    return _http.post('/Account/register', body).asyncMap((Response res) {
-      return GirafUserModel.fromJson(res.json['data']);
-    });
+    return _http
+        .post('/register', body)
+        .map((Response res) => GirafUserModel.fromJson(res.json['data']));
   }
 
   /// Allows the user to change his password if they know their old password.
@@ -60,7 +59,7 @@ class AccountApi {
   /// [newPassword] The desired password.
   Stream<bool> changePasswordWithOld(
       String id, String oldPassword, String newPassword) {
-    return _http.put('/User/$id/Account/password', <String, String>{
+    return _http.put('/password/$id', <String, String>{
       'oldPassword': oldPassword,
       'newPassword': newPassword,
     }).map((Response res) {
@@ -73,7 +72,7 @@ class AccountApi {
   /// [password] The users password.
   /// [token] Reset password token. Used when a user request a password reset.
   Stream<bool> changePassword(String id, String password, String token) {
-    return _http.post('/User/$id/Account/password', <String, String>{
+    return _http.post('/password/$id', <String, String>{
       password: password,
       token: token,
     }).map((Response res) {
@@ -86,7 +85,7 @@ class AccountApi {
   /// [id] ID of the user
   Stream<String> resetPasswordToken(String id) {
     return _http
-        .get('/User/$id/Account/password-reset-token')
+        .get('/password-reset-token/$id')
         .map((Response res) => res.json['data']);
   }
 
@@ -94,19 +93,8 @@ class AccountApi {
   ///
   /// [id] ID of the user
   Stream<bool> delete(String id) {
-    return _http.delete('/Account/user/$id').flatMap((Response res) {
-      if (res.success()) {
-        ///delete from local db
-        Stream<bool>.fromFuture(OfflineDbHandler.instance.deleteAccount(id));
-
-        ///delete online
-        return Stream<bool>.fromFuture(_persist.remove('token'));
-      } else {
-        ///delete from local db
-        return Stream<bool>.fromFuture(
-            OfflineDbHandler.instance.deleteAccount(id));
-      }
-    });
+    return _http.delete('/user/$id').flatMap(
+        (Response res) => Stream<bool>.fromFuture(_persist.remove('token')));
   }
 
   /// Logout the currently logged in user

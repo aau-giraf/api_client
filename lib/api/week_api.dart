@@ -14,7 +14,7 @@ class WeekApi {
   ///
   /// [id] User ID
   Stream<List<WeekNameModel>> getNames(String id) {
-    return _http.get('/$id/week').map((Response res) {
+    return _http.get('/$id/weekName').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
             .map((Map<String, dynamic> json) => WeekNameModel.fromJson(json))
@@ -49,17 +49,8 @@ class WeekApi {
   /// [year] Year the week is in
   /// [weekNumber] The week-number of the week
   Stream<WeekModel> get(String id, int year, int weekNumber) {
-    return _http.get('/$id/week/$year/$weekNumber').asyncMap((Response res) {
-      //if http get success
-      if (res.success()) {
-        WeekModel weekModelInput = WeekModel.fromJson(res.json['data']);
-        //hydrate offline database with week data
-        hydrateOfflineDbweek(weekModelInput, id, year, weekNumber);
-        return weekModelInput;
-      } else {
-        // get week from offline database
-        return OfflineDbHandler.instance.getWeek(id, year, weekNumber);
-      }
+    return _http.get('/$id/$year/$weekNumber').map((Response res) {
+      return WeekModel.fromJson(res.json['data']);
     });
   }
 
@@ -72,16 +63,9 @@ class WeekApi {
   Stream<WeekModel> update(
       String id, int year, int weekNumber, WeekModel week) {
     return _http
-        .put('/$id/week/$year/$weekNumber', week.toJson())
-        .asyncMap((Response res) {
-      if (res.success()) {
-        ///update week in offline database
-        OfflineDbHandler.instance.updateWeek(id, year, weekNumber, week);
-        return WeekModel.fromJson(res.json['data']);
-      } else {
-        ///offline database
-        return OfflineDbHandler.instance.updateWeek(id, year, weekNumber, week);
-      }
+        .put('/$id/$year/$weekNumber', week.toJson())
+        .map((Response res) {
+      return WeekModel.fromJson(res.json['data']);
     });
   }
 
@@ -92,7 +76,7 @@ class WeekApi {
   /// [year] Year the week is in
   /// [weekNumber] The week-number of the week
   Stream<bool> delete(String id, int year, int weekNumber) {
-    return _http.delete('/$id/week/$year/$weekNumber').map((Response res) {
+    return _http.delete('/$id/$year/$weekNumber').map((Response res) {
       return res.success();
     });
   }
