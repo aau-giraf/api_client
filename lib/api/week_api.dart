@@ -1,6 +1,7 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
+import 'package:api_client/models/weekday_model.dart';
 
 /// Week endpoints
 class WeekApi {
@@ -48,6 +49,15 @@ class WeekApi {
         .put('/$id/week/$year/$weekNumber', week.toJson())
         .map((Response res) {
       return WeekModel.fromJson(res.json['data']);
+    });
+  }
+
+  Stream<WeekdayModel> updateDay(
+      String id, int year, int weekNumber, WeekModel week) {
+    return _http
+        .put('/$id/week/$year/$weekNumber', week.toJson())
+        .map((Response res) {
+      return WeekdayModel.fromJson(res.json['data']);
     });
   }
 
