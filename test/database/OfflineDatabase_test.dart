@@ -15,7 +15,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
-  @override
+
   static final MockOfflineDbHandler instance = MockOfflineDbHandler._();
   @override
   Future<Database> initializeDatabase() async {
@@ -74,7 +74,6 @@ Future<void> main() async {
         'departmentId': fakeAccount.department,
         'role': fakeAccount.role.toString().split('.').last,
       };
-      //final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
       expect(() => dbHandler.registerAccount(body),
           throwsA(isInstanceOf<Exception>()));
       await cleanUsers(dbHandler);
@@ -82,8 +81,7 @@ Future<void> main() async {
       await cleanUsers(dbHandler);
     }
   });
-
-  test('Add activity test', () async {
+test('Add activity test', () async {
     //arrange
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     // final List<PictogramModel> fakePictograms = <PictogramModel>[];
@@ -115,7 +113,93 @@ Future<void> main() async {
     //assert
     expect(fakeUserRes.username, testUsername);
   });
+  test('Perform a correct login attempt', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'MyPassword32';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'TestTest',
+        displayName: 'Test Testersen',
+        department: 1);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, testPassword);
+    expect(testLogin, true);
+    await cleanUsers(testdb);
+  });
+
+  test('Perform a correct login attempt 2', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'hunter2';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'PJacobsen',
+        displayName: 'Peter Jacobsen',
+        department: 2);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, testPassword);
+    expect(testLogin, true);
+    await cleanUsers(testdb);
+  });
+
+  test('Perform a wrong login attempt', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'MyPassword32';
+    const String wrongPassword = 'PasswordGuess128';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'TestTest',
+        displayName: 'Test Testersen',
+        department: 1);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
+    expect(testLogin, false);
+    await cleanUsers(testdb);
+  });
+
+  test('Perform a wrong login attempt 2', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'hejmeddig123';
+    const String wrongPassword = 'Hejmeddig123';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'SimOestGaard',
+        displayName: 'Simon Østergård',
+        department: 2);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
+    expect(testLogin, false);
+    await cleanUsers(testdb);
+  });
 }
+
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
@@ -176,3 +260,4 @@ Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
   db.rawDelete('DELETE * FROM `WeekDayColors`');
 }
+

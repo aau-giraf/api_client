@@ -29,13 +29,15 @@ class PictogramModel implements Model {
     imageHash = json['imageHash'];
     userId = json['userId'];
   }
+
+  /// Constructor for json from the database
   PictogramModel.fromDatabase(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
           '[PictogramModel]: Cannot initialize from null');
     }
 
-    id = json['id'];
+    id = json['OnlineId'];
     lastEdit =
         json['LastEdit'] == null ? null : DateTime.tryParse(json['LastEdit']);
     title = json['Title'];

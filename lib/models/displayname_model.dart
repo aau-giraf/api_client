@@ -5,8 +5,8 @@ import 'package:api_client/models/model.dart';
 
 class DisplayNameModel implements Model {
   /// Default constructor
-  DisplayNameModel({@required this.displayName,
-    @required this.role, @required this.id});
+  DisplayNameModel(
+      {@required this.displayName, @required this.role, @required this.id});
 
   /// Create object from JSON mapping
   DisplayNameModel.fromJson(Map<String, dynamic> json) {
@@ -18,6 +18,18 @@ class DisplayNameModel implements Model {
     id = json['userId'];
     displayName = json['displayName'];
     role = json['userRole'];
+  }
+
+  ///Create DisplayNameModel from database json
+  DisplayNameModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[UsernameModel]: Cannot instantiate from null');
+    }
+
+    id = json['Id'];
+    displayName = json['DisplayName'];
+    role = json['RoleName'];
   }
 
   /// Create object from GirafUserModel
@@ -37,8 +49,9 @@ class DisplayNameModel implements Model {
   String id;
 
   @override
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'userId': id,
-        'displayName': displayName, 'userRole': role};
-
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'userId': id,
+        'displayName': displayName,
+        'userRole': role
+      };
 }
