@@ -53,7 +53,29 @@ Future<void> main() async {
     expect(fakeUserRes.username, testUsername);
     expect(fakeUserRes.role, Role.Citizen);
   });
+test('performs a account register', () async {
+     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    //create fake account
+    const String testUsername = 'BobJensen123';
+    final GirafUserModel fakeAccount = GirafUserModel(
+        role: Role.Citizen,
+        username: testUsername,
+        displayName: 'Bob Jensen',
+        department: 1);
+    final Map<String, dynamic> body = <String, dynamic>{
+      'username': fakeAccount.username,
+      'displayName': fakeAccount.displayName,
+      'password': 'TestPassword123',
+      'departmentId': fakeAccount.department,
+      'role': fakeAccount.role.toString().split('.').last,
+    };
+    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+    expect(fakeUserRes.username, testUsername);
+    expect(fakeUserRes.role, Role.Citizen);
+    cleanUsers(dbHandler);
+  });
 }
+
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
@@ -103,3 +125,4 @@ Future<void>cleanWeekDayColors(OfflineDbHandler dbHandler)async{
 final Database db = await dbHandler.database;
   db.rawDelete('DELETE * FROM `WeekDayColors`');
 }
+
