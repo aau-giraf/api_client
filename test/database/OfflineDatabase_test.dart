@@ -35,7 +35,6 @@ Future<void> main() async {
   });
   test('Register an account in the offline db', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    try {
       //create fake account
       const String testUsername = 'BobJensen123';
       final GirafUserModel fakeAccount = GirafUserModel(
@@ -53,13 +52,10 @@ Future<void> main() async {
       final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
       expect(fakeUserRes.username, testUsername);
       expect(fakeUserRes.role, Role.Citizen);
-      await cleanUsers(dbHandler);
-    } finally {
-      await cleanUsers(dbHandler);
-    }
   });
 test('performs a account register', () async {
      final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    try{
     //create fake account
     const String testUsername = 'BobJensen123';
     final GirafUserModel fakeAccount = GirafUserModel(
@@ -74,10 +70,13 @@ test('performs a account register', () async {
       'departmentId': fakeAccount.department,
       'role': fakeAccount.role.toString().split('.').last,
     };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    expect(fakeUserRes.username, testUsername);
-    expect(fakeUserRes.role, Role.Citizen);
-    cleanUsers(dbHandler);
+    //final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+    expect(() => dbHandler.registerAccount(body), 
+    throwsA(isInstanceOf<Exception>()));
+      await cleanUsers(dbHandler);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
   });
 }
 
