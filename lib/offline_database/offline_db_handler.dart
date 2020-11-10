@@ -72,7 +72,7 @@ class OfflineDbHandler {
           '`OfflineId` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`Role` integer NOT NULL, '
           '`RoleName` varchar ( 255 ) DEFAULT NULL, '
-          '`Username` varchar ( 255 ) DEFAULT NULL, '
+          '`Username` varchar ( 255 ) DEFAULT NULL UNIQUE, '
           '`DisplayName` longtext NOT NULL, '
           '`Department` integer DEFAULT NULL, '
           '`Password` char(128) NOT NULL, '
@@ -96,6 +96,7 @@ class OfflineDbHandler {
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`Name`	longtext COLLATE BINARY, '
           '`ThumbnailKey`	integer NOT NULL, '
+          '`OnlineId` integer NOT NULL, '
           'CONSTRAINT `FK_WeekTemplates_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`ThumbnailKey`) '
           'REFERENCES `Pictograms`(`id`) ON DELETE CASCADE);');
@@ -164,7 +165,9 @@ class OfflineDbHandler {
           .execute('CREATE TABLE IF NOT EXISTS `FailedOnlineTransactions` ('
               '`Type` varchar (7) NOT NULL, '
               '`Url` varchar (255) NOT NULL, '
-              '`Body` varchar (255));');
+              '`Body` varchar (255), '
+              // TableAffected is used to know where to change an id if needed
+              '`TableAffected` varchar (255));');
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
           '`Id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
           '`Day` integer NOT NULL,'
@@ -193,13 +196,20 @@ class OfflineDbHandler {
 
   // offline to online functions
   /// Save failed online transactions
+  /// [type] transaction type
+  /// [baseUrl] baseUrl from the http
+  /// [url] Url to send the transaction to
+  /// [body] the json to send to the online database
+  /// [tableAffected] NEEDS to be set when we try to create objects with public
+  /// id's we need to have syncronized between the offline and online database
   Future<void> saveFailedTransactions(String type, String baseUrl, String url,
-      {Map<String, dynamic> body}) async {
+      {Map<String, dynamic> body, String tableAffected}) async {
     final Database db = await database;
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Type': type,
       'Url': baseUrl + url,
-      'Body': body.toString()
+      'Body': body.toString(),
+      'TableAffected': tableAffected
     };
     db.insert('`FailedOnlineTransactions`', insertQuery);
   }
@@ -257,10 +267,16 @@ class OfflineDbHandler {
 
   /// Update the an Id in the database with a new one from the online database,
   /// once the online is done creating them. The [json] contains the key, and
-  /// [url] might be needed to determine what should be updated.
-  /// If the url for the database ever changes this will need to be updated as
-  /// well, or it will break
-  Future<void> updateIdInOfflineDb(Map<String, dynamic> json, String url) {}
+  ///
+  Future<void> updateIdInOfflineDb(
+      Map<String, dynamic> json, String table) async {
+    final Database db = await database;
+    switch (table) {
+      case 'Users':
+        db.rawUpdate("UPDATE `Users` SET Id = '${json['id']}'");
+        break;
+    }
+  }
 
   /// Remove a previously failed transaction from the
   /// offline database when it succeeds
@@ -269,7 +285,8 @@ class OfflineDbHandler {
     db.rawDelete('DELETE * FROM `FailedOnlineTransactions` WHERE '
         "Type == '${transaction['Type']}' AND "
         "Url == '${transaction['Url']}' AND "
-        "Body == '${transaction['Body']}'");
+        "Body == '${transaction['Body']}' AND "
+        "TableAffected == '${transaction['TableAffected']}'");
   }
 
   // Account API functions
@@ -285,6 +302,12 @@ class OfflineDbHandler {
   /// register an account for a user
   Future<GirafUserModel> registerAccount(Map<String, dynamic> body) async {
     final Database db = await database;
+    final List<Map<String, dynamic>> count = await db.rawQuery(
+        "SELECT * FROM `Users` WHERE Username == '${body['username']}'");
+    if (count.isNotEmpty) {
+      // TODO(Tilasair): better exceptions
+      throw Exception('Username already exists');
+    }
     final Map<String, dynamic> settings = <String, dynamic>{
       'ActivitiesCount': 0,
       'CancelMark': CancelMark.Cross.index,

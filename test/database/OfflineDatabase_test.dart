@@ -35,23 +35,28 @@ Future<void> main() async {
   });
   test('Register an account in the offline db', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    //create fake account
-    const String testUsername = 'BobJensen123';
-    final GirafUserModel fakeAccount = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Bob Jensen',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
-      'username': fakeAccount.username,
-      'displayName': fakeAccount.displayName,
-      'password': 'TestPassword123',
-      'departmentId': fakeAccount.department,
-      'role': fakeAccount.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    expect(fakeUserRes.username, testUsername);
-    expect(fakeUserRes.role, Role.Citizen);
+    try {
+      //create fake account
+      const String testUsername = 'BobJensen123';
+      final GirafUserModel fakeAccount = GirafUserModel(
+          role: Role.Citizen,
+          username: testUsername,
+          displayName: 'Bob Jensen',
+          department: 1);
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': fakeAccount.username,
+        'displayName': fakeAccount.displayName,
+        'password': 'TestPassword123',
+        'departmentId': fakeAccount.department,
+        'role': fakeAccount.role.toString().split('.').last,
+      };
+      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      expect(fakeUserRes.username, testUsername);
+      expect(fakeUserRes.role, Role.Citizen);
+      await cleanUsers(dbHandler);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
   });
 test('performs a account register', () async {
      final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
@@ -79,7 +84,7 @@ test('performs a account register', () async {
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `Users`');
+  await db.rawDelete('DELETE FROM `Users`');
 }
 Future<void>cleanSettings(OfflineDbHandler dbHandler)async{
   final Database db = await dbHandler.database;
