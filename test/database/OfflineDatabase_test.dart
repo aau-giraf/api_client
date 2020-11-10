@@ -70,13 +70,98 @@ Future<void> main() async {
         'departmentId': fakeAccount.department,
         'role': fakeAccount.role.toString().split('.').last,
       };
-      //final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
       expect(() => dbHandler.registerAccount(body),
           throwsA(isInstanceOf<Exception>()));
       await cleanUsers(dbHandler);
     } finally {
       await cleanUsers(dbHandler);
     }
+  });
+
+  test('Perform a correct login attempt', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'MyPassword32';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'TestTest',
+        displayName: 'Test Testersen',
+        department: 1);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, testPassword);
+    expect(testLogin, true);
+    await cleanUsers(testdb);
+  });
+
+  test('Perform a correct login attempt 2', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'hunter2';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'PJacobsen',
+        displayName: 'Peter Jacobsen',
+        department: 2);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, testPassword);
+    expect(testLogin, true);
+    await cleanUsers(testdb);
+  });
+
+  test('Perform a wrong login attempt', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'MyPassword32';
+    const String wrongPassword = 'PasswordGuess128';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'TestTest',
+        displayName: 'Test Testersen',
+        department: 1);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
+    expect(testLogin, false);
+    await cleanUsers(testdb);
+  });
+
+  test('Perform a wrong login attempt 2', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    const String testPassword = 'hejmeddig123';
+    const String wrongPassword = 'Hejmeddig123';
+    final GirafUserModel testAcc = GirafUserModel(
+        role: Role.Citizen,
+        username: 'SimOestGaard',
+        displayName: 'Simon Østergård',
+        department: 2);
+    final Map<String, dynamic> dbUser = <String, dynamic>{
+      'username': testAcc.username,
+      'displayName': testAcc.displayName,
+      'password': testPassword,
+      'departmentId': testAcc.department,
+      'role': testAcc.role.toString().split('.').last,
+    };
+    await testdb.registerAccount(dbUser);
+    final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
+    expect(testLogin, false);
+    await cleanUsers(testdb);
   });
 }
 
