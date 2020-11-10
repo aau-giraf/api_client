@@ -99,7 +99,7 @@ class OfflineDbHandler {
           '`OnlineId` integer NOT NULL, '
           'CONSTRAINT `FK_WeekTemplates_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`ThumbnailKey`) '
-          'REFERENCES `Pictograms`(`id`) ON DELETE CASCADE);');
+          'REFERENCES `Pictograms`(`OnlineId`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Weeks` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '
           '`GirafUserId`	varchar ( 255 ) NOT NULL, '
@@ -112,7 +112,7 @@ class OfflineDbHandler {
           'REFERENCES `Users`(`OfflineId`) ON DELETE CASCADE,'
           'CONSTRAINT `FK_Weeks_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`ThumbnailKey`) '
-          'REFERENCES `Pictograms`(`id`) ON DELETE CASCADE);');
+          'REFERENCES `Pictograms`(`OnlineId`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Weekdays` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '
           '`Day`	integer NOT NULL, '
@@ -120,7 +120,7 @@ class OfflineDbHandler {
           '`WeekTemplateId`	integer DEFAULT NULL,'
           'CONSTRAINT `FK_Weekdays_WeekTemplates_WeekTemplateId` '
           'FOREIGN KEY(`WeekTemplateId`) '
-          'REFERENCES `WeekTemplates`(`id`) ON DELETE CASCADE,'
+          'REFERENCES `WeekTemplates`(`OnlineId`) ON DELETE CASCADE,'
           'CONSTRAINT `FK_Weekdays_Weeks_WeekId` '
           'FOREIGN KEY(`WeekId`) '
           'REFERENCES `Weeks`(`id`) ON DELETE CASCADE);');
@@ -130,7 +130,8 @@ class OfflineDbHandler {
           '`LastEdit`	datetime ( 6 ) NOT NULL, '
           '`Sound`	longblob, '
           '`Title`	varchar ( 255 ) NOT NULL, '
-          '`ImageHash`	longtext COLLATE BINARY,'
+          '`ImageHash`	longtext COLLATE BINARY, '
+          '`OnlineId` integer NOT NULL UNIQUE, '
           'UNIQUE(`id`,`Title`));');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Activities` ('
           '`Key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
@@ -154,7 +155,7 @@ class OfflineDbHandler {
           'REFERENCES `Activities`(`Key`) ON DELETE CASCADE, '
           'CONSTRAINT `FK_PictogramRelations_Pictograms_PictogramId` '
           'FOREIGN KEY(`PictogramId`) '
-          'REFERENCES `Pictograms`(`id`) ON DELETE CASCADE);');
+          'REFERENCES `Pictograms`(`OnlineId`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Timers` ('
           '`Key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`StartTime`	integer NOT NULL, '
@@ -167,7 +168,8 @@ class OfflineDbHandler {
               '`Url` varchar (255) NOT NULL, '
               '`Body` varchar (255), '
               // TableAffected is used to know where to change an id if needed
-              '`TableAffected` varchar (255));');
+              '`TableAffected` varchar (255), '
+              '`TempId varchar(255)`);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
           '`Id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
           '`Day` integer NOT NULL,'
@@ -203,13 +205,14 @@ class OfflineDbHandler {
   /// [tableAffected] NEEDS to be set when we try to create objects with public
   /// id's we need to have syncronized between the offline and online database
   Future<void> saveFailedTransactions(String type, String baseUrl, String url,
-      {Map<String, dynamic> body, String tableAffected}) async {
+      {Map<String, dynamic> body, String tableAffected, String tempId}) async {
     final Database db = await database;
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Type': type,
       'Url': baseUrl + url,
       'Body': body.toString(),
-      'TableAffected': tableAffected
+      'TableAffected': tableAffected,
+      'TempId': tempId
     };
     db.insert('`FailedOnlineTransactions`', insertQuery);
   }
@@ -266,14 +269,22 @@ class OfflineDbHandler {
   }
 
   /// Update the an Id in the database with a new one from the online database,
-  /// once the online is done creating them. The [json] contains the key, and
-  ///
+  /// once the online is done creating them. The [json] contains the key
+  /// [table] is the table to be changed
+  /// [tempId] is the id assigned when the object was created offline
   Future<void> updateIdInOfflineDb(
-      Map<String, dynamic> json, String table) async {
+      Map<String, dynamic> json, String table, String tempId) async {
     final Database db = await database;
     switch (table) {
       case 'Users':
-        db.rawUpdate("UPDATE `Users` SET Id = '${json['id']}'");
+        db.rawUpdate("UPDATE `Users` SET Id = '${json['id']}' "
+            "WHERE Id == '$tempId'");
+        break;
+      case 'Pictograms':
+        db.rawUpdate("UPDATE `Pictogram` SET Id = '${json['id']}' "
+            "WHERE Id == '$tempId'");
+        db.rawUpdate("UPDATE `WeekTemplates` SET ThumbnailKey = '${json['id']}'"
+            " WHERE ThumbnailKey == '$tempId'");
         break;
     }
   }
@@ -286,7 +297,8 @@ class OfflineDbHandler {
         "Type == '${transaction['Type']}' AND "
         "Url == '${transaction['Url']}' AND "
         "Body == '${transaction['Body']}' AND "
-        "TableAffected == '${transaction['TableAffected']}'");
+        "TableAffected == '${transaction['TableAffected']}' AND "
+        "TempId == '${transaction['TempId']}'");
   }
 
   // Account API functions
@@ -399,8 +411,10 @@ class OfflineDbHandler {
   /// change a password
   Future<bool> changePassword(String id, String newPassword) async {
     final Database db = await database;
+    String encryptedPassword =
+        sha512.convert(utf8.encode(newPassword)).toString();
     final int rowsChanged = await db.rawUpdate(
-        "UPDATE `Users` SET Password = '$newPassword' WHERE Id == '$id'");
+        "UPDATE `Users` SET Password = '$encryptedPassword' WHERE Id == '$id'");
     return rowsChanged == 1;
   }
 
@@ -441,7 +455,7 @@ class OfflineDbHandler {
       for (PictogramModel pictogram in activity.pictograms) {
         await txn.insert('PictogramRelations', <String, dynamic>{
           'ActivityId': activity.id,
-          'PictogramId': pictogram.id
+          'OnlineId': pictogram.id
         });
       }
     });
@@ -460,12 +474,12 @@ class OfflineDbHandler {
     return ActivityModel.fromDatabase(result, timerModel, pictoList);
   }
 
-  Future<List<PictogramModel>> _getActivityPictograms(int pictogramKey) async {
+  Future<List<PictogramModel>> _getActivityPictograms(int activityKey) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Pictograms` '
-            'WHERE `Key` == (SELECT `PictogramId` FROM `PictogramRelations` '
-            "'WHERE `ActivityId` == '$pictogramKey)'");
+    final List<Map<String, dynamic>> res = await db.rawQuery(
+        'SELECT * FROM `Pictograms` '
+        'WHERE `OnlineId` == (SELECT `PictogramId` FROM `PictogramRelations` '
+        "'WHERE `ActivityId` == '$activityKey)'");
     List<PictogramModel> result;
     for (Map<String, dynamic> pictogram in res) {
       result.add(PictogramModel.fromDatabase(pictogram));
@@ -502,7 +516,7 @@ class OfflineDbHandler {
       for (PictogramModel pictogram in activity.pictograms) {
         await txn.insert('PictogramRelations', <String, dynamic>{
           'ActivityId': activity.id,
-          'PictogramId': pictogram.id
+          'OnlineId': pictogram.id
         });
       }
     });
@@ -553,7 +567,7 @@ class OfflineDbHandler {
   Future<PictogramModel> getPictogramID(int id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery("SELECT * FROM `Pictograms` WHERE id == '$id'");
+        await db.rawQuery("SELECT * FROM `Pictograms` WHERE OnlineId == '$id'");
     return PictogramModel.fromDatabase(res[0]);
   }
 
@@ -561,7 +575,7 @@ class OfflineDbHandler {
   Future<PictogramModel> createPictogram(PictogramModel pictogram) async {
     final Database db = await database;
     final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'id': pictogram.id,
+      'OnlineId': pictogram.id ?? Uuid().v1().hashCode,
       'AccessLevel': pictogram.accessLevel,
       'LastEdit': pictogram.lastEdit,
       'Title': pictogram.title,
@@ -579,7 +593,7 @@ class OfflineDbHandler {
         "LastEdit = '${pictogram.lastEdit}', "
         "Title = '${pictogram.title}', "
         "ImageHash = '${pictogram.imageHash}' "
-        "WHERE id == '${pictogram.id}'");
+        "WHERE OnlineId == '${pictogram.id}'");
     return getPictogramID(pictogram.id);
   }
 
@@ -587,7 +601,7 @@ class OfflineDbHandler {
   Future<bool> deletePictogram(int id) async {
     final Database db = await database;
     final int pictogramsDeleted =
-        await db.rawDelete("DELETE FROM `Pictograms` WHERE id == '$id'");
+        await db.rawDelete("DELETE FROM `Pictograms` WHERE OnlineId == '$id'");
     final String pictogramDirectoryPath = await getPictogramDirectory;
     File(join(pictogramDirectoryPath, '$id.png')).delete();
     return pictogramsDeleted == 1;
@@ -601,9 +615,9 @@ class OfflineDbHandler {
     newImage.copy(join(pictogramDirectoryPath, '$id.png'));
     final String newImageHash = Image.memory(image).hashCode.toString();
     db.rawUpdate('UPDATE `Pictograms` SET '
-        "ImageHash = '$newImageHash' WHERE id == '$id'");
+        "ImageHash = '$newImageHash' WHERE OnlineId == '$id'");
     final List<Map<String, dynamic>> res =
-        await db.rawQuery("SELECT * FROM `Pictograms` WHERE id == '$id'");
+        await db.rawQuery("SELECT * FROM `Pictograms` WHERE OnlineId == '$id'");
     return PictogramModel.fromDatabase(res[0]);
   }
 
