@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:api_client/models/activity_model.dart';
-import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
@@ -199,23 +197,6 @@ test('Add activity test', () async {
     expect(testLogin, false);
     await cleanUsers(testdb);
   });
-   test('Create a pictogram in the offline database',() async {
-      final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
-      try {
-      final PictogramModel testPicto = PictogramModel(
-        title: 'Spis Mad',
-        accessLevel: AccessLevel.PUBLIC,
-        id: 25,
-        lastEdit: DateTime.now(),
-        imageHash: 'XXXXX');
-        await testdb.createPictogram(testPicto);
-        final PictogramModel dbPicto = 
-        await testdb.getPictogramID(testPicto.id);
-        expect(dbPicto.id, testPicto.id);
-      } finally {
-        await cleanPictograms(testdb);
-      }
-    });
   test('performs a successfull change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     const String testUsername = 'ChrisAaen11';
@@ -235,6 +216,7 @@ test('Add activity test', () async {
  await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
  final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
  expect(res, true);
+await cleanUsers(dbHandler);
 });
 
   test('performs a falied change of password ', () async {
@@ -256,6 +238,11 @@ test('Add activity test', () async {
  await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
  final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
  expect(res, false);
+ await cleanUsers(dbHandler);
+});
+
+test('performs an update to activities', () {
+  
 });
 }
 
@@ -263,61 +250,60 @@ test('Add activity test', () async {
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Users`');
+  await db.rawDelete('DELETE FROM `Users`');
 }
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Setting`');
+  db.rawDelete('DELETE * FROM `Setting`');
 }
 
 Future<void> cleanGaurdianRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `GuardianRelations`');
+  db.rawDelete('DELETE * FROM `GuardianRelations`');
 }
 
 Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekTemplates`');
+  db.rawDelete('DELETE * FROM `WeekTemplates`');
 }
 
 Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weeks`');
+  db.rawDelete('DELETE * FROM `Weeks`');
 }
 
 Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weekdays`');
+  db.rawDelete('DELETE * FROM `Weekdays`');
 }
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Pictograms`');
+  db.rawDelete('DELETE * FROM `Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Activities`');
+  db.rawDelete('DELETE * FROM `Activities`');
 }
 
 Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `PictogramRelations`');
+  db.rawDelete('DELETE * FROM `PictogramRelations`');
 }
 
 Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Timers`');
+  db.rawDelete('DELETE * FROM `Timers`');
 }
 
 Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
+  db.rawDelete('DELETE * FROM `FailedOnlineTransactions`');
 }
 
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekDayColors`');
+  db.rawDelete('DELETE * FROM `WeekDayColors`');
 }
-
