@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/api_client.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
@@ -97,6 +98,7 @@ class OfflineDbHandler {
           '`Name`	longtext COLLATE BINARY, '
           '`ThumbnailKey`	integer NOT NULL, '
           '`OnlineId` integer NOT NULL, '
+          '`Department` integer, '
           'CONSTRAINT `FK_WeekTemplates_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`ThumbnailKey`) '
           'REFERENCES `Pictograms`(`OnlineId`) ON DELETE CASCADE);');
@@ -861,17 +863,26 @@ class OfflineDbHandler {
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Name': template.name,
       'ThumbnailKey': template.thumbnail.id,
-      'OnlineId': template.id ?? Uuid().v1().hashCode
+      'OnlineId': template.id ?? Uuid().v1().hashCode,
+      'Department': template.departmentKey
     };
     await db.insert('WeekTemplates', insertQuery);
     return getTemplate(template.id);
   }
 
-  Future<WeekTemplateModel> getTemplate(int id) {}
+  Future<WeekTemplateModel> getTemplate(int id) async {
+    final Database db = await database;
+    List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `WeekTemplates` WHERE '
+            "OnlineId == '$id'");
+    final Map<String, dynamic> template = res[0];
+    template['Thumbnail'] = getPictogramID(template['ThumbnailKey']);
+    return WeekTemplateModel.fromDatabase(template);
+  }
 
-  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) {}
+  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) async {}
 
-  Future<bool> deleteTemplate(int id) {}
+  Future<bool> deleteTemplate(int id) async {}
 
   /// Gets the version of the currently running db
   Future<int> getCurrentDBVersion() async {
