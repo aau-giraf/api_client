@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:api_client/models/activity_model.dart';
+import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
@@ -28,7 +29,41 @@ class MockOfflineDbHandler extends OfflineDbHandler {
     return db;
   }
 }
+final GirafUserModel jamesbondTestUser = GirafUserModel(
+  username:'JamesBond007' ,
+  department: 1,
+  displayName: 'James Bond',
+  roleName: 'Citizen',
+  id: 'james007bond',
+  role: Role.Citizen,
+  offlineId: 1);
 
+  final GirafUserModel edTestUser = GirafUserModel(
+  department: 34,
+  offlineId: 34,
+  role: Role.Citizen,
+  id: 'edmcniel01',
+  roleName: 'Citizen',
+  displayName: 'Ed McNiel',
+  username: 'EdMcNiel34');
+  
+  final PictogramModel scrum = PictogramModel(
+    accessLevel: AccessLevel.PUBLIC,
+    id: 44,
+    title: 'Pacture of Scrum',
+    imageHash: ,
+    imageUrl: ,
+    lastEdit: ,
+    userId: )
+
+  final ActivityModel lege = ActivityModel(
+    id: 69,
+    isChoiceBoard: true,
+    order: 4,
+    pictograms: ,
+    choiceBoardName: '',
+    state: ,
+    timer: )
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
@@ -262,13 +297,18 @@ test('performs an update to activities', () async {
       isChoiceBoard: true);
 
       final ActivityModel fakeActivityRes = await
-       dbHandler.addActivity(updateActivity, 'Testactivity1', 'weekplanName', weekYear, weekNumber, weekDay);
+       dbHandler.addActivity(updateActivity, 
+       'Testactivity1',
+        'weekplanName',
+         2020,
+        1,
+          Weekday.Monday);
+  }
 
-      expect(fakeActivityRes, matcher);}
+      //expect(fakeActivityRes, matcher);}
       finally{
         await cleanActivities(dbHandler);
       }
-  }
 });
 }
 
