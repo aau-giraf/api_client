@@ -63,7 +63,7 @@ class ActivityModel implements Model {
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'id': id,
+      'id': id ?? '',
       'pictograms': pictograms
           .map((PictogramModel pictogram) => pictogram.toJson())
           .toList(),
@@ -71,7 +71,7 @@ class ActivityModel implements Model {
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
       'timer': timer != null ? timer.toJson() : null,
-      'title': title
+      'title': title ?? ''
     };
   }
 }
