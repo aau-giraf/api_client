@@ -667,6 +667,15 @@ class OfflineDbHandler {
     return GirafUserModel.fromDatabase(res[0]);
   }
 
+  //Get User Id
+  // ignore: public_member_api_docs
+  Future<String> getUserId(String userName) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> id = await db
+        .rawQuery("SELECT * FROM `Users` WHERE username == '$userName'");
+    return GirafUserModel.fromDatabase(id[0]).id;
+  }
+
   /// Update a user based on [user.id] with the values from [user]
   Future<GirafUserModel> updateUser(GirafUserModel user) async {
     final Database db = await database;
