@@ -596,8 +596,8 @@ class OfflineDbHandler {
     final Database db = await database;
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'OnlineId': pictogram.id ?? Uuid().v1().hashCode,
-      'AccessLevel': pictogram.accessLevel,
-      'LastEdit': pictogram.lastEdit,
+      'AccessLevel': pictogram.accessLevel.index,
+      'LastEdit': pictogram.lastEdit.toIso8601String(),
       'Title': pictogram.title,
       'ImageHash': pictogram.imageHash,
     };
