@@ -41,7 +41,7 @@ class PictogramModel implements Model {
     lastEdit =
         json['LastEdit'] == null ? null : DateTime.tryParse(json['LastEdit']);
     title = json['Title'];
-    accessLevel = AccessLevel.values[(json['AccessLevel']) - 1];
+    accessLevel = AccessLevel.values[(json['AccessLevel'])];
     imageHash = json['ImageHash'];
   }
 
