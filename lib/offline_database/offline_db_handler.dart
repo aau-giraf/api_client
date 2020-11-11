@@ -489,7 +489,8 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> listResult =
         await db.rawQuery("SELECT * FROM `Activities` WHERE `Key` == '$key'");
     final Map<String, dynamic> result = listResult[0];
-    final TimerModel timerModel = await _getTimer(result['TimerKey']);
+    final TimerModel timerModel =
+        result != null ? await _getTimer(result['TimerKey']) : null;
     final List<PictogramModel> pictoList = await _getActivityPictograms(key);
     return ActivityModel.fromDatabase(result, timerModel, pictoList);
   }
@@ -752,15 +753,56 @@ class OfflineDbHandler {
         DisplayNameModel.fromDatabase(citizenJson));
   }
 
-  Future<List<DisplayNameModel>> getGuardians(String id) {}
+  ///
+  Future<List<DisplayNameModel>> getGuardians(String id) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `Users` AS `U` JOIN'
+            ' `GuardianRelations` AS `GR` ON `U`.Id==`GR`.GuardianId '
+            "WHERE `GR`.CitizenId =='$id'");
+    return res.map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
+        DisplayNameModel.fromDatabase(citizenJson));
+  }
 
-  Future<bool> addCitizenToGuardian(String guardianId, String citizenId) {}
+  /// Add a [guardianId] to a [citizenId]
+  Future<bool> addCitizenToGuardian(String guardianId, String citizenId) async {
+    final Database db = await database;
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'GuardianId': guardianId,
+      'CitizenId': citizenId
+    };
+    final int addedCount = await db.insert('`GuardianRelations`', insertQuery);
+    return addedCount == 1;
+  }
 
   // Week API functions
 
-  Future<List<WeekNameModel>> getWeekNames(String id) {}
+  /// Get all weeks from a user with the Id [id]
+  Future<List<WeekNameModel>> getWeekNames(String id) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `Weeks` AS `w` JOIN `Users` AS `u` '
+            "ON `w`.`GirafUserId`==`u`.`Id` WHERE `u`.Id == '$id'");
+    return res
+        .map((Map<String, dynamic> json) => WeekNameModel.fromDatabase(json));
+  }
 
-  Future<WeekModel> getWeek(String id, int year, int weekNumber) {}
+  /// Get a week base on
+  /// [id] (User id)
+  /// [year]
+  /// [weekNumber]
+  Future<WeekModel> getWeek(String id, int year, int weekNumber) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `Weeks` AS `w` JOIN `Users` AS `u` '
+            "ON `w`.`GirafUserId`==`u`.`Id` WHERE `u`.Id == '$id' AND "
+            "`Year` == '$year' AND "
+            "`WeekNumber` == '$weekNumber'");
+    final Map<String, dynamic> weekModel = res[0];
+    weekModel['Thumbnail'] =
+        (await getPictogramID(res[0]['ThumbnailKey'])).toJson();
+    return WeekModel.fromDatabase(weekModel);
+  }
 
   Future<WeekModel> updateWeek(
       String id, int year, int weekNumber, WeekModel week) {}
