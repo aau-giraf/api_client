@@ -846,7 +846,7 @@ class OfflineDbHandler {
 
   // Week Template API functions
 
-  ///
+  /// Get all weekTemplateNameModels
   Future<List<WeekTemplateNameModel>> getTemplateNames() async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -855,8 +855,16 @@ class OfflineDbHandler {
         WeekTemplateNameModel.fromDatabase(json));
   }
 
+  /// Create a week template in the database from [template]
   Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) async {
     final Database db = await database;
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'Name': template.name,
+      'ThumbnailKey': template.thumbnail.id,
+      'OnlineId': template.id ?? Uuid().v1().hashCode
+    };
+    await db.insert('WeekTemplates', insertQuery);
+    return getTemplate(template.id);
   }
 
   Future<WeekTemplateModel> getTemplate(int id) {}
