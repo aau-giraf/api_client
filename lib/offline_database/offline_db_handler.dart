@@ -614,7 +614,7 @@ class OfflineDbHandler {
   Future<PictogramModel> updatePictogram(PictogramModel pictogram) async {
     final Database db = await database;
     await db.rawUpdate('UPDATE `Pictograms` SET '
-        "AccessLevel = '${pictogram.accessLevel}', "
+        "AccessLevel = '${pictogram.accessLevel.index}', "
         "LastEdit = '${pictogram.lastEdit}', "
         "Title = '${pictogram.title}', "
         "ImageHash = '${pictogram.imageHash}' "
