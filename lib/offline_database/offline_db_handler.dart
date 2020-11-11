@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/api_client.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
@@ -638,9 +637,6 @@ class OfflineDbHandler {
     final File newImage = File.fromRawPath(image);
     final String pictogramDirectoryPath = await getPictogramDirectory;
     newImage.copy(join(pictogramDirectoryPath, '$id.png'));
-    final String newImageHash = Image.memory(image).hashCode.toString();
-    db.rawUpdate('UPDATE `Pictograms` SET '
-        "ImageHash = '$newImageHash' WHERE OnlineId == '$id'");
     final List<Map<String, dynamic>> res =
         await db.rawQuery("SELECT * FROM `Pictograms` WHERE OnlineId == '$id'");
     return PictogramModel.fromDatabase(res[0]);
@@ -870,9 +866,10 @@ class OfflineDbHandler {
     return getTemplate(template.id);
   }
 
+  /// get a template by its [id]
   Future<WeekTemplateModel> getTemplate(int id) async {
     final Database db = await database;
-    List<Map<String, dynamic>> res =
+    final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `WeekTemplates` WHERE '
             "OnlineId == '$id'");
     final Map<String, dynamic> template = res[0];
@@ -880,9 +877,25 @@ class OfflineDbHandler {
     return WeekTemplateModel.fromDatabase(template);
   }
 
-  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) async {}
+  /// Update a template with all the values from [template]
+  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) async {
+    final Database db = await database;
+    db.rawUpdate('UPDATE `WeekTemplates` SET '
+        "Name = '${template.name}', "
+        "ThumbnailKey = '${template.thumbnail.id}', "
+        "Department = '${template.departmentKey}' WHERE "
+        "OfflineId == '${template.id}'");
+    return getTemplate(template.id);
+  }
 
-  Future<bool> deleteTemplate(int id) async {}
+  /// Delete a template with the id [id]
+  Future<bool> deleteTemplate(int id) async {
+    final Database db = await database;
+    final int deleteCount =
+        await db.rawDelete('DELETE FROM `WeekTemplates` WHERE '
+            "OfflineID =='$id'");
+    return deleteCount > 0;
+  }
 
   /// Gets the version of the currently running db
   Future<int> getCurrentDBVersion() async {
