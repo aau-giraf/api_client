@@ -29,6 +29,42 @@ class MockOfflineDbHandler extends OfflineDbHandler {
   }
 }
 
+final GirafUserModel jamesbondTestUser = GirafUserModel(
+    username: 'JamesBond007',
+    department: 1,
+    displayName: 'James Bond',
+    roleName: 'Citizen',
+    id: 'james007bond',
+    role: Role.Citizen,
+    offlineId: 1);
+
+final GirafUserModel edTestUser = GirafUserModel(
+    department: 34,
+    offlineId: 34,
+    role: Role.Citizen,
+    id: 'edmcniel01',
+    roleName: 'Citizen',
+    displayName: 'Ed McNiel',
+    username: 'EdMcNiel34');
+
+final PictogramModel scrum = PictogramModel(
+    accessLevel: AccessLevel.PUBLIC,
+    id: 44,
+    title: 'Pacture of Scrum',
+    /*imageHash: File(join(Directory.current.path, 'test',
+     'giraf.png')).hashCode.toString(),
+    imageUrl: ,*/
+    lastEdit: DateTime.now(),
+    userId: '1');
+List<PictogramModel> kurt = [scrum];
+final ActivityModel lege = ActivityModel(
+    id: 69,
+    isChoiceBoard: true,
+    order: 4,
+    pictograms: kurt,
+    choiceBoardName: '',
+    state: ActivityState.Normal,
+    timer: null);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
@@ -83,37 +119,44 @@ Future<void> main() async {
     }
   });
   test('Add activity test', () async {
-    //arrange
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    final List<PictogramModel> fakePictograms = <PictogramModel>[];
-    final ActivityModel fakeActivity = ActivityModel(
-      pictograms: fakePictograms,
-      order: 1,
-      id: 1,
-      state: ActivityState.Normal,
-      isChoiceBoard: true,
-    );
-    //create fake account
-    const String testUsername = 'BobJensen123';
-    final GirafUserModel fakeAccount = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Bob Jensen',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
-      'username': fakeAccount.username,
-      'displayName': fakeAccount.displayName,
-      'password': 'TestPassword123',
-      'departmentId': fakeAccount.department,
-      'role': fakeAccount.role.toString().split('.').last,
-    };
-    //final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    //final Weekday fakeDay = Weekday(;
-    //act
-    final ActivityModel fakeactivityModel = await dbHandler.addActivity(
-        fakeActivity, '1', 'weekplanName', 2020, 50, Weekday.Friday);
-    //assert
-    //expect(fakeUserRes.username, testUsername);
+    try {
+      //arrange
+
+      final List<PictogramModel> fakePictograms = <PictogramModel>[];
+      final ActivityModel fakeActivity = ActivityModel(
+        pictograms: fakePictograms,
+        order: 1,
+        id: 1,
+        state: ActivityState.Normal,
+        isChoiceBoard: true,
+      );
+      //create fake account
+      const String testUsername = 'BobJensen123';
+      final GirafUserModel fakeAccount = GirafUserModel(
+          role: Role.Citizen,
+          username: testUsername,
+          displayName: 'Bob Jensen',
+          department: 1);
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': fakeAccount.username,
+        'displayName': fakeAccount.displayName,
+        'password': 'TestPassword123',
+        'departmentId': fakeAccount.department,
+        'role': fakeAccount.role.toString().split('.').last,
+      };
+      //final GirafUserModel fakeUserRes =
+      // await dbHandler.registerAccount(body);
+      //final Weekday fakeDay = Weekday(;
+      //act
+      final ActivityModel fakeactivityModel = await dbHandler.addActivity(
+          lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
+      //assert
+      //expect(fakeUserRes.username, testUsername);
+    } finally {
+      await cleanActivities(dbHandler);
+      await cleanUsers(dbHandler);
+    }
   });
   test('Perform a correct login attempt', () async {
     final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;

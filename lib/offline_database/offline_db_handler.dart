@@ -463,16 +463,18 @@ class OfflineDbHandler {
       'State': activity.state,
       'IsChoiceBoard': activity.isChoiceBoard,
     };
-    if (activity.timer.key != null) {
+    Map<String, dynamic> insertTimerQuery;
+    if (activity.timer != null) {
       insertActivityQuery['TimerKey'] = activity.timer.key;
+      insertTimerQuery = <String, dynamic>{
+        'Key': activity.timer.key,
+        'StartTime': activity.timer.startTime,
+        'Progress': activity.timer.progress,
+        'FullLength': activity.timer.fullLength,
+        'Paused': activity.timer.paused,
+      };
     }
-    final Map<String, dynamic> insertTimerQuery = <String, dynamic>{
-      'Key': activity.timer.key,
-      'StartTime': activity.timer.startTime,
-      'Progress': activity.timer.progress,
-      'FullLength': activity.timer.fullLength,
-      'Paused': activity.timer.paused,
-    };
+
     final Database db = await database;
     db.transaction((Transaction txn) async {
       for (PictogramModel pictogram in activity.pictograms) {
@@ -483,7 +485,9 @@ class OfflineDbHandler {
       }
     });
     await db.insert('Activities', insertActivityQuery);
-    await db.insert('Timers', insertTimerQuery);
+    if (insertTimerQuery != null) {
+      await db.insert('Timers', insertTimerQuery);
+    }
     return _getActivity(activity.id);
   }
 
