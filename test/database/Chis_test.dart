@@ -1,4 +1,6 @@
+//import 'dart:html';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
@@ -51,19 +53,20 @@ final GirafUserModel jamesbondTestUser = GirafUserModel(
     accessLevel: AccessLevel.PUBLIC,
     id: 44,
     title: 'Pacture of Scrum',
-    imageHash: ,
-    imageUrl: ,
-    lastEdit: ,
-    userId: )
-
+    /*imageHash: File(join(Directory.current.path, 'test',
+     'giraf.png')).hashCode.toString(),
+    imageUrl: ,*/
+    lastEdit: DateTime.now(),
+    userId: '1');
+    List<PictogramModel> kurt = [scrum];
   final ActivityModel lege = ActivityModel(
     id: 69,
     isChoiceBoard: true,
     order: 4,
-    pictograms: ,
+    pictograms: kurt,
     choiceBoardName: '',
-    state: ,
-    timer: )
+    state: ActivityState.Normal,
+    timer: null);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
