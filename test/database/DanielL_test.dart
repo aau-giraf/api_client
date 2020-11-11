@@ -77,11 +77,12 @@ Future<void> main() async {
       };
       expect(() => dbHandler.registerAccount(body),
           throwsA(isInstanceOf<Exception>()));
+      await cleanUsers(dbHandler);
     } finally {
       await cleanUsers(dbHandler);
     }
   });
-  test('Add activity test', () async {
+test('Add activity test', () async {
     //arrange
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     // final List<PictogramModel> fakePictograms = <PictogramModel>[];
@@ -202,11 +203,11 @@ Future<void> main() async {
       final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
       try {
       final PictogramModel testPicto = PictogramModel(
-        title: 'Spis Mad',
-        accessLevel: AccessLevel.PUBLIC,
-        id: 25,
-        lastEdit: DateTime.now(),
-        imageHash: 'XXXXX');
+          id: 42,
+          title: 'Spis Mad',
+          accessLevel: AccessLevel.PUBLIC,
+          lastEdit: DateTime.now(),
+          imageHash: 'XXXXX');
         await testdb.createPictogram(testPicto);
         final PictogramModel dbPicto = 
         await testdb.getPictogramID(testPicto.id);
@@ -215,48 +216,94 @@ Future<void> main() async {
         await cleanPictograms(testdb);
       }
     });
+    
+test('Update existing pictogram in database',() async {
+      final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+      try {
+        final PictogramModel testPicto = PictogramModel(
+          id: 25,
+          title: 'Spis Mad',
+          accessLevel: AccessLevel.PUBLIC,
+          lastEdit: DateTime.now(),
+          imageHash: 'XXXXX');
+        final PictogramModel newPicto = PictogramModel(
+          id: 25,
+          title: 'Lav tegninger',
+          accessLevel: AccessLevel.PROTECTED,
+          lastEdit: DateTime.now(),
+          imageHash: 'YYYYY');
+        await testdb.createPictogram(testPicto);
+        final PictogramModel updatedPicto =
+          await testdb.updatePictogram(newPicto);
+        expect(updatedPicto.id, newPicto.id);
+        expect(updatedPicto.title, newPicto.title);
+      } finally {
+        await cleanPictograms(testdb);
+      }
+  });
+
+  test('Delete a pictogram from database',() async {
+      final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+      try {
+        final PictogramModel testPicto = PictogramModel(
+          id: 68,
+          title: 'Gå en tur',
+          accessLevel: AccessLevel.PUBLIC,
+          lastEdit: DateTime.now(),
+          imageHash: 'XYXYX');
+        final PictogramModel dbPicto = await testdb.createPictogram(testPicto);
+        expect(dbPicto.id, testPicto.id);
+        final bool wasDeleted = await testdb.deletePictogram(dbPicto.id);
+        expect(wasDeleted, true);
+      } finally {
+        await cleanPictograms(testdb);
+      }
+  });
+
   test('performs a successfull change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     const String testUsername = 'ChrisAaen11';
     final GirafUserModel changepassword = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Chris Aaen',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
+      role: Role.Citizen,
+      username: testUsername,
+      displayName: 'Chris Aaen',
+      department: 1);
+        final Map<String, dynamic> body = <String, dynamic>{
       'username': changepassword.username,
       'displayName': changepassword.displayName,
       'password': 'TestPassword123',
       'departmentId': changepassword.department,
       'role': changepassword.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
-    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
-    expect(res, true);
-  });
+  };
+  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+ await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+ final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
+ expect(res, true);
+});
 
   test('performs a falied change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     const String testUsername = 'BrianJohnson44';
     final GirafUserModel changepassword = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Brian Johnson',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
+      role: Role.Citizen,
+      username: testUsername,
+      displayName: 'Brian Johnson',
+      department: 1);
+        final Map<String, dynamic> body = <String, dynamic>{
       'username': changepassword.username,
       'displayName': changepassword.displayName,
       'password': 'TestPassword123',
       'departmentId': changepassword.department,
       'role': changepassword.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
-    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
-    expect(res, false);
-  });
+  };
+  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+ await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+ final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
+ expect(res, false);
+});
 }
+
+
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
@@ -317,3 +364,4 @@ Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
   db.rawDelete('DELETE FROM `WeekDayColors`');
 }
+
