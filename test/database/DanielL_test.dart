@@ -34,8 +34,8 @@ class MockOfflineDbHandler extends OfflineDbHandler {
   Future<String> get getPictogramDirectory async {
     final Directory directory = await getTemporaryDirectory();
     final Directory imageDirectory =
-        Directory(join(directory.path));
-    imageDirectory.createSync();
+        Directory(join(directory.path, 'giraf', 'pictograms'));
+    imageDirectory.createSync(recursive: true);
     return imageDirectory.path;
   }
 }
@@ -286,21 +286,23 @@ test('Update existing pictogram in database',() async {
 test('Update the image contained in a pictogram',() async {
       final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
       try {
-        final Directory pictoDir = Directory(join(Directory.current.path, 'test', 'giraf.png'));
-        final File pictoImg = File(pictoDir.path);
-        final Uint8List pictoUInt8 = await pictoImg.readAsBytes();
+        final Directory pictoDir = Directory(
+          join(Directory.current.path, 'test', 'giraf.png'));
+        final File pictoPath = File(pictoDir.path);
+        final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
 
         final PictogramModel testPicto = PictogramModel(
           id: 419,
           title: 'Spil fodbold',
           accessLevel: AccessLevel.PUBLIC,
-          lastEdit: DateTime.now(),
-          imageHash: 'XYXYX');
-          testdb.createPictogram(testPicto);
-        final PictogramModel dbPicto = await testdb.updateImageInPictogram(
-          testPicto.id, pictoUInt8);
-          expect(
-            dbPicto.imageHash,Image.memory(pictoUInt8).hashCode.toString());
+          lastEdit: DateTime.now());
+          await testdb.createPictogram(testPicto);
+          await testdb.updateImageInPictogram(testPicto.id, pictoUInt8);
+          final Directory newDir = await getTemporaryDirectory();
+          final File newSavedPicto = File(
+            join(newDir.path, 'giraf', 'pictograms', '${testPicto.id}.png'));
+            final Uint8List newUInt8 = await newSavedPicto.readAsBytes();
+          expect(newUInt8,pictoUInt8);
       } finally {
         await cleanPictograms(testdb);
       }
@@ -353,61 +355,61 @@ test('Update the image contained in a pictogram',() async {
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Users`');
+  await db.rawDelete('DELETE FROM `Users`');
 }
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Setting`');
+  await db.rawDelete('DELETE FROM `Setting`');
 }
 
 Future<void> cleanGaurdianRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `GuardianRelations`');
+  await db.rawDelete('DELETE FROM `GuardianRelations`');
 }
 
 Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekTemplates`');
+  await db.rawDelete('DELETE FROM `WeekTemplates`');
 }
 
 Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weeks`');
+  await db.rawDelete('DELETE FROM `Weeks`');
 }
 
 Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weekdays`');
+  await db.rawDelete('DELETE FROM `Weekdays`');
 }
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Pictograms`');
+  await await db.rawDelete('DELETE FROM `Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Activities`');
+  await db.rawDelete('DELETE FROM `Activities`');
 }
 
 Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `PictogramRelations`');
+  await db.rawDelete('DELETE FROM `PictogramRelations`');
 }
 
 Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Timers`');
+  await db.rawDelete('DELETE FROM `Timers`');
 }
 
 Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
+  await db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
 }
 
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekDayColors`');
+  await db.rawDelete('DELETE FROM `WeekDayColors`');
 }
 
