@@ -462,7 +462,7 @@ class OfflineDbHandler {
       'State': activity.state,
       'IsChoiceBoard': activity.isChoiceBoard,
     };
-    if(activity.timer.key != null){
+    if (activity.timer.key != null) {
       insertActivityQuery['TimerKey'] = activity.timer.key;
     }
     final Map<String, dynamic> insertTimerQuery = <String, dynamic>{
@@ -846,7 +846,7 @@ class OfflineDbHandler {
 
   // Week Template API functions
 
-  /// 
+  ///
   Future<List<WeekTemplateNameModel>> getTemplateNames() async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -855,8 +855,8 @@ class OfflineDbHandler {
         WeekTemplateNameModel.fromDatabase(json));
   }
 
-  Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) {
-    final Database 
+  Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) async {
+    final Database db = await database;
   }
 
   Future<WeekTemplateModel> getTemplate(int id) {}
