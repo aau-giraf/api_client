@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
@@ -11,6 +12,7 @@ import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -26,6 +28,15 @@ class MockOfflineDbHandler extends OfflineDbHandler {
         options: OpenDatabaseOptions(version: 1));
     createTables(db);
     return db;
+  }
+
+  @override
+  Future<String> get getPictogramDirectory async {
+    final Directory directory = await getTemporaryDirectory();
+    final Directory imageDirectory =
+        Directory(join(directory.path));
+    imageDirectory.createSync();
+    return imageDirectory.path;
   }
 }
 
@@ -116,6 +127,7 @@ test('Add activity test', () async {
   });
   test('Perform a correct login attempt', () async {
     final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    try {
     const String testPassword = 'MyPassword32';
     final GirafUserModel testAcc = GirafUserModel(
         role: Role.Citizen,
@@ -132,11 +144,14 @@ test('Add activity test', () async {
     await testdb.registerAccount(dbUser);
     final bool testLogin = await testdb.login(testAcc.username, testPassword);
     expect(testLogin, true);
-    await cleanUsers(testdb);
+    } finally {
+      await cleanUsers(testdb);
+    }
   });
 
   test('Perform a correct login attempt 2', () async {
     final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    try {
     const String testPassword = 'hunter2';
     final GirafUserModel testAcc = GirafUserModel(
         role: Role.Citizen,
@@ -153,11 +168,14 @@ test('Add activity test', () async {
     await testdb.registerAccount(dbUser);
     final bool testLogin = await testdb.login(testAcc.username, testPassword);
     expect(testLogin, true);
-    await cleanUsers(testdb);
+    } finally {
+      await cleanUsers(testdb);
+    }
   });
 
   test('Perform a wrong login attempt', () async {
     final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    try {
     const String testPassword = 'MyPassword32';
     const String wrongPassword = 'PasswordGuess128';
     final GirafUserModel testAcc = GirafUserModel(
@@ -175,11 +193,14 @@ test('Add activity test', () async {
     await testdb.registerAccount(dbUser);
     final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
     expect(testLogin, false);
-    await cleanUsers(testdb);
+    } finally {
+      await cleanUsers(testdb);
+    }
   });
 
   test('Perform a wrong login attempt 2', () async {
     final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    try {
     const String testPassword = 'hejmeddig123';
     const String wrongPassword = 'Hejmeddig123';
     final GirafUserModel testAcc = GirafUserModel(
@@ -197,7 +218,9 @@ test('Add activity test', () async {
     await testdb.registerAccount(dbUser);
     final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
     expect(testLogin, false);
-    await cleanUsers(testdb);
+    } finally {
+      await cleanUsers(testdb);
+    } 
   });
    test('Create a pictogram in the offline database',() async {
       final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
@@ -255,6 +278,29 @@ test('Update existing pictogram in database',() async {
         expect(dbPicto.id, testPicto.id);
         final bool wasDeleted = await testdb.deletePictogram(dbPicto.id);
         expect(wasDeleted, true);
+      } finally {
+        await cleanPictograms(testdb);
+      }
+  });
+
+test('Update the image contained in a pictogram',() async {
+      final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+      try {
+        final Directory pictoDir = Directory(join(Directory.current.path, 'test', 'giraf.png'));
+        final File pictoImg = File(pictoDir.path);
+        final Uint8List pictoUInt8 = await pictoImg.readAsBytes();
+
+        final PictogramModel testPicto = PictogramModel(
+          id: 419,
+          title: 'Spil fodbold',
+          accessLevel: AccessLevel.PUBLIC,
+          lastEdit: DateTime.now(),
+          imageHash: 'XYXYX');
+          testdb.createPictogram(testPicto);
+        final PictogramModel dbPicto = await testdb.updateImageInPictogram(
+          testPicto.id, pictoUInt8);
+          expect(
+            dbPicto.imageHash,Image.memory(pictoUInt8).hashCode.toString());
       } finally {
         await cleanPictograms(testdb);
       }
