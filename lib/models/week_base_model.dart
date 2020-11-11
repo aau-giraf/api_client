@@ -35,8 +35,8 @@ abstract class WeekBaseModel {
     name = json['Name'];
 
     // WeekModel sometimes don't have a thumbnail
-    if (json['ThumbnailKey'] != null) {
-      thumbnail = PictogramModel.fromJson(json['thumbnail']);
+    if (json['Thumbnail'] != null) {
+      thumbnail = PictogramModel.fromJson(json['Thumbnail']);
     }
 
     // WeekModel sometimes dont have days
