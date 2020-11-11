@@ -279,12 +279,32 @@ class OfflineDbHandler {
       case 'Users':
         db.rawUpdate("UPDATE `Users` SET Id = '${json['id']}' "
             "WHERE Id == '$tempId'");
+        db.rawUpdate(
+            "UPDATE `GuardianRelations` SET CitizenId = '${json['id']}' "
+            "WHERE CitizenId == '$tempId'");
+        db.rawUpdate(
+            "UPDATE `GuardianRelations` SET GuardianId = '${json['id']}' "
+            "WHERE GuardianId == '$tempId'");
+        db.rawUpdate("UPDATE `Weeks` SET GirafUserId = '${json['id']}' "
+            "WHERE GirafUserId == '$tempId'");
         break;
       case 'Pictograms':
         db.rawUpdate("UPDATE `Pictogram` SET Id = '${json['id']}' "
             "WHERE Id == '$tempId'");
         db.rawUpdate("UPDATE `WeekTemplates` SET ThumbnailKey = '${json['id']}'"
             " WHERE ThumbnailKey == '$tempId'");
+        db.rawUpdate("UPDATE `Weeks` SET ThumbnailKey = '${json['id']}'"
+            " WHERE ThumbnailKey == '$tempId'");
+        db.rawUpdate(
+            "UPDATE `PictogramRelations` SET PictogramId = '${json['id']}'"
+            " WHERE PictogramId == '$tempId'");
+        break;
+      case 'WeekTemplates':
+        db.rawUpdate("UPDATE `WeekTemplates` SET OnlineId = '${json['id']}' "
+            "Where OnlineId == '$tempId'");
+        db.rawUpdate("UPDATE `Weekdays` SET WeekTemplateId = '${json['id']}' "
+            "Where WeekTemplateId == '$tempId'");
+
         break;
     }
   }
@@ -411,7 +431,7 @@ class OfflineDbHandler {
   /// change a password
   Future<bool> changePassword(String id, String newPassword) async {
     final Database db = await database;
-    String encryptedPassword =
+    final String encryptedPassword =
         sha512.convert(utf8.encode(newPassword)).toString();
     final int rowsChanged = await db.rawUpdate(
         "UPDATE `Users` SET Password = '$encryptedPassword' WHERE Id == '$id'");
@@ -576,8 +596,8 @@ class OfflineDbHandler {
     final Database db = await database;
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'OnlineId': pictogram.id ?? Uuid().v1().hashCode,
-      'AccessLevel': pictogram.accessLevel,
-      'LastEdit': pictogram.lastEdit,
+      'AccessLevel': pictogram.accessLevel.index,
+      'LastEdit': pictogram.lastEdit.toIso8601String(),
       'Title': pictogram.title,
       'ImageHash': pictogram.imageHash,
     };
@@ -703,13 +723,34 @@ class OfflineDbHandler {
     return getUserSettings(id);
   }
 
-  Future<bool> deleteUserIcon(String id) {}
+  /// Delete a users icon. as users do not have an icon,
+  /// this is not yet implementet
+  Future<bool> deleteUserIcon(String id) {
+    throw UnimplementedError();
+  }
 
-  Future<Image> getUserIcon(String id) {}
+  /// Get a users icon. as users do not have an icon,
+  /// this is not yet implementet
+  Future<Image> getUserIcon(String id) {
+    throw UnimplementedError();
+  }
 
-  Future<bool> updateUserIcon() {}
+  /// Update a users icon. as users do not have an icon,
+  /// this is not yet implementet
+  Future<bool> updateUserIcon() {
+    throw UnimplementedError();
+  }
 
-  Future<List<DisplayNameModel>> getCitizens(String id) {}
+  /// return list of citizens from database based on guardian id
+  Future<List<DisplayNameModel>> getCitizens(String id) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `Users` AS `U` JOIN'
+            ' `GuardianRelations` AS `GR` ON `U`.Id==`GR`.CitizenId '
+            "WHERE `GR`.GuardianId =='$id'");
+    return res.map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
+        DisplayNameModel.fromDatabase(citizenJson));
+  }
 
   Future<List<DisplayNameModel>> getGuardians(String id) {}
 
