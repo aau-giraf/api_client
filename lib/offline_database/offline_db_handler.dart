@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/api_client.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
@@ -889,9 +888,13 @@ class OfflineDbHandler {
     return getTemplate(template.id);
   }
 
+  /// Delete a template with the id [id]
   Future<bool> deleteTemplate(int id) async {
     final Database db = await database;
-    final int deleteCount = await db.rawDelete('DELETE');
+    final int deleteCount =
+        await db.rawDelete('DELETE FROM `WeekTemplates` WHERE '
+            "OfflineID =='$id'");
+    return deleteCount > 0;
   }
 
   /// Gets the version of the currently running db
