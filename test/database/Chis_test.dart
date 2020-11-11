@@ -12,6 +12,8 @@ import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import 'OfflineDatabase_test.dart';
+
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
 
@@ -199,6 +201,7 @@ test('Add activity test', () async {
   });
   test('performs a successfull change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    try{
     const String testUsername = 'ChrisAaen11';
     final GirafUserModel changepassword = GirafUserModel(
       role: Role.Citizen,
@@ -216,11 +219,14 @@ test('Add activity test', () async {
  await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
  final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
  expect(res, true);
+    }finally{
 await cleanUsers(dbHandler);
+    }
 });
 
   test('performs a falied change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    try{
     const String testUsername = 'BrianJohnson44';
     final GirafUserModel changepassword = GirafUserModel(
       role: Role.Citizen,
@@ -237,12 +243,32 @@ await cleanUsers(dbHandler);
   final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
  await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
  final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
- expect(res, false);
+ expect(res, false);}
+ finally{
  await cleanUsers(dbHandler);
+ }
 });
 
-test('performs an update to activities', () {
-  
+test('performs an update to activities', () async {
+  final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+  try{
+    final List<PictogramModel> testPictograms = <PictogramModel>[];
+    
+    final ActivityModel updateActivity = ActivityModel(
+      id: 2,
+      pictograms: testPictograms,
+      order: 1,
+      state: ActivityState.Active,
+      isChoiceBoard: true);
+
+      final ActivityModel fakeActivityRes = await
+       dbHandler.addActivity(updateActivity, 'Testactivity1', 'weekplanName', weekYear, weekNumber, weekDay);
+
+      expect(fakeActivityRes, matcher);}
+      finally{
+        await cleanActivities(dbHandler);
+      }
+  }
 });
 }
 
