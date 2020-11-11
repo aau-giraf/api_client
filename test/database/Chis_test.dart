@@ -216,6 +216,7 @@ test('Add activity test', () async {
  await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
  final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
  expect(res, true);
+await cleanUsers(dbHandler);
 });
 
   test('performs a falied change of password ', () async {
@@ -237,9 +238,12 @@ test('Add activity test', () async {
  await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
  final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
  expect(res, false);
+ await cleanUsers(dbHandler);
 });
 
-
+test('performs an update to activities', () {
+  
+});
 }
 
 
