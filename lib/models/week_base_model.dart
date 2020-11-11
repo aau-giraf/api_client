@@ -25,6 +25,27 @@ abstract class WeekBaseModel {
     }
   }
 
+  /// Creates a weekbase model from offline database json
+  WeekBaseModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[WeekBaseModel]: Cannot initialize from null');
+    }
+
+    name = json['Name'];
+
+    // WeekModel sometimes don't have a thumbnail
+    if (json['ThumbnailKey'] != null) {
+      thumbnail = PictogramModel.fromJson(json['thumbnail']);
+    }
+
+    // WeekModel sometimes dont have days
+    if (json['Days'] != null && json['Days'] is List) {
+      days = List<Map<String, dynamic>>.from(json['Days'])
+          .map((Map<String, dynamic> element) => WeekdayModel.fromJson(element))
+          .toList();
+    }
+  }
   PictogramModel thumbnail;
 
   String name;
