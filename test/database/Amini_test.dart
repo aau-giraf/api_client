@@ -12,8 +12,6 @@ import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-import 'OfflineDatabase_test.dart';
-
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
 
@@ -82,7 +80,7 @@ Future<void> main() async {
       await cleanUsers(dbHandler);
     }
   });
-test('Add activity test', () async {
+  test('Add activity test', () async {
     //arrange
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     // final List<PictogramModel> fakePictograms = <PictogramModel>[];
@@ -201,78 +199,77 @@ test('Add activity test', () async {
   });
   test('performs a successfull change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    try{
     const String testUsername = 'ChrisAaen11';
     final GirafUserModel changepassword = GirafUserModel(
-      role: Role.Citizen,
-      username: testUsername,
-      displayName: 'Chris Aaen',
-      department: 1);
-        final Map<String, dynamic> body = <String, dynamic>{
+        role: Role.Citizen,
+        username: testUsername,
+        displayName: 'Chris Aaen',
+        department: 1);
+    final Map<String, dynamic> body = <String, dynamic>{
       'username': changepassword.username,
       'displayName': changepassword.displayName,
       'password': 'TestPassword123',
       'departmentId': changepassword.department,
       'role': changepassword.role.toString().split('.').last,
-  };
-  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
- await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
- final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
- expect(res, true);
-    }finally{
-await cleanUsers(dbHandler);
-    }
-});
+    };
+    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
+    expect(res, true);
+    await cleanUsers(dbHandler);
+  });
 
   test('performs a falied change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    try{
     const String testUsername = 'BrianJohnson44';
     final GirafUserModel changepassword = GirafUserModel(
-      role: Role.Citizen,
-      username: testUsername,
-      displayName: 'Brian Johnson',
-      department: 1);
-        final Map<String, dynamic> body = <String, dynamic>{
+        role: Role.Citizen,
+        username: testUsername,
+        displayName: 'Brian Johnson',
+        department: 1);
+    final Map<String, dynamic> body = <String, dynamic>{
       'username': changepassword.username,
       'displayName': changepassword.displayName,
       'password': 'TestPassword123',
       'departmentId': changepassword.department,
       'role': changepassword.role.toString().split('.').last,
-  };
-  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
- await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
- final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
- expect(res, false);}
- finally{
- await cleanUsers(dbHandler);
- }
-});
+    };
+    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
+    expect(res, false);
+    await cleanUsers(dbHandler);
+  });
 
-test('performs an update to activities', () async {
-  final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-  try{
-    final List<PictogramModel> testPictograms = <PictogramModel>[];
-    
-    final ActivityModel updateActivity = ActivityModel(
-      id: 2,
-      pictograms: testPictograms,
-      order: 1,
-      state: ActivityState.Active,
-      isChoiceBoard: true);
+  test('performs an update to activities', () {});
 
-      final ActivityModel fakeActivityRes = await
-       dbHandler.addActivity(updateActivity, 'Testactivity1', 'weekplanName', weekYear, weekNumber, weekDay);
+//Delete the user from database
+  test('peforms a account deletion', () async {
+    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
 
-      expect(fakeActivityRes, matcher);}
-      finally{
-        await cleanActivities(dbHandler);
-      }
-  }
-});
+    try {
+      final GirafUserModel fakeAccount = GirafUserModel(
+          role: Role.Citizen,
+          username: 'testUsername',
+          displayName: 'Bob Jensen',
+          department: 1);
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': fakeAccount.username,
+        'displayName': fakeAccount.displayName,
+        'password': 'TestPassword123',
+        'departmentId': fakeAccount.department,
+        'role': fakeAccount.role.toString().split('.').last,
+      };
+      await dbHandler.registerAccount(body);
+      final String user = await dbHandler.getUserId(fakeAccount.username);
+      expect(() => dbHandler.deleteAccount(user),
+          throwsA(isInstanceOf<Exception>()));
+      // await cleanUsers(dbHandler);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
+  });
 }
-
-
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
