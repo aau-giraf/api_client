@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/api_client.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
@@ -97,6 +98,7 @@ class OfflineDbHandler {
           '`Name`	longtext COLLATE BINARY, '
           '`ThumbnailKey`	integer NOT NULL, '
           '`OnlineId` integer NOT NULL, '
+          '`Department` integer, '
           'CONSTRAINT `FK_WeekTemplates_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`ThumbnailKey`) '
           'REFERENCES `Pictograms`(`OnlineId`) ON DELETE CASCADE);');
@@ -460,9 +462,11 @@ class OfflineDbHandler {
       'Order': activity.order,
       'OtherKey': weekNumber,
       'State': activity.state,
-      'TimerKey': activity.timer.key,
       'IsChoiceBoard': activity.isChoiceBoard,
     };
+    if (activity.timer.key != null) {
+      insertActivityQuery['TimerKey'] = activity.timer.key;
+    }
     final Map<String, dynamic> insertTimerQuery = <String, dynamic>{
       'Key': activity.timer.key,
       'StartTime': activity.timer.startTime,
@@ -610,7 +614,7 @@ class OfflineDbHandler {
   Future<PictogramModel> updatePictogram(PictogramModel pictogram) async {
     final Database db = await database;
     await db.rawUpdate('UPDATE `Pictograms` SET '
-        "AccessLevel = '${pictogram.accessLevel}', "
+        "AccessLevel = '${pictogram.accessLevel.index}', "
         "LastEdit = '${pictogram.lastEdit}', "
         "Title = '${pictogram.title}', "
         "ImageHash = '${pictogram.imageHash}' "
@@ -803,8 +807,8 @@ class OfflineDbHandler {
   Future<WeekModel> getWeek(String id, int year, int weekNumber) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Weeks` AS `w` JOIN `Users` AS `u` '
-            "ON `w`.`GirafUserId`==`u`.`Id` WHERE `u`.Id == '$id' AND "
+        await db.rawQuery('SELECT * FROM `Weeks` '
+            "Where GirafUserIdId == '$id' AND "
             "`Year` == '$year' AND "
             "`WeekNumber` == '$weekNumber'");
     final Map<String, dynamic> weekModel = res[0];
@@ -813,22 +817,72 @@ class OfflineDbHandler {
     return WeekModel.fromDatabase(weekModel);
   }
 
+  /// Update a week with all the fields in the given [week]
+  /// With the userid [id]
+  /// Year [year]
+  /// And Weeknumber [weekNumber]
   Future<WeekModel> updateWeek(
-      String id, int year, int weekNumber, WeekModel week) {}
+      String id, int year, int weekNumber, WeekModel week) async {
+    final Database db = await database;
+    await db.rawUpdate("UPDATE `Weeks` SET WeekYear = '${week.weekYear}', "
+        "Name = '${week.name}', "
+        "ThumbnailKey = '${week.thumbnail.id}', "
+        "WeekNumber = '${week.weekNumber}' WHERE "
+        "GirafUserId == '$id' AND "
+        "WeekYear == '$year' AND "
+        "WeekNumber == '$weekNumber'");
+    return getWeek(id, year, weekNumber);
+  }
 
-  Future<bool> deleteWeek(String id, int year, int weekNumber) {}
+  /// Delete a Week With the userid [id]
+  /// Year [year]
+  /// And Weeknumber [weekNumber]
+  Future<bool> deleteWeek(String id, int year, int weekNumber) async {
+    final Database db = await database;
+    final int deleteCount = await db.rawDelete('DELETE FROM `Weeks` WHERE '
+        "GirrafUserId == '$id' AND "
+        "WeekYear == '$year' AND "
+        "WeekNumber == '$weekNumber'");
+    return 0 < deleteCount;
+  }
 
   // Week Template API functions
 
-  Future<List<WeekTemplateNameModel>> getTemplateNames() {}
+  /// Get all weekTemplateNameModels
+  Future<List<WeekTemplateNameModel>> getTemplateNames() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `WeekTemplates`');
+    return res.map((Map<String, dynamic> json) =>
+        WeekTemplateNameModel.fromDatabase(json));
+  }
 
-  Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) {}
+  /// Create a week template in the database from [template]
+  Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) async {
+    final Database db = await database;
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'Name': template.name,
+      'ThumbnailKey': template.thumbnail.id,
+      'OnlineId': template.id ?? Uuid().v1().hashCode,
+      'Department': template.departmentKey
+    };
+    await db.insert('WeekTemplates', insertQuery);
+    return getTemplate(template.id);
+  }
 
-  Future<WeekTemplateModel> getTemplate(int id) {}
+  Future<WeekTemplateModel> getTemplate(int id) async {
+    final Database db = await database;
+    List<Map<String, dynamic>> res =
+        await db.rawQuery('SELECT * FROM `WeekTemplates` WHERE '
+            "OnlineId == '$id'");
+    final Map<String, dynamic> template = res[0];
+    template['Thumbnail'] = getPictogramID(template['ThumbnailKey']);
+    return WeekTemplateModel.fromDatabase(template);
+  }
 
-  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) {}
+  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) async {}
 
-  Future<bool> deleteTemplate(int id) {}
+  Future<bool> deleteTemplate(int id) async {}
 
   /// Gets the version of the currently running db
   Future<int> getCurrentDBVersion() async {
