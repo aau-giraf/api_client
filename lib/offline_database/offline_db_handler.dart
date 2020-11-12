@@ -631,7 +631,10 @@ class OfflineDbHandler {
     final int pictogramsDeleted =
         await db.rawDelete("DELETE FROM `Pictograms` WHERE OnlineId == '$id'");
     final String pictogramDirectoryPath = await getPictogramDirectory;
-    File(join(pictogramDirectoryPath, '$id.png')).delete();
+    try {
+      await File(join(pictogramDirectoryPath, '$id.png')).delete();
+    } 
+    on FileSystemException catch (_) {}
     return pictogramsDeleted == 1;
   }
 

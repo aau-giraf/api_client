@@ -229,8 +229,7 @@ test('Add activity test', () async {
           id: 42,
           title: 'Spis Mad',
           accessLevel: AccessLevel.PUBLIC,
-          lastEdit: DateTime.now(),
-          imageHash: 'XXXXX');
+          lastEdit: DateTime.now());
         await testdb.createPictogram(testPicto);
         final PictogramModel dbPicto = 
         await testdb.getPictogramID(testPicto.id);
@@ -247,14 +246,12 @@ test('Update existing pictogram in database',() async {
           id: 25,
           title: 'Spis Mad',
           accessLevel: AccessLevel.PUBLIC,
-          lastEdit: DateTime.now(),
-          imageHash: 'XXXXX');
-        final PictogramModel newPicto = PictogramModel(
+          lastEdit: DateTime.now());
+          final PictogramModel newPicto = PictogramModel(
           id: 25,
           title: 'Lav tegninger',
           accessLevel: AccessLevel.PROTECTED,
-          lastEdit: DateTime.now(),
-          imageHash: 'YYYYY');
+          lastEdit: DateTime.now());
         await testdb.createPictogram(testPicto);
         final PictogramModel updatedPicto =
           await testdb.updatePictogram(newPicto);
@@ -290,7 +287,6 @@ test('Update the image contained in a pictogram',() async {
           join(Directory.current.path, 'test', 'giraf.png'));
         final File pictoPath = File(pictoDir.path);
         final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
-
         final PictogramModel testPicto = PictogramModel(
           id: 419,
           title: 'Spil fodbold',
@@ -385,7 +381,7 @@ Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await await db.rawDelete('DELETE FROM `Pictograms`');
+  await db.rawDelete('DELETE FROM `Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
