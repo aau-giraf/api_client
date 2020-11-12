@@ -460,8 +460,8 @@ class OfflineDbHandler {
       'Key': activity.id,
       'Order': activity.order,
       'OtherKey': weekNumber,
-      'State': activity.state,
-      'IsChoiceBoard': activity.isChoiceBoard,
+      'State': activity.state.index,
+      'IsChoiceBoard': activity.isChoiceBoard ? 1 :0 ,
     };
     Map<String, dynamic> insertTimerQuery;
     if (activity.timer != null) {

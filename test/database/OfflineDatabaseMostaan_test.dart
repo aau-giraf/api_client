@@ -56,15 +56,28 @@ final PictogramModel scrum = PictogramModel(
     imageUrl: ,*/
     lastEdit: DateTime.now(),
     userId: '1');
-List<PictogramModel> kurt = [scrum];
+
+final PictogramModel extreme = PictogramModel(
+    accessLevel: AccessLevel.PROTECTED,
+    id: null,
+    title: 'Pacture of XP',
+    /*imageHash: File(join(Directory.current.path, 'test',
+     'giraf.png')).hashCode.toString(),
+    imageUrl: ,*/
+    lastEdit: DateTime.now(),
+    userId: '3');
+
+List<PictogramModel> testListe = [scrum, extreme];
+
 final ActivityModel lege = ActivityModel(
     id: 69,
     isChoiceBoard: true,
     order: 4,
-    pictograms: kurt,
-    choiceBoardName: '',
+    pictograms: testListe,
+    choiceBoardName: 'Testchoice',
     state: ActivityState.Normal,
     timer: null);
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
@@ -123,14 +136,6 @@ Future<void> main() async {
     try {
       //arrange
 
-      final List<PictogramModel> fakePictograms = <PictogramModel>[];
-      final ActivityModel fakeActivity = ActivityModel(
-        pictograms: fakePictograms,
-        order: 1,
-        id: 1,
-        state: ActivityState.Normal,
-        isChoiceBoard: true,
-      );
       //create fake account
       const String testUsername = 'BobJensen123';
       final GirafUserModel fakeAccount = GirafUserModel(
@@ -145,17 +150,23 @@ Future<void> main() async {
         'departmentId': fakeAccount.department,
         'role': fakeAccount.role.toString().split('.').last,
       };
-      //final GirafUserModel fakeUserRes =
-      // await dbHandler.registerAccount(body);
-      //final Weekday fakeDay = Weekday(;
+      //create fake user
+      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      //add pictograms to offline database
+      await dbHandler.createPictogram(scrum);
+      await dbHandler.createPictogram(extreme);
       //act
       final ActivityModel fakeactivityModel = await dbHandler.addActivity(
           lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
       //assert
       //expect(fakeUserRes.username, testUsername);
+      await cleanActivities(dbHandler);
+      await cleanUsers(dbHandler);
+      await cleanPictograms(dbHandler);
     } finally {
       await cleanActivities(dbHandler);
       await cleanUsers(dbHandler);
+      await cleanPictograms(dbHandler);
     }
   });
   test('Perform a correct login attempt', () async {
@@ -304,37 +315,37 @@ Future<void> main() async {
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Users`');
+  await db.rawDelete('DELETE FROM `Users`');
 }
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Setting`');
+  await db.rawDelete('DELETE FROM `Setting`');
 }
 
 Future<void> cleanGaurdianRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `GuardianRelations`');
+  await db.rawDelete('DELETE FROM `GuardianRelations`');
 }
 
 Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekTemplates`');
+  await db.rawDelete('DELETE FROM `WeekTemplates`');
 }
 
 Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weeks`');
+  await db.rawDelete('DELETE FROM `Weeks`');
 }
 
 Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weekdays`');
+  await db.rawDelete('DELETE FROM `Weekdays`');
 }
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Pictograms`');
+  await db.rawDelete('DELETE FROM `Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
@@ -344,7 +355,7 @@ Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
 
 Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `PictogramRelations`');
+  await db.rawDelete('DELETE FROM `PictogramRelations`');
 }
 
 Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
@@ -354,10 +365,10 @@ Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
 
 Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
+  await db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
 }
 
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekDayColors`');
+  await db.rawDelete('DELETE FROM `WeekDayColors`');
 }
