@@ -316,21 +316,27 @@ Future<void> main() async {
     try {
       final Map<String, dynamic> jamesBondBody = <String, dynamic>{
         'username': jamesbondTestUser.username,
-        'displayname': jamesbondTestUser.displayName,
+        'displayName': jamesbondTestUser.displayName,
         'Rolename': jamesbondTestUser.roleName,
         'offlineid': jamesbondTestUser.offlineId,
         'id': jamesbondTestUser.id,
-        'Role': jamesbondTestUser.role
+        'Role': jamesbondTestUser.role,
+        'password': '007'
       };
       await dbHandler.registerAccount(jamesBondBody);
-      await dbHandler.createPictogram(scrum);
+      final PictogramModel fakePictogram =
+          await dbHandler.createPictogram(scrum);
+      lege.pictograms = [fakePictogram];
       await dbHandler.addActivity(
           lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
       final ActivityModel res =
           await dbHandler.updateActivity(spise, 'en spise aktivitet');
-          expect(res, spise);
-    } finally {
+      expect(res, spise);
+      await cleanUsers(dbHandler);
       await cleanActivities(dbHandler);
+      await cleanPictograms(dbHandler);
+    } finally {
+      await cleanUsers(dbHandler);
       await cleanActivities(dbHandler);
       await cleanPictograms(dbHandler);
     }
