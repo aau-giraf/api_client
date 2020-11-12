@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:api_client/models/activity_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/enums/role_enum.dart';
@@ -11,6 +13,7 @@ import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -27,7 +30,70 @@ class MockOfflineDbHandler extends OfflineDbHandler {
     createTables(db);
     return db;
   }
+
+  @override
+  Future<String> get getPictogramDirectory async {
+    final Directory directory = await getTemporaryDirectory();
+    final Directory imageDirectory =
+        Directory(join(directory.path, 'giraf', 'pictograms'));
+    imageDirectory.createSync(recursive: true);
+    return imageDirectory.path;
+  }
 }
+
+final MockOfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+
+final GirafUserModel jamesbondTestUser = GirafUserModel(
+    username: 'JamesBond007',
+    department: 1,
+    displayName: 'James Bond',
+    roleName: 'Citizen',
+    id: 'james007bond',
+    role: Role.Citizen,
+    offlineId: 1);
+
+final GirafUserModel edTestUser = GirafUserModel(
+    department: 34,
+    offlineId: 34,
+    role: Role.Citizen,
+    id: 'edmcniel01',
+    roleName: 'Citizen',
+    displayName: 'Ed McNiel',
+    username: 'EdMcNiel34');
+
+final PictogramModel scrum = PictogramModel(
+    accessLevel: AccessLevel.PUBLIC,
+    id: 44,
+    title: 'Picture of Scrum',
+    lastEdit: DateTime.now(),
+    userId: '1');
+
+final PictogramModel extreme = PictogramModel(
+    accessLevel: AccessLevel.PROTECTED,
+    id: 20,
+    title: 'Picture of XP',
+    lastEdit: DateTime.now(),
+    userId: '3');
+
+List<PictogramModel> testListe = <PictogramModel>[scrum];
+List<PictogramModel> testListe2 = <PictogramModel>[extreme];
+
+final ActivityModel lege = ActivityModel(
+    id: 69,
+    isChoiceBoard: true,
+    order: 4,
+    pictograms: testListe,
+    choiceBoardName: 'Testchoice',
+    state: ActivityState.Active,
+    timer: null);
+
+final ActivityModel spise = ActivityModel(
+    id: 70,
+    pictograms: testListe2,
+    order: 44,
+    state: ActivityState.Active,
+    isChoiceBoard: true,
+    timer: null);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,284 +102,415 @@ Future<void> main() async {
     expect(await MockOfflineDbHandler.instance.getCurrentDBVersion(), 1);
     // We might need this if somthing is wrong
     // in the tests and it doesn't close itself
-    //testDb.closeDb();
+    //dbHandler.closeDb();
   });
   test('Register an account in the offline db', () async {
-    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     //create fake account
-    const String testUsername = 'BobJensen123';
-    final GirafUserModel fakeAccount = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Bob Jensen',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
-      'username': fakeAccount.username,
-      'displayName': fakeAccount.displayName,
-      'password': 'TestPassword123',
-      'departmentId': fakeAccount.department,
-      'role': fakeAccount.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    expect(fakeUserRes.username, testUsername);
-    expect(fakeUserRes.role, Role.Citizen);
+    try {
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': 'TestPassword123',
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      expect(fakeUserRes.username, jamesbondTestUser.username);
+      expect(fakeUserRes.displayName, jamesbondTestUser.displayName);
+      expect(fakeUserRes.role, Role.Citizen);
+    } finally {
+      cleanUsers(dbHandler);
+    }
   });
   test('Test if it is possible to register the same account twice', () async {
-    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     try {
       //create fake account
-      const String testUsername = 'BobJensen123';
-      final GirafUserModel fakeAccount = GirafUserModel(
-          role: Role.Citizen,
-          username: testUsername,
-          displayName: 'Bob Jensen',
-          department: 1);
       final Map<String, dynamic> body = <String, dynamic>{
-        'username': fakeAccount.username,
-        'displayName': fakeAccount.displayName,
+        'username': edTestUser.username,
+        'displayName': edTestUser.displayName,
         'password': 'TestPassword123',
-        'departmentId': fakeAccount.department,
-        'role': fakeAccount.role.toString().split('.').last,
+        'departmentId': edTestUser.department,
+        'role': edTestUser.role.toString().split('.').last,
       };
+      await dbHandler.registerAccount(body);
       expect(() => dbHandler.registerAccount(body),
           throwsA(isInstanceOf<Exception>()));
+      await cleanUsers(dbHandler);
     } finally {
       await cleanUsers(dbHandler);
     }
   });
   test('Add activity test', () async {
-    //arrange
-    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    // final List<PictogramModel> fakePictograms = <PictogramModel>[];
-    // final ActivityModel fakeActivity = ActivityModel(
-    //     pictograms: fakePictograms,
-    //     order: 1,
-    //     id: 1,
-    //     state: ActivityState.Normal,
-    //     isChoiceBoard: true);
-    //create fake account
-    const String testUsername = 'BobJensen123';
-    final GirafUserModel fakeAccount = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Bob Jensen',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
-      'username': fakeAccount.username,
-      'displayName': fakeAccount.displayName,
-      'password': 'TestPassword123',
-      'departmentId': fakeAccount.department,
-      'role': fakeAccount.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    //final Weekday fakeDay = Weekday(;
-    //act
-    // final ActivityModel fakeactivityModel = await dbHandler.addActivity(
-    //     fakeActivity, '1', 'weekplanName', 2020, 50, Weekday.Friday);
-    //assert
-    expect(fakeUserRes.username, testUsername);
+    try {
+      //arrange
+      final ActivityModel addedActivityModel = await dbHandler.addActivity(
+          lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
+      expect(addedActivityModel.id, lege.id);
+    } finally {
+      await cleanActivities(dbHandler);
+      await cleanPictograms(dbHandler);
+      await cleanPictogramRelations(dbHandler);
+    }
   });
+
   test('Perform a correct login attempt', () async {
-    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
-    const String testPassword = 'MyPassword32';
-    final GirafUserModel testAcc = GirafUserModel(
-        role: Role.Citizen,
-        username: 'TestTest',
-        displayName: 'Test Testersen',
-        department: 1);
-    final Map<String, dynamic> dbUser = <String, dynamic>{
-      'username': testAcc.username,
-      'displayName': testAcc.displayName,
-      'password': testPassword,
-      'departmentId': testAcc.department,
-      'role': testAcc.role.toString().split('.').last,
-    };
-    await testdb.registerAccount(dbUser);
-    final bool testLogin = await testdb.login(testAcc.username, testPassword);
-    expect(testLogin, true);
-    await cleanUsers(testdb);
+    try {
+      const String testPassword = 'MyPassword32';
+      final Map<String, dynamic> dbUser = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': testPassword,
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      await dbHandler.registerAccount(dbUser);
+      final bool testLogin =
+          await dbHandler.login(jamesbondTestUser.username, testPassword);
+      expect(testLogin, true);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
   });
 
   test('Perform a correct login attempt 2', () async {
-    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
-    const String testPassword = 'hunter2';
-    final GirafUserModel testAcc = GirafUserModel(
-        role: Role.Citizen,
-        username: 'PJacobsen',
-        displayName: 'Peter Jacobsen',
-        department: 2);
-    final Map<String, dynamic> dbUser = <String, dynamic>{
-      'username': testAcc.username,
-      'displayName': testAcc.displayName,
-      'password': testPassword,
-      'departmentId': testAcc.department,
-      'role': testAcc.role.toString().split('.').last,
-    };
-    await testdb.registerAccount(dbUser);
-    final bool testLogin = await testdb.login(testAcc.username, testPassword);
-    expect(testLogin, true);
-    await cleanUsers(testdb);
+    try {
+      const String testPassword = 'hunter2';
+      final Map<String, dynamic> dbUser = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': testPassword,
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      await dbHandler.registerAccount(dbUser);
+      final bool testLogin =
+          await dbHandler.login(jamesbondTestUser.username, testPassword);
+      expect(testLogin, true);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
   });
 
-  test('Perform a wrong login attempt', () async {
-    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
-    const String testPassword = 'MyPassword32';
-    const String wrongPassword = 'PasswordGuess128';
-    final GirafUserModel testAcc = GirafUserModel(
-        role: Role.Citizen,
-        username: 'TestTest',
-        displayName: 'Test Testersen',
-        department: 1);
-    final Map<String, dynamic> dbUser = <String, dynamic>{
-      'username': testAcc.username,
-      'displayName': testAcc.displayName,
-      'password': testPassword,
-      'departmentId': testAcc.department,
-      'role': testAcc.role.toString().split('.').last,
-    };
-    await testdb.registerAccount(dbUser);
-    final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
-    expect(testLogin, false);
-    await cleanUsers(testdb);
+  test('Perform a incorrect login attempt', () async {
+    try {
+      const String testPassword = 'MyPassword32';
+      const String wrongPassword = 'PasswordGuess128';
+      final Map<String, dynamic> dbUser = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': testPassword,
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      await dbHandler.registerAccount(dbUser);
+      final bool testLogin =
+          await dbHandler.login(jamesbondTestUser.username, wrongPassword);
+      expect(testLogin, false);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
   });
 
-  test('Perform a wrong login attempt 2', () async {
-    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
-    const String testPassword = 'hejmeddig123';
-    const String wrongPassword = 'Hejmeddig123';
-    final GirafUserModel testAcc = GirafUserModel(
-        role: Role.Citizen,
-        username: 'SimOestGaard',
-        displayName: 'Simon Østergård',
-        department: 2);
-    final Map<String, dynamic> dbUser = <String, dynamic>{
-      'username': testAcc.username,
-      'displayName': testAcc.displayName,
-      'password': testPassword,
-      'departmentId': testAcc.department,
-      'role': testAcc.role.toString().split('.').last,
-    };
-    await testdb.registerAccount(dbUser);
-    final bool testLogin = await testdb.login(testAcc.username, wrongPassword);
-    expect(testLogin, false);
-    await cleanUsers(testdb);
+  test('Perform a incorrect login attempt 2', () async {
+    try {
+      const String testPassword = 'hejmeddig123';
+      const String wrongPassword = 'Hejmeddig123';
+      final Map<String, dynamic> dbUser = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': testPassword,
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      await dbHandler.registerAccount(dbUser);
+      final bool testLogin =
+          await dbHandler.login(jamesbondTestUser.username, wrongPassword);
+      expect(testLogin, false);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
   });
-   test('Create a pictogram in the offline database',() async {
-      final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
-      try {
-      final PictogramModel testPicto = PictogramModel(
-        title: 'Spis Mad',
-        accessLevel: AccessLevel.PUBLIC,
-        id: 25,
-        lastEdit: DateTime.now(),
-        imageHash: 'XXXXX');
-        await testdb.createPictogram(testPicto);
-        final PictogramModel dbPicto = 
-        await testdb.getPictogramID(testPicto.id);
-        expect(dbPicto.id, testPicto.id);
-      } finally {
-        await cleanPictograms(testdb);
-      }
-    });
-  test('performs a successfull change of password ', () async {
+  test('Create a pictogram in the offline database', () async {
+    try {
+      await dbHandler.createPictogram(scrum);
+      final PictogramModel dbPicto = await dbHandler.getPictogramID(scrum.id);
+      expect(dbPicto.id, scrum.id);
+    } finally {
+      await cleanPictograms(dbHandler);
+    }
+  });
+
+  test('Update existing pictogram in database', () async {
+    try {
+      await dbHandler.createPictogram(scrum);
+      final PictogramModel scrum2 = scrum;
+      scrum2.title = 'Super Scrum';
+      final PictogramModel updatedPicto =
+          await dbHandler.updatePictogram(scrum2);
+
+      expect(updatedPicto.id, scrum2.id);
+      expect(updatedPicto.title, scrum2.title);
+    } finally {
+      await cleanPictograms(dbHandler);
+    }
+  });
+
+  test('Delete a pictogram from database', () async {
+    try {
+      final PictogramModel dbPicto = await dbHandler.createPictogram(scrum);
+      expect(dbPicto.id, scrum.id);
+      final bool wasDeleted = await dbHandler.deletePictogram(dbPicto.id);
+      expect(wasDeleted, true);
+    } finally {
+      await cleanPictograms(dbHandler);
+    }
+  });
+
+  test('Update the image contained in a pictogram', () async {
+    try {
+      final Directory pictoDir =
+          Directory(join(Directory.current.path, 'test', 'giraf.png'));
+      final File pictoPath = File(pictoDir.path);
+      final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
+      await dbHandler.createPictogram(scrum);
+      await dbHandler.updateImageInPictogram(scrum.id, pictoUInt8);
+      final Directory newDir = await getTemporaryDirectory();
+      final File newSavedPicto =
+          File(join(newDir.path, 'giraf', 'pictograms', '${scrum.id}.png'));
+      final Uint8List newUInt8 = await newSavedPicto.readAsBytes();
+      expect(newUInt8, pictoUInt8);
+    } finally {
+      await cleanPictograms(dbHandler);
+    }
+  });
+
+  test('performs a successful login after password change', () async {
+    try {
+      const String oldPass = 'TestPassword123';
+      const String newPass = 'TestPassword444';
+
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': oldPass,
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      final bool loginOld =
+          await dbHandler.login(fakeUserRes.username, oldPass);
+      expect(loginOld, true);
+      await dbHandler.changePassword(fakeUserRes.id, newPass);
+      final bool loginNew =
+          await dbHandler.login(fakeUserRes.username, newPass);
+      expect(loginNew, true);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
+  });
+
+  test('performs a failed login after password change', () async {
+    try {
+      const String newPass = 'testPassword444';
+      const String oldPass = 'TestPassword123';
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': oldPass,
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      bool sameLogin = await dbHandler.login(fakeUserRes.username, oldPass);
+      expect(sameLogin, true);
+      await dbHandler.changePassword(fakeUserRes.id, newPass);
+      sameLogin = await dbHandler.login(fakeUserRes.username, oldPass);
+      expect(sameLogin, false);
+    } finally {
+      cleanUsers(dbHandler);
+    }
+  });
+
+  test('Performs a account deletion action', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    const String testUsername = 'ChrisAaen11';
-    final GirafUserModel changepassword = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Chris Aaen',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
-      'username': changepassword.username,
-      'displayName': changepassword.displayName,
-      'password': 'TestPassword123',
-      'departmentId': changepassword.department,
-      'role': changepassword.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
-    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
-    expect(res, true);
+    try {
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': edTestUser.username,
+        'displayName': edTestUser.displayName,
+        'password': 'TestPassword123',
+        'departmentId': edTestUser.department,
+        'role': edTestUser.role.toString().split('.').last,
+      };
+      await dbHandler.registerAccount(body);
+      final String user = await dbHandler.getUserId(edTestUser.username);
+      expect(() => dbHandler.deleteAccount(user),
+          throwsA(isInstanceOf<Exception>()));
+    } finally {
+      await cleanUsers(dbHandler);
+    }
   });
 
-  test('performs a falied change of password ', () async {
+  test('Get the list of citizens with a guardian relation', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    const String testUsername = 'BrianJohnson44';
-    final GirafUserModel changepassword = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Brian Johnson',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
-      'username': changepassword.username,
-      'displayName': changepassword.displayName,
-      'password': 'TestPassword123',
-      'departmentId': changepassword.department,
-      'role': changepassword.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
-    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
-    expect(res, false);
+    try {
+      final GirafUserModel newGuardian = GirafUserModel(
+          role: Role.Guardian,
+          username: 'Alex Jones',
+          displayName: 'AJones',
+          department: 1);
+      final Map<String, dynamic> cit1Body = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': 'pwd1234',
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+
+      final Map<String, dynamic> cit2Body = <String, dynamic>{
+        'username': edTestUser.username,
+        'displayName': edTestUser.displayName,
+        'password': 'pwd1234',
+        'departmentId': edTestUser.department,
+        'role': edTestUser.role.toString().split('.').last,
+      };
+      final Map<String, dynamic> guardBody = <String, dynamic>{
+        'username': newGuardian.username,
+        'displayName': newGuardian.displayName,
+        'password': 'pwd1234',
+        'departmentId': newGuardian.department,
+        'role': newGuardian.role.toString().split('.').last,
+      };
+
+      final GirafUserModel citizen1Res =
+          await dbHandler.registerAccount(cit1Body);
+      final GirafUserModel citizen2Res =
+          await dbHandler.registerAccount(cit2Body);
+      final GirafUserModel guardianRes =
+          await dbHandler.registerAccount(guardBody);
+
+      expect(citizen1Res.username, jamesbondTestUser.username);
+      expect(citizen1Res.role, Role.Citizen);
+
+      expect(citizen2Res.username, edTestUser.username);
+      expect(citizen2Res.role, Role.Citizen);
+
+      expect(guardianRes.username, newGuardian.username);
+      expect(guardianRes.role, Role.Guardian);
+
+      await dbHandler.addCitizenToGuardian(guardianRes.id, citizen1Res.id);
+      await dbHandler.addCitizenToGuardian(guardianRes.id, citizen2Res.id);
+
+      final DisplayNameModel cit1 = DisplayNameModel(
+          id: citizen1Res.id,
+          displayName: citizen1Res.displayName,
+          role: citizen1Res.role.toString().split('.').last);
+
+      final DisplayNameModel cit2 = DisplayNameModel(
+          id: citizen2Res.id,
+          displayName: citizen2Res.displayName,
+          role: citizen2Res.role.toString().split('.').last);
+
+      final List<DisplayNameModel> citizenList = <DisplayNameModel>[cit1, cit2];
+      final List<DisplayNameModel> guardianList =
+          await dbHandler.getCitizens(guardianRes.id);
+      expect(guardianList[0].id, citizenList[0].id);
+      expect(guardianList[1].id, citizenList[1].id);
+      expect(guardianList[0].displayName, citizenList[0].displayName);
+      expect(guardianList[1].displayName, citizenList[1].displayName);
+      expect(guardianList[0].role, citizenList[0].role);
+      expect(guardianList[1].role, citizenList[1].role);
+    } finally {
+      await cleanUsers(dbHandler);
+      await cleanGuardianRelations(dbHandler);
+    }
   });
+//Test not working yet
+  /*test('performs an update to activities', () async {
+    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    try {
+      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'Rolename': jamesbondTestUser.roleName,
+        'offlineid': jamesbondTestUser.offlineId,
+        'id': jamesbondTestUser.id,
+        'Role': jamesbondTestUser.role,
+        'password': '007'
+      };
+      await dbHandler.registerAccount(jamesBondBody);
+      final PictogramModel fakePictogram =
+          await dbHandler.createPictogram(scrum);
+      lege.pictograms = [fakePictogram];
+      await dbHandler.addActivity(
+          lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
+      final ActivityModel res =
+          await dbHandler.updateActivity(spise, 'en spise aktivitet');
+      expect(res, spise);
+    } finally {
+      await cleanPictogramRelations(dbHandler);
+      await cleanUsers(dbHandler);
+      await cleanActivities(dbHandler);
+      await cleanPictograms(dbHandler);
+    }
+  });*/
 }
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Users`');
+  await db.rawDelete('DELETE FROM `Users`');
 }
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Setting`');
+  await db.rawDelete('DELETE FROM `Setting`');
 }
 
-Future<void> cleanGaurdianRelations(OfflineDbHandler dbHandler) async {
+Future<void> cleanGuardianRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `GuardianRelations`');
+  await db.rawDelete('DELETE FROM `GuardianRelations`');
 }
 
 Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekTemplates`');
+  await db.rawDelete('DELETE FROM `WeekTemplates`');
 }
 
 Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weeks`');
+  await db.rawDelete('DELETE FROM `Weeks`');
 }
 
 Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weekdays`');
+  await db.rawDelete('DELETE FROM `Weekdays`');
 }
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Pictograms`');
+  await db.rawDelete('DELETE FROM `Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Activities`');
+  await db.rawDelete('DELETE FROM `Activities`');
 }
 
 Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `PictogramRelations`');
+  await db.rawDelete('DELETE FROM `PictogramRelations`');
 }
 
 Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Timers`');
+  await db.rawDelete('DELETE FROM `Timers`');
 }
 
 Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
+  await db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
 }
 
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekDayColors`');
+  await db.rawDelete('DELETE FROM `WeekDayColors`');
 }
