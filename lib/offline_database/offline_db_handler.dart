@@ -483,8 +483,8 @@ class OfflineDbHandler {
       'Key': activity.id,
       'Order': activity.order,
       'OtherKey': weekNumber,
-      'State': activity.state,
-      'IsChoiceBoard': activity.isChoiceBoard,
+      'State': activity.state.index,
+      'IsChoiceBoard': activity.isChoiceBoard ? 1 :0 ,
     };
     Map<String, dynamic> insertTimerQuery;
     if (activity.timer != null) {
@@ -519,8 +519,10 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> listResult =
         await db.rawQuery("SELECT * FROM `Activities` WHERE `Key` == '$key'");
     final Map<String, dynamic> result = listResult[0];
-    final TimerModel timerModel =
-        result != null ? await _getTimer(result['TimerKey']) : null;
+    TimerModel timerModel;
+    if(result != null && result['TimerKey'] != null){
+      timerModel = await _getTimer(result['TimerKey']);
+    }
     final List<PictogramModel> pictoList = await _getActivityPictograms(key);
     return ActivityModel.fromDatabase(result, timerModel, pictoList);
   }
