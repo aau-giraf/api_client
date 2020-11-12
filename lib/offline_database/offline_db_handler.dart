@@ -758,8 +758,10 @@ class OfflineDbHandler {
         await db.rawQuery('SELECT * FROM `Users` AS `U` JOIN'
             ' `GuardianRelations` AS `GR` ON `U`.Id==`GR`.CitizenId '
             "WHERE `GR`.GuardianId =='$id'");
-    return res.map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
-        DisplayNameModel.fromDatabase(citizenJson));
+    return res
+        .map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
+            DisplayNameModel.fromDatabase(citizenJson))
+        .toList();
   }
 
   ///
