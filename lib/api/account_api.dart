@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:api_client/http/http.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:meta/meta.dart';

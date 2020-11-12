@@ -633,7 +633,7 @@ class OfflineDbHandler {
       'ImageHash': pictogram.imageHash,
     };
     await db.insert('Pictograms', insertQuery);
-    return getPictogramID(pictogram.id);
+    return getPictogramID(insertQuery['OnlineId']);
   }
 
   ///Update a given pictogram
