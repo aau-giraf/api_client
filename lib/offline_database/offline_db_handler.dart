@@ -633,7 +633,7 @@ class OfflineDbHandler {
       'ImageHash': pictogram.imageHash,
     };
     await db.insert('Pictograms', insertQuery);
-    return getPictogramID(pictogram.id);
+    return getPictogramID(insertQuery['OnlineId']);
   }
 
   ///Update a given pictogram
@@ -787,8 +787,10 @@ class OfflineDbHandler {
         await db.rawQuery('SELECT * FROM `Users` AS `U` JOIN'
             ' `GuardianRelations` AS `GR` ON `U`.Id==`GR`.CitizenId '
             "WHERE `GR`.GuardianId =='$id'");
-    return res.map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
-        DisplayNameModel.fromDatabase(citizenJson));
+    return res
+        .map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
+            DisplayNameModel.fromDatabase(citizenJson))
+        .toList();
   }
 
   ///
