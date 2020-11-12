@@ -146,9 +146,11 @@ Future<void> main() async {
       //create fake user
       final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
       //add pictograms to offline database
-      await dbHandler.createPictogram(scrum);
-      await dbHandler.createPictogram(extreme);
+      final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
+      final PictogramModel fakePicto2 =
+          await dbHandler.createPictogram(extreme);
       //act
+      lege.pictograms = [fakePicto1, fakePicto2];
       final ActivityModel fakeactivityModel = await dbHandler.addActivity(
           lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
       //assert
