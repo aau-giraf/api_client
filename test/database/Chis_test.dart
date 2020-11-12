@@ -1,4 +1,5 @@
 //import 'dart:html';
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:api_client/models/activity_model.dart';
@@ -58,13 +59,25 @@ final GirafUserModel jamesbondTestUser = GirafUserModel(
     imageUrl: ,*/
     lastEdit: DateTime.now(),
     userId: '1');
-    List<PictogramModel> kurt = [scrum];
-  final ActivityModel lege = ActivityModel(
+
+    final PictogramModel extreme = PictogramModel(
+    accessLevel: AccessLevel.PROTECTED,
+    id: 20,
+    title: 'Pacture of XP',
+    /*imageHash: File(join(Directory.current.path, 'test',
+     'giraf.png')).hashCode.toString(),
+    imageUrl: ,*/
+    lastEdit: DateTime.now(),
+    userId: '3');
+
+    List<PictogramModel> testListe = [scrum, extreme];
+
+    final ActivityModel lege = ActivityModel(
     id: 69,
     isChoiceBoard: true,
     order: 4,
-    pictograms: kurt,
-    choiceBoardName: '',
+    pictograms: testListe,
+    choiceBoardName: 'Testchoice',
     state: ActivityState.Normal,
     timer: null);
 Future<void> main() async {
@@ -290,17 +303,10 @@ await cleanUsers(dbHandler);
 test('performs an update to activities', () async {
   final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
   try{
-    final List<PictogramModel> testPictograms = <PictogramModel>[];
+    final List<PictogramModel> testPictograms = testListe;
     
-    final ActivityModel updateActivity = ActivityModel(
-      id: 2,
-      pictograms: testPictograms,
-      order: 1,
-      state: ActivityState.Active,
-      isChoiceBoard: true);
-
       final ActivityModel fakeActivityRes = await
-       dbHandler.addActivity(updateActivity, 
+       dbHandler.addActivity(lege, 
        'Testactivity1',
         'weekplanName',
          2020,
