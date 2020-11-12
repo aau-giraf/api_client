@@ -503,7 +503,7 @@ class OfflineDbHandler {
       for (PictogramModel pictogram in activity.pictograms) {
         await txn.insert('PictogramRelations', <String, dynamic>{
           'ActivityId': activity.id,
-          'OnlineId': pictogram.id
+          'PictogramId': pictogram.id
         });
       }
     });
@@ -656,8 +656,7 @@ class OfflineDbHandler {
     final String pictogramDirectoryPath = await getPictogramDirectory;
     try {
       await File(join(pictogramDirectoryPath, '$id.png')).delete();
-    } 
-    on FileSystemException catch (_) {}
+    } on FileSystemException catch (_) {}
     return pictogramsDeleted == 1;
   }
 
