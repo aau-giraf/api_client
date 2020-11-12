@@ -135,20 +135,13 @@ Future<void> main() async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     try {
       //arrange
-
       //create fake account
-      const String testUsername = 'BobJensen123';
-      final GirafUserModel fakeAccount = GirafUserModel(
-          role: Role.Citizen,
-          username: testUsername,
-          displayName: 'Bob Jensen',
-          department: 1);
       final Map<String, dynamic> body = <String, dynamic>{
-        'username': fakeAccount.username,
-        'displayName': fakeAccount.displayName,
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
         'password': 'TestPassword123',
-        'departmentId': fakeAccount.department,
-        'role': fakeAccount.role.toString().split('.').last,
+        'departmentId': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
       };
       //create fake user
       final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
