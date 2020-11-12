@@ -155,13 +155,14 @@ Future<void> main() async {
           lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
       //assert
       //expect(fakeUserRes.username, testUsername);
-      await cleanActivities(dbHandler);
-      await cleanUsers(dbHandler);
-      await cleanPictograms(dbHandler);
+      // await cleanActivities(dbHandler);
+      // await cleanUsers(dbHandler);
+      // await cleanPictograms(dbHandler);
     } finally {
       await cleanActivities(dbHandler);
       await cleanUsers(dbHandler);
       await cleanPictograms(dbHandler);
+      await cleanPictogramRelations(dbHandler);
     }
   });
   test('Perform a correct login attempt', () async {
