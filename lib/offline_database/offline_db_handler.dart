@@ -532,7 +532,7 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> res = await db.rawQuery(
         'SELECT * FROM `Pictograms` '
         'WHERE `OnlineId` == (SELECT `PictogramId` FROM `PictogramRelations` '
-        "'WHERE `ActivityId` == '$activityKey)'");
+        "'WHERE `ActivityId` == '$activityKey')");
     List<PictogramModel> result;
     for (Map<String, dynamic> pictogram in res) {
       result.add(PictogramModel.fromDatabase(pictogram));
