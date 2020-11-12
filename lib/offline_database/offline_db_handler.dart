@@ -377,6 +377,7 @@ class OfflineDbHandler {
       'LockTimerControl': 0, //false
       'PictogramText': 0 //false
     };
+    // TODO(Tilasair): Make the settings a transaction
     await db.insert('Setting', settings);
     final List<Map<String, dynamic>> settingsIdRes =
         await db.rawQuery('SELECT `Key` FROM `Setting` WHERE `Key` NOT IN '
