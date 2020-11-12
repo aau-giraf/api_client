@@ -798,8 +798,10 @@ class OfflineDbHandler {
         await db.rawQuery('SELECT * FROM `Users` AS `U` JOIN'
             ' `GuardianRelations` AS `GR` ON `U`.Id==`GR`.GuardianId '
             "WHERE `GR`.CitizenId =='$id'");
-    return res.map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
-        DisplayNameModel.fromDatabase(citizenJson));
+    return res
+        .map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
+            DisplayNameModel.fromDatabase(citizenJson))
+        .toList();
   }
 
   /// Add a [guardianId] to a [citizenId]
@@ -822,7 +824,8 @@ class OfflineDbHandler {
         await db.rawQuery('SELECT * FROM `Weeks` AS `w` JOIN `Users` AS `u` '
             "ON `w`.`GirafUserId`==`u`.`Id` WHERE `u`.Id == '$id'");
     return res
-        .map((Map<String, dynamic> json) => WeekNameModel.fromDatabase(json));
+        .map((Map<String, dynamic> json) => WeekNameModel.fromDatabase(json))
+        .toList();
   }
 
   /// Get a week base on
@@ -878,8 +881,10 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `WeekTemplates`');
-    return res.map((Map<String, dynamic> json) =>
-        WeekTemplateNameModel.fromDatabase(json));
+    return res
+        .map((Map<String, dynamic> json) =>
+            WeekTemplateNameModel.fromDatabase(json))
+        .toList();
   }
 
   /// Create a week template in the database from [template]
