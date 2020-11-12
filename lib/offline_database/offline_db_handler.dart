@@ -484,7 +484,7 @@ class OfflineDbHandler {
       'Order': activity.order,
       'OtherKey': weekNumber,
       'State': activity.state.index,
-      'IsChoiceBoard': activity.isChoiceBoard ? 1 :0 ,
+      'IsChoiceBoard': activity.isChoiceBoard ? 1 : 0,
     };
     Map<String, dynamic> insertTimerQuery;
     if (activity.timer != null) {
@@ -520,7 +520,7 @@ class OfflineDbHandler {
         await db.rawQuery("SELECT * FROM `Activities` WHERE `Key` == '$key'");
     final Map<String, dynamic> result = listResult[0];
     TimerModel timerModel;
-    if(result != null && result['TimerKey'] != null){
+    if (result != null && result['TimerKey'] != null) {
       timerModel = await _getTimer(result['TimerKey']);
     }
     final List<PictogramModel> pictoList = await _getActivityPictograms(key);
@@ -532,7 +532,7 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> res = await db.rawQuery(
         'SELECT * FROM `Pictograms` '
         'WHERE `OnlineId` == (SELECT `PictogramId` FROM `PictogramRelations` '
-        "'WHERE `ActivityId` == '$activityKey')");
+        "WHERE `ActivityId` == '$activityKey')");
     List<PictogramModel> result;
     for (Map<String, dynamic> pictogram in res) {
       result.add(PictogramModel.fromDatabase(pictogram));
