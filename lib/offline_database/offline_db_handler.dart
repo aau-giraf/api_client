@@ -638,9 +638,9 @@ class OfflineDbHandler {
   /// Update a image in the pictogram table
   Future<PictogramModel> updateImageInPictogram(int id, Uint8List image) async {
     final Database db = await database;
-    final File newImage = File.fromRawPath(image);
     final String pictogramDirectoryPath = await getPictogramDirectory;
-    newImage.copy(join(pictogramDirectoryPath, '$id.png'));
+    final File newImage = File(join(pictogramDirectoryPath, '$id.png'));
+    newImage.writeAsBytes(image);
     final List<Map<String, dynamic>> res =
         await db.rawQuery("SELECT * FROM `Pictograms` WHERE OnlineId == '$id'");
     return PictogramModel.fromDatabase(res[0]);
