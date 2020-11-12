@@ -1,7 +1,6 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
-import 'package:api_client/offline_database/offline_db_handler.dart';
 
 /// Week template endpoints
 class WeekTemplateApi {
@@ -31,13 +30,8 @@ class WeekTemplateApi {
   /// [template] After successful execution, a new week template will be created
   /// with the same values as this DTO.
   Stream<WeekTemplateModel> create(WeekTemplateModel template) {
-    return _http.post('/', template.toJson()).asyncMap((Response res) {
-      if (res.success()) {
-        OfflineDbHandler.instance.createTemplate(template);
-        return WeekTemplateModel.fromJson(res.json['data']);
-      } else {
-        return OfflineDbHandler.instance.createTemplate(template);
-      }
+    return _http.post('/', template.toJson()).map((Response res) {
+      return WeekTemplateModel.fromJson(res.json['data']);
     });
   }
 
@@ -55,15 +49,8 @@ class WeekTemplateApi {
   ///
   /// [template] The new template value
   Stream<WeekTemplateModel> update(WeekTemplateModel template) {
-    return _http
-        .put('/${template.id}', template.toJson())
-        .asyncMap((Response res) {
-      if (res.success()) {
-        OfflineDbHandler.instance.updateTemplate(template);
-        return WeekTemplateModel.fromJson(res.json['data']);
-      } else {
-        return OfflineDbHandler.instance.updateTemplate(template);
-      }
+    return _http.put('/${template.id}', template.toJson()).map((Response res) {
+      return WeekTemplateModel.fromJson(res.json['data']);
     });
   }
 
@@ -72,13 +59,6 @@ class WeekTemplateApi {
   ///
   /// [id] ID of the template to delete
   Stream<bool> delete(int id) {
-    return _http.delete('/$id').asyncMap((Response res) {
-      if (res.success()) {
-        OfflineDbHandler.instance.deleteTemplate(id);
-        return res.success();
-      } else {
-        return OfflineDbHandler.instance.deleteTemplate(id);
-      }
-    });
+    return _http.delete('/$id').map((Response res) => res.success());
   }
 }

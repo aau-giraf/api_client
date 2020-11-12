@@ -1,7 +1,5 @@
-//import 'dart:html';
-import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
@@ -15,8 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-import 'OfflineDatabase_test.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
@@ -32,25 +28,26 @@ class MockOfflineDbHandler extends OfflineDbHandler {
     return db;
   }
 }
-final GirafUserModel jamesbondTestUser = GirafUserModel(
-  username:'JamesBond007' ,
-  department: 1,
-  displayName: 'James Bond',
-  roleName: 'Citizen',
-  id: 'james007bond',
-  role: Role.Citizen,
-  offlineId: 1);
 
-  final GirafUserModel edTestUser = GirafUserModel(
-  department: 34,
-  offlineId: 34,
-  role: Role.Citizen,
-  id: 'edmcniel01',
-  roleName: 'Citizen',
-  displayName: 'Ed McNiel',
-  username: 'EdMcNiel34');
-  
-  final PictogramModel scrum = PictogramModel(
+final GirafUserModel jamesbondTestUser = GirafUserModel(
+    username: 'JamesBond007',
+    department: 1,
+    displayName: 'James Bond',
+    roleName: 'Citizen',
+    id: 'james007bond',
+    role: Role.Citizen,
+    offlineId: 1);
+
+final GirafUserModel edTestUser = GirafUserModel(
+    department: 34,
+    offlineId: 34,
+    role: Role.Citizen,
+    id: 'edmcniel01',
+    roleName: 'Citizen',
+    displayName: 'Ed McNiel',
+    username: 'EdMcNiel34');
+
+final PictogramModel scrum = PictogramModel(
     accessLevel: AccessLevel.PUBLIC,
     id: 44,
     title: 'Pacture of Scrum',
@@ -59,25 +56,13 @@ final GirafUserModel jamesbondTestUser = GirafUserModel(
     imageUrl: ,*/
     lastEdit: DateTime.now(),
     userId: '1');
-
-    final PictogramModel extreme = PictogramModel(
-    accessLevel: AccessLevel.PROTECTED,
-    id: 20,
-    title: 'Pacture of XP',
-    /*imageHash: File(join(Directory.current.path, 'test',
-     'giraf.png')).hashCode.toString(),
-    imageUrl: ,*/
-    lastEdit: DateTime.now(),
-    userId: '3');
-
-    List<PictogramModel> testListe = [scrum, extreme];
-
-    final ActivityModel lege = ActivityModel(
+List<PictogramModel> kurt = [scrum];
+final ActivityModel lege = ActivityModel(
     id: 69,
     isChoiceBoard: true,
     order: 4,
-    pictograms: testListe,
-    choiceBoardName: 'Testchoice',
+    pictograms: kurt,
+    choiceBoardName: '',
     state: ActivityState.Normal,
     timer: null);
 Future<void> main() async {
@@ -133,37 +118,45 @@ Future<void> main() async {
       await cleanUsers(dbHandler);
     }
   });
-test('Add activity test', () async {
-    //arrange
+  test('Add activity test', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    // final List<PictogramModel> fakePictograms = <PictogramModel>[];
-    // final ActivityModel fakeActivity = ActivityModel(
-    //     pictograms: fakePictograms,
-    //     order: 1,
-    //     id: 1,
-    //     state: ActivityState.Normal,
-    //     isChoiceBoard: true);
-    //create fake account
-    const String testUsername = 'BobJensen123';
-    final GirafUserModel fakeAccount = GirafUserModel(
-        role: Role.Citizen,
-        username: testUsername,
-        displayName: 'Bob Jensen',
-        department: 1);
-    final Map<String, dynamic> body = <String, dynamic>{
-      'username': fakeAccount.username,
-      'displayName': fakeAccount.displayName,
-      'password': 'TestPassword123',
-      'departmentId': fakeAccount.department,
-      'role': fakeAccount.role.toString().split('.').last,
-    };
-    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
-    //final Weekday fakeDay = Weekday(;
-    //act
-    // final ActivityModel fakeactivityModel = await dbHandler.addActivity(
-    //     fakeActivity, '1', 'weekplanName', 2020, 50, Weekday.Friday);
-    //assert
-    expect(fakeUserRes.username, testUsername);
+    try {
+      //arrange
+
+      final List<PictogramModel> fakePictograms = <PictogramModel>[];
+      final ActivityModel fakeActivity = ActivityModel(
+        pictograms: fakePictograms,
+        order: 1,
+        id: 1,
+        state: ActivityState.Normal,
+        isChoiceBoard: true,
+      );
+      //create fake account
+      const String testUsername = 'BobJensen123';
+      final GirafUserModel fakeAccount = GirafUserModel(
+          role: Role.Citizen,
+          username: testUsername,
+          displayName: 'Bob Jensen',
+          department: 1);
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': fakeAccount.username,
+        'displayName': fakeAccount.displayName,
+        'password': 'TestPassword123',
+        'departmentId': fakeAccount.department,
+        'role': fakeAccount.role.toString().split('.').last,
+      };
+      //final GirafUserModel fakeUserRes =
+      // await dbHandler.registerAccount(body);
+      //final Weekday fakeDay = Weekday(;
+      //act
+      final ActivityModel fakeactivityModel = await dbHandler.addActivity(
+          lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
+      //assert
+      //expect(fakeUserRes.username, testUsername);
+    } finally {
+      await cleanActivities(dbHandler);
+      await cleanUsers(dbHandler);
+    }
   });
   test('Perform a correct login attempt', () async {
     final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
@@ -250,135 +243,121 @@ test('Add activity test', () async {
     expect(testLogin, false);
     await cleanUsers(testdb);
   });
+  test('Create a pictogram in the offline database', () async {
+    final MockOfflineDbHandler testdb = MockOfflineDbHandler.instance;
+    try {
+      final PictogramModel testPicto = PictogramModel(
+          title: 'Spis Mad',
+          accessLevel: AccessLevel.PUBLIC,
+          id: 25,
+          lastEdit: DateTime.now(),
+          imageHash: 'XXXXX');
+      await testdb.createPictogram(testPicto);
+      final PictogramModel dbPicto = await testdb.getPictogramID(testPicto.id);
+      expect(dbPicto.id, testPicto.id);
+    } finally {
+      await cleanPictograms(testdb);
+    }
+  });
   test('performs a successfull change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    try{
     const String testUsername = 'ChrisAaen11';
     final GirafUserModel changepassword = GirafUserModel(
-      role: Role.Citizen,
-      username: testUsername,
-      displayName: 'Chris Aaen',
-      department: 1);
-        final Map<String, dynamic> body = <String, dynamic>{
+        role: Role.Citizen,
+        username: testUsername,
+        displayName: 'Chris Aaen',
+        department: 1);
+    final Map<String, dynamic> body = <String, dynamic>{
       'username': changepassword.username,
       'displayName': changepassword.displayName,
       'password': 'TestPassword123',
       'departmentId': changepassword.department,
       'role': changepassword.role.toString().split('.').last,
-  };
-  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
- await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
- final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
- expect(res, true);
-    }finally{
-await cleanUsers(dbHandler);
-    }
-});
+    };
+    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword444');
+    expect(res, true);
+  });
 
   test('performs a falied change of password ', () async {
     final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-    try{
     const String testUsername = 'BrianJohnson44';
     final GirafUserModel changepassword = GirafUserModel(
-      role: Role.Citizen,
-      username: testUsername,
-      displayName: 'Brian Johnson',
-      department: 1);
-        final Map<String, dynamic> body = <String, dynamic>{
+        role: Role.Citizen,
+        username: testUsername,
+        displayName: 'Brian Johnson',
+        department: 1);
+    final Map<String, dynamic> body = <String, dynamic>{
       'username': changepassword.username,
       'displayName': changepassword.displayName,
       'password': 'TestPassword123',
       'departmentId': changepassword.department,
       'role': changepassword.role.toString().split('.').last,
-  };
-  final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
- await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
- final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
- expect(res, false);}
- finally{
- await cleanUsers(dbHandler);
- }
-});
-
-test('performs an update to activities', () async {
-  final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-  try{
-    final List<PictogramModel> testPictograms = testListe;
-    
-      final ActivityModel fakeActivityRes = await
-       dbHandler.addActivity(lege, 
-       'Testactivity1',
-        'weekplanName',
-         2020,
-        1,
-          Weekday.Monday);
-  }
-
-      //expect(fakeActivityRes, matcher);}
-      finally{
-        await cleanActivities(dbHandler);
-      }
-});
+    };
+    final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+    await dbHandler.changePassword(fakeUserRes.id, 'TestPassword444');
+    final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
+    expect(res, false);
+  });
 }
-
-
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Users`');
+  db.rawDelete('DELETE FROM `Users`');
 }
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `Setting`');
+  db.rawDelete('DELETE FROM `Setting`');
 }
 
 Future<void> cleanGaurdianRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `GuardianRelations`');
+  db.rawDelete('DELETE FROM `GuardianRelations`');
 }
 
 Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `WeekTemplates`');
+  db.rawDelete('DELETE FROM `WeekTemplates`');
 }
 
 Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `Weeks`');
+  db.rawDelete('DELETE FROM `Weeks`');
 }
 
 Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `Weekdays`');
+  db.rawDelete('DELETE FROM `Weekdays`');
 }
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `Pictograms`');
+  db.rawDelete('DELETE FROM `Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `Activities`');
+  db.rawDelete('DELETE FROM `Activities`');
 }
 
 Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `PictogramRelations`');
+  db.rawDelete('DELETE FROM `PictogramRelations`');
 }
 
 Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `Timers`');
+  db.rawDelete('DELETE FROM `Timers`');
 }
 
 Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `FailedOnlineTransactions`');
+  db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
 }
 
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE * FROM `WeekDayColors`');
+  db.rawDelete('DELETE FROM `WeekDayColors`');
 }
