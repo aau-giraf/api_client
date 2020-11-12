@@ -9,12 +9,12 @@ class ActivityModel implements Model {
   /// Constructor for Activity
   ActivityModel(
       {@required this.id,
-        @required this.pictograms,
-        @required this.order,
-        @required this.state,
-        @required this.isChoiceBoard,
-        this.choiceBoardName,
-        this.timer});
+      @required this.pictograms,
+      @required this.order,
+      @required this.state,
+      @required this.isChoiceBoard,
+      this.choiceBoardName,
+      this.timer});
 
   /// Constructs the activityModel from json.
   ActivityModel.fromJson(Map<String, dynamic> json) {
@@ -46,8 +46,8 @@ class ActivityModel implements Model {
     }
     id = json['Key'];
     order = json['Order'];
-    state = ActivityState.values[(json['State']) - 1];
-    isChoiceBoard = json['IsChoiceBoard'];
+    state = ActivityState.values[(json['State'])];
+    isChoiceBoard = json['IsChoiceBoard'] == 1;
   }
 
   /// The ID of the activity.
