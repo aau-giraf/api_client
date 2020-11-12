@@ -26,7 +26,6 @@ Future<void> main() async {
         .listen(expectAsync1((bool success) {
       expect(success, isTrue);
     }));
-
     httpMock
         .expectOne(url: '/login', method: Method.post)
         .flush(<String, dynamic>{
