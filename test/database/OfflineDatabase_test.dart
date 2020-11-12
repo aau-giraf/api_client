@@ -28,7 +28,63 @@ class MockOfflineDbHandler extends OfflineDbHandler {
     return db;
   }
 }
+final GirafUserModel jamesbondTestUser = GirafUserModel(
+    username: 'JamesBond007',
+    department: 1,
+    displayName: 'James Bond',
+    roleName: 'Citizen',
+    id: 'james007bond',
+    role: Role.Citizen,
+    offlineId: 1);
 
+final GirafUserModel edTestUser = GirafUserModel(
+    department: 34,
+    offlineId: 34,
+    role: Role.Citizen,
+    id: 'edmcniel01',
+    roleName: 'Citizen',
+    displayName: 'Ed McNiel',
+    username: 'EdMcNiel34');
+
+final PictogramModel scrum = PictogramModel(
+    accessLevel: AccessLevel.PUBLIC,
+    id: 44,
+    title: 'Pacture of Scrum',
+    /*imageHash: File(join(Directory.current.path, 'test',
+     'giraf.png')).hashCode.toString(),
+    imageUrl: ,*/
+    lastEdit: DateTime.now(),
+    userId: '1');
+
+final PictogramModel extreme = PictogramModel(
+    accessLevel: AccessLevel.PROTECTED,
+    id: 20,
+    title: 'Pacture of XP',
+    /*imageHash: File(join(Directory.current.path, 'test',
+     'giraf.png')).hashCode.toString(),
+    imageUrl: ,*/
+    lastEdit: DateTime.now(),
+    userId: '3');
+
+List<PictogramModel> testListe = [scrum];
+List<PictogramModel> testListe2 = [extreme];
+
+final ActivityModel lege = ActivityModel(
+    id: 69,
+    isChoiceBoard: true,
+    order: 4,
+    pictograms: testListe,
+    choiceBoardName: 'Testchoice',
+    state: ActivityState.Active,
+    timer: null);
+
+final ActivityModel spise = ActivityModel(
+    id: 70,
+    pictograms: testListe2,
+    order: 44,
+    state: ActivityState.Active,
+    isChoiceBoard: true,
+    timer: null);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
@@ -256,64 +312,95 @@ Future<void> main() async {
     final bool res = await dbHandler.login('ChrisAaen11', 'TestPassword6969');
     expect(res, false);
   });
+
+//Test not working yet
+   /*test('performs an update to activities', () async {
+    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    try {
+      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'Rolename': jamesbondTestUser.roleName,
+        'offlineid': jamesbondTestUser.offlineId,
+        'id': jamesbondTestUser.id,
+        'Role': jamesbondTestUser.role,
+        'password': '007'
+      };
+      await dbHandler.registerAccount(jamesBondBody);
+      final PictogramModel fakePictogram =
+          await dbHandler.createPictogram(scrum);
+      lege.pictograms = [fakePictogram];
+      await dbHandler.addActivity(
+          lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
+      final ActivityModel res =
+          await dbHandler.updateActivity(spise, 'en spise aktivitet');
+      expect(res, spise);
+    } finally {
+      await cleanPictogramRelations(dbHandler);
+      await cleanUsers(dbHandler);
+      await cleanActivities(dbHandler);
+      await cleanPictograms(dbHandler);
+    }
+  });*/
 }
+
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Users`');
+  await db.rawDelete('DELETE FROM `Users`');
 }
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Setting`');
+  await db.rawDelete('DELETE FROM `Setting`');
 }
 
 Future<void> cleanGaurdianRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `GuardianRelations`');
+  await db.rawDelete('DELETE FROM `GuardianRelations`');
 }
 
 Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekTemplates`');
+  await db.rawDelete('DELETE * FROM `WeekTemplates`');
 }
 
 Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weeks`');
+  await db.rawDelete('DELETE FROM `Weeks`');
 }
 
 Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Weekdays`');
+  await db.rawDelete('DELETE FROM `Weekdays`');
 }
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Pictograms`');
+  await db.rawDelete('DELETE FROM `Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Activities`');
+  await db.rawDelete('DELETE FROM `Activities`');
 }
 
 Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `PictogramRelations`');
+  await db.rawDelete('DELETE FROM `PictogramRelations`');
 }
 
 Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `Timers`');
+  await db.rawDelete('DELETE FROM `Timers`');
 }
 
 Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
+  await db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
 }
 
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  db.rawDelete('DELETE FROM `WeekDayColors`');
+  await db.rawDelete('DELETE FROM `WeekDayColors`');
 }
