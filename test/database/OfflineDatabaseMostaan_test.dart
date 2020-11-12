@@ -144,7 +144,8 @@ Future<void> main() async {
         'role': jamesbondTestUser.role.toString().split('.').last,
       };
       //create fake user
-      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      final GirafUserModel fakeUserRmatcheres =
+          await dbHandler.registerAccount(body);
       //add pictograms to offline database
       final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
       final PictogramModel fakePicto2 =
@@ -154,10 +155,8 @@ Future<void> main() async {
       final ActivityModel fakeactivityModel = await dbHandler.addActivity(
           lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
       //assert
-      //expect(fakeUserRes.username, testUsername);
-      // await cleanActivities(dbHandler);
-      // await cleanUsers(dbHandler);
-      // await cleanPictograms(dbHandler);
+      expect(lege.id, fakeactivityModel.id);
+      expect(lege.state, fakeactivityModel.state);
     } finally {
       await cleanActivities(dbHandler);
       await cleanUsers(dbHandler);
