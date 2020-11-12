@@ -23,14 +23,14 @@ class AccountApi {
   /// [password] The users password
   Stream<bool> login(String username, String password) async* {
     int responseCode;
-    final bool online = await _http.post('/login', <String, String>{
+    final Future<bool> online = _http.post('/login', <String, String>{
       'username': username,
       'password': password,
     }).flatMap<bool>((Response res) {
       responseCode = res.statusCode();
       return Stream<bool>.fromFuture(_persist.set('token', res.json['data']));
     }).first;
-    if (!online && responseCode != 400 && responseCode != 401) {
+    if (!(await online) && responseCode != 400 && responseCode != 401) {
       yield await OfflineDbHandler.instance.login(username, password);
     } else {
       yield false;

@@ -20,7 +20,7 @@ Future<void> main() async {
     accountApi = AccountApi(httpMock, persistenceMock);
   });
 
-  test('Should call login endpoint', () {
+  test('Should call login endpoint', () async {
     accountApi
         .login('username', 'password')
         .listen(expectAsync1((bool success) {
