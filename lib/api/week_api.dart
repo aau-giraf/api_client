@@ -1,7 +1,6 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
-import 'package:api_client/offline_database/offline_db_handler.dart';
 
 /// Week endpoints
 class WeekApi {
@@ -23,23 +22,6 @@ class WeekApi {
         return null;
       }
     });
-  }
-
-  ///Compares a [inputWeekModel] with the offline database and adds
-  /// the weekmodel to the offline database if it exists.
-  Future<void> hydrateOfflineDbweek(
-      WeekModel inputWeekModel, String id, int year, int weekNumber) async {
-    WeekModel weekModelOffline =
-        await OfflineDbHandler.instance.getWeek(id, year, weekNumber);
-    //Compare weekmodels online with offline
-    if (inputWeekModel.name == weekModelOffline.name &&
-        inputWeekModel.weekNumber == weekModelOffline.weekNumber &&
-        inputWeekModel.weekYear == weekModelOffline.weekYear) {
-    } else {
-      //add week to offline database
-      OfflineDbHandler.instance
-          .updateWeek(id, year, weekNumber, inputWeekModel);
-    }
   }
 
   /// Gets the Week with the specified week number and year for the user with

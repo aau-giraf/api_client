@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:api_client/models/activity_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
@@ -265,6 +266,95 @@ Future<void> main() async {
       expect(() => dbHandler.deleteAccount(user),
           throwsA(isInstanceOf<Exception>()));
       // await cleanUsers(dbHandler);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
+  });
+
+  test('Get the list of citizens with a guardian relation', () async {
+    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+    try {
+      const String testUsername1 = 'John Smith';
+      final GirafUserModel fakeAccount = GirafUserModel(
+          role: Role.Citizen,
+          username: testUsername1,
+          displayName: 'John',
+          department: 1);
+      final Map<String, dynamic> body = <String, dynamic>{
+        'username': fakeAccount.username,
+        'displayName': fakeAccount.displayName,
+        'password': 'pwd1234',
+        'departmentId': fakeAccount.department,
+        'role': fakeAccount.role.toString().split('.').last,
+      };
+      const String testUsername2 = 'Alice Poole';
+      final GirafUserModel fakeAccount2 = GirafUserModel(
+          role: Role.Citizen,
+          username: testUsername2,
+          displayName: 'Alice',
+          department: 1);
+      final Map<String, dynamic> body2 = <String, dynamic>{
+        'username': fakeAccount2.username,
+        'displayName': fakeAccount2.displayName,
+        'password': 'pwd1234',
+        'departmentId': fakeAccount2.department,
+        'role': fakeAccount2.role.toString().split('.').last,
+      };
+      const String testUsername3 = 'Jake Park';
+      final GirafUserModel fakeAccount3 = GirafUserModel(
+          role: Role.Guardian,
+          username: testUsername3,
+          displayName: 'Jake',
+          department: 1);
+      final Map<String, dynamic> body3 = <String, dynamic>{
+        'username': fakeAccount3.username,
+        'displayName': fakeAccount3.displayName,
+        'password': 'pwd1234',
+        'departmentId': fakeAccount3.department,
+        'role': fakeAccount3.role.toString().split('.').last,
+      };
+
+      /// Figure out how to create multiple users
+      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      final GirafUserModel fakeUserRes2 =
+          await dbHandler.registerAccount(body2);
+      final GirafUserModel fakeUserRes3 =
+          await dbHandler.registerAccount(body3);
+
+      expect(fakeUserRes.username, testUsername1);
+      expect(fakeUserRes.role, Role.Citizen);
+
+      expect(fakeUserRes2.username, testUsername2);
+      expect(fakeUserRes2.role, Role.Citizen);
+
+      expect(fakeUserRes3.username, testUsername3);
+      expect(fakeUserRes3.role, Role.Guardian);
+
+      await dbHandler.addCitizenToGuardian(fakeUserRes3.id, fakeUserRes.id);
+      await dbHandler.addCitizenToGuardian(fakeUserRes3.id, fakeUserRes2.id);
+
+      final DisplayNameModel cit1 = DisplayNameModel(
+          id: fakeUserRes.id,
+          displayName: fakeUserRes.displayName,
+          role: fakeUserRes.role.toString().split('.').last);
+
+      final DisplayNameModel cit2 = DisplayNameModel(
+          id: fakeUserRes2.id,
+          displayName: fakeUserRes2.displayName,
+          role: fakeUserRes2.role.toString().split('.').last);
+
+      //await dbHandler.registerAccount(body);
+      // ignore: always_specify_types
+      final List<DisplayNameModel> citizenList = [cit1, cit2];
+      final List<DisplayNameModel> guardianList =
+          await dbHandler.getCitizens(fakeUserRes3.id);
+      // await cleanUsers(dbHandler);
+      expect(guardianList[0].id, citizenList[0].id);
+      expect(guardianList[1].id, citizenList[1].id);
+      expect(guardianList[0].displayName, citizenList[0].displayName);
+      expect(guardianList[1].displayName, citizenList[1].displayName);
+      expect(guardianList[0].role, citizenList[0].role);
+      expect(guardianList[1].role, citizenList[1].role);
     } finally {
       await cleanUsers(dbHandler);
     }
