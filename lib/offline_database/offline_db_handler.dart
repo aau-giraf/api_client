@@ -534,7 +534,7 @@ class OfflineDbHandler {
         'SELECT * FROM `Pictograms` '
         'WHERE `OnlineId` == (SELECT `PictogramId` FROM `PictogramRelations` '
         "WHERE `ActivityId` == '$activityKey')");
-    List<PictogramModel> result;
+    List<PictogramModel> result = <PictogramModel>[];
     for (Map<String, dynamic> pictogram in res) {
       result.add(PictogramModel.fromDatabase(pictogram));
     }
