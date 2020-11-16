@@ -37,7 +37,7 @@ class ActivityModel implements Model {
     }
   }
 
-  /// Constructer from jason for the offlineDb
+  /// Constructer from json for the offlineDb
   ActivityModel.fromDatabase(
       Map<String, dynamic> json, this.timer, this.pictograms) {
     if (json == null) {
