@@ -453,7 +453,7 @@ class OfflineDbHandler {
 
   /// Do not call this function without ensuring that the password is
   /// successfully changed online
-  /// change a password
+  /// change a password of a user with id [id] to [newPassword]
   Future<bool> changePassword(String id, String newPassword) async {
     final Database db = await database;
     final String encryptedPassword =
@@ -534,7 +534,7 @@ class OfflineDbHandler {
         'SELECT * FROM `Pictograms` '
         'WHERE `OnlineId` == (SELECT `PictogramId` FROM `PictogramRelations` '
         "WHERE `ActivityId` == '$activityKey')");
-    List<PictogramModel> result = <PictogramModel>[];
+    final List<PictogramModel> result = <PictogramModel>[];
     for (Map<String, dynamic> pictogram in res) {
       result.add(PictogramModel.fromDatabase(pictogram));
     }
