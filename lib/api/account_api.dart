@@ -32,7 +32,7 @@ class AccountApi {
     if (!online && responseCode != 400 && responseCode != 401) {
       yield await OfflineDbHandler.instance.login(username, password);
     } else {
-      yield false;
+      yield online;
     }
   }
 
