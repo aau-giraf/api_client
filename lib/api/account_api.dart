@@ -26,7 +26,8 @@ class AccountApi {
       'password': password,
     }).flatMap<bool>((Response res) {
       responseCode = res.statusCode();
-      return Stream<bool>.fromFuture(_persist.set('token', res.json['data']));
+      _persist.set('token', res.json['data']);
+      return Stream<bool>.value(res.success());
     }).first;
     if (!online && responseCode != 400 && responseCode != 401) {
       yield await OfflineDbHandler.instance.login(username, password);
