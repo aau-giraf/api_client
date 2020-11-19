@@ -26,13 +26,13 @@ Future<void> main() async {
         .listen(expectAsync1((bool success) {
       expect(success, isTrue);
     }));
-    httpMock
-        .expectOne(url: '/login', method: Method.post)
-        .flush(<String, dynamic>{
-      'data': 'TestToken',
-      'message': '',
-      'errorKey': 'NoError',
-    });
+    Future<void>.delayed(const Duration(milliseconds: 10)).then((_) => httpMock
+            .expectOne(url: '/login', method: Method.post)
+            .flush(<String, dynamic>{
+          'data': 'TestToken',
+          'message': '',
+          'errorKey': 'NoError',
+        }));
   });
 
   test('Should throw on error', () {
@@ -41,13 +41,13 @@ Future<void> main() async {
       expect(error.errorKey, ErrorKey.InvalidCredentials);
     }));
 
-    httpMock
+    Future<void>.delayed(const Duration(milliseconds: 10)).then((_) => httpMock
         .expectOne(url: '/login', method: Method.post)
         .throwError(ApiException(Response(null, <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'InvalidCredentials',
-        })));
+        }))));
   });
 
   test('Should request reset password token', () {
