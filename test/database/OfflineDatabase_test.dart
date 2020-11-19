@@ -456,7 +456,7 @@ Future<void> main() async {
       await cleanGuardianRelations(dbHandler);
     }
   });
-  test('performs an update to activities', () async {
+  test('update an activity', () async {
     try {
       final Map<String, dynamic> jamesBondBody = <String, dynamic>{
         'username': jamesbondTestUser.username,
@@ -473,10 +473,9 @@ Future<void> main() async {
       lege.pictograms = [fakePictogram];
       ActivityModel model = await dbHandler.addActivity(
           lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
-          model.choiceBoardName = 'test';
-      final ActivityModel res =
-          await dbHandler.updateActivity(model, '33');
-      expect(res.choiceBoardName, 'test');
+      model.order = 0;
+      final ActivityModel res = await dbHandler.updateActivity(model, '33');
+      expect(res.order, 0);
     } finally {
       await cleanPictogramRelations(dbHandler);
       await cleanUsers(dbHandler);

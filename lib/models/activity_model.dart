@@ -46,7 +46,14 @@ class ActivityModel implements Model {
     }
     id = json['Key'];
     order = json['Order'];
-    state = ActivityState.values[(json['State'])];
+    int stateIndex;
+    if (json['State'] is int) {
+      stateIndex = json['State'];
+    } else {
+      final String stateString = json['State'];
+      stateIndex = int.tryParse(stateString);
+    }
+    state = ActivityState.values[stateIndex];
     isChoiceBoard = json['IsChoiceBoard'] == 1;
   }
 

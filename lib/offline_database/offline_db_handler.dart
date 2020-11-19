@@ -560,7 +560,7 @@ class OfflineDbHandler {
       }
       await db.rawUpdate('UPDATE `Activities` SET '
           "`Order` = '${activity.order}', "
-          "State = '${activity.state}', "
+          "State = '${activity.state.index}', "
           "IsChoiceBoard = '${activity.isChoiceBoard}' "
           "WHERE `Key` == '${activity.id}'");
     } else {
