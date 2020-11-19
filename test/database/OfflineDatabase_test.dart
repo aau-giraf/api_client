@@ -25,8 +25,15 @@ class MockOfflineDbHandler extends OfflineDbHandler {
   @override
   Future<Database> initializeDatabase() async {
     sqfliteFfiInit();
-    final Database db = await databaseFactoryFfi.openDatabase(
-        join(Directory.current.path, 'test', 'database', 'girafTest.db'),
+    final String tempDir = Directory.current.path;
+    String dbDir;
+    Database db;
+    if (tempDir.split(separator).last == 'test') {
+      dbDir = join(tempDir, 'database');
+    } else {
+      dbDir = join(tempDir, 'test', 'database');
+    }
+    db = await databaseFactoryFfi.openDatabase(join(dbDir, 'girafTest.db'),
         options: OpenDatabaseOptions(version: 1));
     createTables(db);
     return db;
@@ -108,7 +115,6 @@ final ActivityModel spise = ActivityModel(
   timer: null,
 );
 
- 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
