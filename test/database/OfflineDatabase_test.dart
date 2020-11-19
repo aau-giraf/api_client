@@ -14,9 +14,7 @@ import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -159,15 +157,6 @@ Future<void> main() async {
   test('Add activity test', () async {
     try {
       //arrange
-      //create fake account
-      final Map<String, dynamic> body = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'password': 'TestPassword123',
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
-      };
-      //create fake user
       //add pictograms to offline database
       final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
       final PictogramModel fakePicto2 =
@@ -481,8 +470,8 @@ Future<void> main() async {
       await dbHandler.registerAccount(jamesBondBody);
       final PictogramModel fakePictogram =
           await dbHandler.createPictogram(scrum);
-      lege.pictograms = [fakePictogram];
-      ActivityModel model = await dbHandler.addActivity(
+      lege.pictograms = <PictogramModel>[fakePictogram];
+      final ActivityModel model = await dbHandler.addActivity(
           lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
       model.order = 0;
       final ActivityModel res = await dbHandler.updateActivity(model, '33');
