@@ -508,15 +508,14 @@ class OfflineDbHandler {
         });
       }
     });
-    await db.insert('Activities', insertActivityQuery);
+    await db.insert('`Activities`', insertActivityQuery);
     if (insertTimerQuery != null) {
       await db.insert('Timers', insertTimerQuery);
     }
-    return _getActivity(activity.id);
+    return _getActivity(activity.id, db);
   }
 
-  Future<ActivityModel> _getActivity(int key) async {
-    final Database db = await database;
+  Future<ActivityModel> _getActivity(int key, Database db) async {
     final List<Map<String, dynamic>> listResult =
         await db.rawQuery("SELECT * FROM `Activities` WHERE `Key` == '$key'");
     final Map<String, dynamic> result = listResult[0];
@@ -552,29 +551,43 @@ class OfflineDbHandler {
   Future<ActivityModel> updateActivity(
       ActivityModel activity, String userId) async {
     final Database db = await database;
-    await db.rawUpdate('UPDATE `Activities` SET '
-        "Order = '${activity.order}', "
-        "State = '${activity.state}', "
-        "TimerKey = '${activity.timer.key}', "
-        "IsChoiceBoard = '${activity.isChoiceBoard}' "
-        "WHERE `Key` == '$activity'");
-    await db.rawUpdate('UPDATE `Timers` SET '
-        "StartTime = '${activity.timer.startTime}', "
-        "Progress = '${activity.timer.progress}', "
-        "FullLength = '${activity.timer.fullLength}', "
-        "Paused = '${activity.timer.paused}' "
-        "WHERE Key == '${activity.timer.key}'");
+    if (activity.timer == null) {
+      final List<Map<String, dynamic>> res = await db.rawQuery(
+          "SELECT * FROM `Activities` WHERE `Key` == '${activity.id}'");
+      if (res.isNotEmpty) {
+        db.rawDelete(
+            "DELETE FROM `Timers` WHERE `Key` == '${res[0]['TimerKey']}'");
+      }
+      await db.rawUpdate('UPDATE `Activities` SET '
+          "`Order` = '${activity.order}', "
+          "State = '${activity.state}', "
+          "IsChoiceBoard = '${activity.isChoiceBoard}' "
+          "WHERE `Key` == '${activity.id}'");
+    } else {
+      await db.rawUpdate('UPDATE `Activities` SET '
+          "`Order` = '${activity.order}', "
+          "State = '${activity.state}', "
+          "TimerKey = '${activity.timer.key}', "
+          "IsChoiceBoard = '${activity.isChoiceBoard}' "
+          "WHERE `Key` == '${activity.id}'");
+      await db.rawUpdate('UPDATE `Timers` SET '
+          "StartTime = '${activity.timer.startTime}', "
+          "Progress = '${activity.timer.progress}', "
+          "FullLength = '${activity.timer.fullLength}', "
+          "Paused = '${activity.timer.paused}' "
+          "WHERE Key == '${activity.timer.key}'");
+    }
     db.transaction((Transaction txn) async {
       await txn.rawDelete('DELETE FROM `PictogramRelations` '
           "WHERE ActivityId = '${activity.id}'");
       for (PictogramModel pictogram in activity.pictograms) {
         await txn.insert('PictogramRelations', <String, dynamic>{
           'ActivityId': activity.id,
-          'OnlineId': pictogram.id
+          'PictogramId': pictogram.id
         });
       }
     });
-    return _getActivity(activity.id);
+    return _getActivity(activity.id, db);
   }
 
   ///Delete an activity with the id [activityId]

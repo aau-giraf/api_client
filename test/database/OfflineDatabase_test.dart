@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -9,6 +10,7 @@ import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,21 +81,31 @@ List<PictogramModel> testListe = <PictogramModel>[scrum];
 List<PictogramModel> testListe2 = <PictogramModel>[extreme];
 
 final ActivityModel lege = ActivityModel(
-    id: 69,
-    isChoiceBoard: true,
-    order: 4,
-    pictograms: testListe,
-    choiceBoardName: 'Testchoice',
-    state: ActivityState.Active,
-    timer: null);
+  id: 69,
+  isChoiceBoard: true,
+  order: 1,
+  pictograms: testListe,
+  choiceBoardName: 'Testchoice',
+  state: ActivityState.Active,
+  timer: null,
+);
+final TimerModel timer = TimerModel(
+  startTime: DateTime.now(),
+  progress: 1,
+  fullLength: 10,
+  paused: true,
+  key: 44,
+);
 
 final ActivityModel spise = ActivityModel(
-    id: 70,
-    pictograms: testListe2,
-    order: 44,
-    state: ActivityState.Active,
-    isChoiceBoard: true,
-    timer: null);
+  id: 70,
+  pictograms: testListe2,
+  order: 2,
+  state: ActivityState.Active,
+  isChoiceBoard: true,
+  choiceBoardName: 'Testsecondchoice',
+  timer: null,
+);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -154,11 +166,11 @@ Future<void> main() async {
       };
       //create fake user
       final GirafUserModel fakeUserRmatcheres =
-      await dbHandler.registerAccount(body);
+          await dbHandler.registerAccount(body);
       //add pictograms to offline database
       final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
       final PictogramModel fakePicto2 =
-      await dbHandler.createPictogram(extreme);
+          await dbHandler.createPictogram(extreme);
       //act
       lege.pictograms = [fakePicto1, fakePicto2];
       final ActivityModel fakeactivityModel = await dbHandler.addActivity(
@@ -445,9 +457,7 @@ Future<void> main() async {
       await cleanGuardianRelations(dbHandler);
     }
   });
-//Test not working yet
-  /*test('performs an update to activities', () async {
-    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
+  test('performs an update to activities', () async {
     try {
       final Map<String, dynamic> jamesBondBody = <String, dynamic>{
         'username': jamesbondTestUser.username,
@@ -462,18 +472,19 @@ Future<void> main() async {
       final PictogramModel fakePictogram =
           await dbHandler.createPictogram(scrum);
       lege.pictograms = [fakePictogram];
-      await dbHandler.addActivity(
+      ActivityModel model = await dbHandler.addActivity(
           lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
+          model.choiceBoardName = 'test';
       final ActivityModel res =
-          await dbHandler.updateActivity(spise, 'en spise aktivitet');
-      expect(res, spise);
+          await dbHandler.updateActivity(model, '33');
+      expect(res.choiceBoardName, 'test');
     } finally {
       await cleanPictogramRelations(dbHandler);
       await cleanUsers(dbHandler);
       await cleanActivities(dbHandler);
       await cleanPictograms(dbHandler);
     }
-  });*/
+  });
 }
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
