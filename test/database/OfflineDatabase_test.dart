@@ -14,6 +14,7 @@ import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
@@ -35,9 +36,13 @@ class MockOfflineDbHandler extends OfflineDbHandler {
 
   @override
   Future<String> get getPictogramDirectory async {
-    final Directory directory = await getTemporaryDirectory();
-    final Directory imageDirectory =
-        Directory(join(directory.path, 'giraf', 'pictograms'));
+    final String tempDir = Directory.current.path;
+    Directory imageDirectory;
+    if (tempDir.split(separator).last == 'test') {
+      imageDirectory = Directory(join(tempDir, 'pictograms'));
+    } else {
+      imageDirectory = Directory(join(tempDir, 'test', 'pictograms'));
+    }
     imageDirectory.createSync(recursive: true);
     return imageDirectory.path;
   }
@@ -299,20 +304,26 @@ Future<void> main() async {
     try {
       final String tempDir = Directory.current.path;
       Directory pictoDir;
+      Directory newPictoDir;
       if (tempDir.split(separator).last == 'test') {
-        pictoDir = Directory(join(tempDir, 'giraf.png'));
+        pictoDir = Directory(join(tempDir, 'pictograms', 'giraf.png'));
       } else {
-        pictoDir = Directory(join(tempDir, 'test', 'giraf.png'));
+        pictoDir = Directory(join(tempDir, 'test', 'pictograms', 'giraf.png'));
       }
       final File pictoPath = File(pictoDir.path);
       final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
       await dbHandler.createPictogram(scrum);
       await dbHandler.updateImageInPictogram(scrum.id, pictoUInt8);
-      final Directory newDir = await getTemporaryDirectory();
+      if (tempDir.split(separator).last == 'test') {
+        newPictoDir = Directory(join(tempDir, 'pictograms'));
+      } else {
+        newPictoDir = Directory(join(tempDir, 'test', 'pictograms'));
+      }
       final File newSavedPicto =
-          File(join(newDir.path, 'giraf', 'pictograms', '${scrum.id}.png'));
+          File(join(newPictoDir.path, '${scrum.id}.png'));
       final Uint8List newUInt8 = await newSavedPicto.readAsBytes();
       expect(newUInt8, pictoUInt8);
+      newSavedPicto.delete();
     } finally {
       await cleanPictograms(dbHandler);
     }
