@@ -41,8 +41,6 @@ class MockOfflineDbHandler extends OfflineDbHandler {
   }
 }
 
-final MockOfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
-
 final GirafUserModel jamesbondTestUser = GirafUserModel(
     username: 'JamesBond007',
     department: 1,
@@ -98,8 +96,9 @@ final ActivityModel spise = ActivityModel(
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
+  final MockOfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
   test('Try to create the test db', () async {
-    expect(await MockOfflineDbHandler.instance.getCurrentDBVersion(), 1);
+    expect(await dbHandler.getCurrentDBVersion(), 1);
     // We might need this if somthing is wrong
     // in the tests and it doesn't close itself
     //dbHandler.closeDb();
@@ -141,26 +140,14 @@ Future<void> main() async {
     }
   });
   test('Add activity test', () async {
-    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     try {
       //arrange
-      //create fake account
-      final Map<String, dynamic> body = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'password': 'TestPassword123',
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
-      };
-      //create fake user
-      final GirafUserModel fakeUserRmatcheres =
-          await dbHandler.registerAccount(body);
       //add pictograms to offline database
       final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
       final PictogramModel fakePicto2 =
           await dbHandler.createPictogram(extreme);
       //act
-      lege.pictograms = [fakePicto1, fakePicto2];
+      lege.pictograms = <PictogramModel>[fakePicto1, fakePicto2];
       final ActivityModel fakeactivityModel = await dbHandler.addActivity(
           lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
       //assert
@@ -358,7 +345,6 @@ Future<void> main() async {
   });
 
   test('Performs a account deletion action', () async {
-    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     try {
       final Map<String, dynamic> body = <String, dynamic>{
         'username': edTestUser.username,
@@ -377,7 +363,6 @@ Future<void> main() async {
   });
 
   test('Get the list of citizens with a guardian relation', () async {
-    final OfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
     try {
       final GirafUserModel newGuardian = GirafUserModel(
           role: Role.Guardian,

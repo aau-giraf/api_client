@@ -1,9 +1,14 @@
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 
+/// Base model for a week
 abstract class WeekBaseModel {
+  /// [Thumbnail] id for pictogram
+  /// [name] name for the weekmodel
+  /// [days] List of weekday models for the week
   WeekBaseModel({this.thumbnail, this.name, this.days});
 
+  /// Constructor from Json
   WeekBaseModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
@@ -46,9 +51,13 @@ abstract class WeekBaseModel {
           .toList();
     }
   }
+
+  /// Id for a pictogram to be used as thumbnail
   PictogramModel thumbnail;
 
+  /// Name for the weekModel
   String name;
 
+  /// List of seven days connected to the week
   List<WeekdayModel> days;
 }
