@@ -1,3 +1,2 @@
-enum CancelMark{
-  Removed, Cross
-}
+// ignore_for_file: public_member_api_docs
+enum CancelMark { Removed, Cross }

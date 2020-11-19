@@ -24,6 +24,7 @@ class TimerModel implements Model {
     key = json['key'];
   }
 
+  /// Cunstrocter from database
   TimerModel.fromDatabase(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException('[TimerModel]: Cannot initialize from null');

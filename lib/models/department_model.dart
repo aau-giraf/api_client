@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/displayname_model.dart';
 
+/// A model for departments
 class DepartmentModel implements Model {
   /// Default constructor
   DepartmentModel({
@@ -51,5 +52,4 @@ class DepartmentModel implements Model {
       'resources': resources
     };
   }
-
 }

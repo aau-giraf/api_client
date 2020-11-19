@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
@@ -17,10 +15,8 @@ import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/displayname_model.dart';
-import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:api_client/models/model.dart';
 
+///
 class DisplayNameModel implements Model {
   /// Default constructor
   DisplayNameModel(

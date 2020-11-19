@@ -1,8 +1,11 @@
 import 'package:api_client/models/model.dart';
 
+/// A model for a department id and a name
 class DepartmentNameModel implements Model {
+  /// Constructor with an department [id] and [name]
   DepartmentNameModel({this.id, this.name});
 
+  /// Contructor from json
   DepartmentNameModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
@@ -21,8 +24,7 @@ class DepartmentNameModel implements Model {
 
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'id': id,
-    'name': name,
-  };
-
+        'id': id,
+        'name': name,
+      };
 }

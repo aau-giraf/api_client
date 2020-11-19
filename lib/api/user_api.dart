@@ -80,6 +80,7 @@ class UserApi {
     });
   }
 
+  /// NYI
   Stream<bool> updateIcon() {
     // TODO(boginw): implement this
     return null;

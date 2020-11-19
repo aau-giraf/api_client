@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
 
+/// Model with a pictogram
 class PictogramModel implements Model {
   /// Constructor
   PictogramModel({
@@ -14,6 +15,7 @@ class PictogramModel implements Model {
     this.userId,
   });
 
+  /// Cunstroctor from Json
   PictogramModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
@@ -45,6 +47,7 @@ class PictogramModel implements Model {
     imageHash = json['ImageHash'];
   }
 
+  /// pictogram id
   int id;
 
   /// The last time the pictogram was edited.
@@ -56,10 +59,13 @@ class PictogramModel implements Model {
   /// The access level of the pictogram.
   AccessLevel accessLevel;
 
+  /// Url for image
   String imageUrl;
 
+  /// Hash for image
   String imageHash;
 
+  /// Id of the user which the pictogram is owned by
   String userId;
 
   @override
