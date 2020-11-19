@@ -511,66 +511,67 @@ Future<void> main() async {
       await cleanUsers(dbHandler);
       await cleanActivities(dbHandler);
       await cleanPictograms(dbHandler);
+      await cleanTimers(dbHandler);
     }
   });
 }
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Users`');
+  await db.delete('`Users`');
 }
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Setting`');
+  await db.delete('`Setting`');
 }
 
 Future<void> cleanGuardianRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `GuardianRelations`');
+  await db.delete('`GuardianRelations`');
 }
 
 Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `WeekTemplates`');
+  await db.delete('`WeekTemplates`');
 }
 
 Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Weeks`');
+  await db.delete('`Weeks`');
 }
 
 Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Weekdays`');
+  await db.delete('`Weekdays`');
 }
 
 Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Pictograms`');
+  await db.delete('`Pictograms`');
 }
 
 Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Activities`');
+  await db.delete('`Activities`');
 }
 
 Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `PictogramRelations`');
+  await db.delete('`PictogramRelations`');
 }
 
 Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `Timers`');
+  await db.delete('`Timers`');
 }
 
 Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `FailedOnlineTransactions`');
+  await db.delete('`FailedOnlineTransactions`');
 }
 
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.rawDelete('DELETE FROM `WeekDayColors`');
+  await db.delete('`WeekDayColors`');
 }
