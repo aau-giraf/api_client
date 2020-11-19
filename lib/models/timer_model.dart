@@ -32,7 +32,7 @@ class TimerModel implements Model {
     startTime = DateTime.fromMillisecondsSinceEpoch(json['StartTime']);
     progress = json['Progress'];
     fullLength = json['FullLength'];
-    paused = json['Paused'];
+    paused = json['Paused']==1;
     key = json['Key'];
   }
 

@@ -94,7 +94,7 @@ final TimerModel timer = TimerModel(
   startTime: DateTime.now(),
   progress: 1,
   fullLength: 10,
-  paused: true,
+  paused: false,
   key: 44,
 );
 
@@ -108,6 +108,7 @@ final ActivityModel spise = ActivityModel(
   timer: null,
 );
 
+ 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
@@ -456,7 +457,7 @@ Future<void> main() async {
       await cleanGuardianRelations(dbHandler);
     }
   });
-  test('update an activity', () async {
+  test('update an activity with timer is null', () async {
     try {
       final Map<String, dynamic> jamesBondBody = <String, dynamic>{
         'username': jamesbondTestUser.username,
@@ -474,6 +475,35 @@ Future<void> main() async {
       final ActivityModel model = await dbHandler.addActivity(
           lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
       model.order = 0;
+      final ActivityModel res = await dbHandler.updateActivity(model, '33');
+      expect(res.order, 0);
+    } finally {
+      await cleanPictogramRelations(dbHandler);
+      await cleanUsers(dbHandler);
+      await cleanActivities(dbHandler);
+      await cleanPictograms(dbHandler);
+    }
+  });
+
+  test('update an activity with timer', () async {
+    try {
+      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'Rolename': jamesbondTestUser.roleName,
+        'offlineid': jamesbondTestUser.offlineId,
+        'id': jamesbondTestUser.id,
+        'Role': jamesbondTestUser.role,
+        'password': '007'
+      };
+      await dbHandler.registerAccount(jamesBondBody);
+      final PictogramModel fakePictogram =
+          await dbHandler.createPictogram(scrum);
+      lege.pictograms = <PictogramModel>[fakePictogram];
+      final ActivityModel model = await dbHandler.addActivity(
+          lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
+      model.order = 0;
+      model.timer = timer;
       final ActivityModel res = await dbHandler.updateActivity(model, '33');
       expect(res.order, 0);
     } finally {

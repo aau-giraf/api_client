@@ -551,9 +551,9 @@ class OfflineDbHandler {
   Future<ActivityModel> updateActivity(
       ActivityModel activity, String userId) async {
     final Database db = await database;
+    final List<Map<String, dynamic>> res = await db
+        .rawQuery("SELECT * FROM `Activities` WHERE `Key` == '${activity.id}'");
     if (activity.timer == null) {
-      final List<Map<String, dynamic>> res = await db.rawQuery(
-          "SELECT * FROM `Activities` WHERE `Key` == '${activity.id}'");
       if (res.isNotEmpty) {
         db.rawDelete(
             "DELETE FROM `Timers` WHERE `Key` == '${res[0]['TimerKey']}'");
@@ -564,18 +564,30 @@ class OfflineDbHandler {
           "IsChoiceBoard = '${activity.isChoiceBoard}' "
           "WHERE `Key` == '${activity.id}'");
     } else {
+      final int timerKey = activity.timer.key ?? Uuid().v1().hashCode;
       await db.rawUpdate('UPDATE `Activities` SET '
           "`Order` = '${activity.order}', "
-          "State = '${activity.state}', "
-          "TimerKey = '${activity.timer.key}', "
+          "State = '${activity.state.index}', "
+          "TimerKey = '$timerKey', "
           "IsChoiceBoard = '${activity.isChoiceBoard}' "
           "WHERE `Key` == '${activity.id}'");
-      await db.rawUpdate('UPDATE `Timers` SET '
-          "StartTime = '${activity.timer.startTime}', "
-          "Progress = '${activity.timer.progress}', "
-          "FullLength = '${activity.timer.fullLength}', "
-          "Paused = '${activity.timer.paused}' "
-          "WHERE Key == '${activity.timer.key}'");
+      if (res[0]['TimerKey'] == null) {
+        final Map<String, dynamic> insertTimerQuery = <String, dynamic>{
+          'Key': timerKey,
+          'StartTime': activity.timer.startTime.millisecondsSinceEpoch,
+          'Progress': activity.timer.progress,
+          'FullLength': activity.timer.fullLength,
+          'Paused': activity.timer.paused ? 1:0,
+        };
+        db.insert('`Timers`', insertTimerQuery);
+      } else {
+        await db.rawUpdate('UPDATE `Timers` SET '
+            "StartTime = '${activity.timer.startTime}', "
+            "Progress = '${activity.timer.progress}', "
+            "FullLength = '${activity.timer.fullLength}', "
+            "Paused = '${activity.timer.paused}' "
+            "WHERE Key == '${activity.timer.key}'");
+      }
     }
     db.transaction((Transaction txn) async {
       await txn.rawDelete('DELETE FROM `PictogramRelations` '
