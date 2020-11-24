@@ -492,10 +492,10 @@ class OfflineDbHandler {
       insertActivityQuery['TimerKey'] = activity.timer.key;
       insertTimerQuery = <String, dynamic>{
         'Key': activity.timer.key,
-        'StartTime': activity.timer.startTime,
+        'StartTime': activity.timer.startTime.millisecondsSinceEpoch,
         'Progress': activity.timer.progress,
         'FullLength': activity.timer.fullLength,
-        'Paused': activity.timer.paused,
+        'Paused': activity.timer.paused ? 1 : 0,
       };
     }
 
@@ -577,7 +577,7 @@ class OfflineDbHandler {
           'StartTime': activity.timer.startTime.millisecondsSinceEpoch,
           'Progress': activity.timer.progress,
           'FullLength': activity.timer.fullLength,
-          'Paused': activity.timer.paused ? 1:0,
+          'Paused': activity.timer.paused ? 1 : 0,
         };
         db.insert('`Timers`', insertTimerQuery);
       } else {
