@@ -530,6 +530,36 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
+
+  test('Delete an activity from weekplan', () async {
+    try {
+      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'Rolename': jamesbondTestUser.roleName,
+        'offlineid': jamesbondTestUser.offlineId,
+        'id': jamesbondTestUser.id,
+        'Role': jamesbondTestUser.role,
+        'password': '007'
+      };
+      final ActivityModel testActivity = lege;
+      testActivity.pictograms = <PictogramModel>[scrum];
+      testActivity.timer = timer;
+      await dbHandler.registerAccount(jamesBondBody);
+      final ActivityModel fakeActivity = await dbHandler.addActivity(
+          lege, jamesbondTestUser.id, 'weekplanName', 2020, 43, Weekday.Friday);
+
+      expect(fakeActivity.id, lege.id);
+      final bool delResult =
+          await dbHandler.deleteActivity(fakeActivity.id, jamesbondTestUser.id);
+      expect(delResult, true);
+    } finally {
+      await cleanUsers(dbHandler);
+      await cleanActivities(dbHandler);
+      await cleanTimers(dbHandler);
+      await cleanPictogramRelations(dbHandler);
+    }
+  });
 }
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
