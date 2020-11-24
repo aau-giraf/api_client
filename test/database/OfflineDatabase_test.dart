@@ -278,6 +278,28 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
+
+  test('Update a user with a new attribute', () async {
+    try {
+      final Map<String, dynamic> jbTestUser = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'password': 'testPassword',
+        'department': jamesbondTestUser.department,
+        'role': jamesbondTestUser.role.toString().split('.').last,
+      };
+      final GirafUserModel formerUser =
+          await dbHandler.registerAccount(jbTestUser);
+      expect(formerUser.username, jamesbondTestUser.username);
+      final GirafUserModel updatedUser = formerUser;
+      updatedUser.username = 'DoubleOhSeven';
+      final GirafUserModel newUser = await dbHandler.updateUser(updatedUser);
+      expect(newUser.id, formerUser.id);
+      expect(newUser.username, updatedUser.username);
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
   test('Create a pictogram in the offline database', () async {
     try {
       await dbHandler.createPictogram(scrum);
@@ -554,10 +576,7 @@ Future<void> main() async {
           await dbHandler.deleteActivity(fakeActivity.id, jamesbondTestUser.id);
       expect(delResult, true);
     } finally {
-      await cleanUsers(dbHandler);
-      await cleanActivities(dbHandler);
-      await cleanTimers(dbHandler);
-      await cleanPictogramRelations(dbHandler);
+      await killAll(dbHandler);
     }
   });
 }
@@ -622,6 +641,7 @@ Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   await db.delete('`WeekDayColors`');
 }
 
+/// Clear the testing database of all information
 Future<void> killAll(OfflineDbHandler dbHandler) async {
   await cleanWeekDayColors(dbHandler);
   await cleanFailedOnlineTransactions(dbHandler);

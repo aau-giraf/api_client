@@ -721,7 +721,7 @@ class OfflineDbHandler {
   Future<GirafUserModel> getUser(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery("SELECT * `Users` WHERE id == '$id'");
+        await db.rawQuery("SELECT * FROM `Users` WHERE id == '$id'");
     return GirafUserModel.fromDatabase(res[0]);
   }
 
@@ -738,7 +738,7 @@ class OfflineDbHandler {
   Future<GirafUserModel> updateUser(GirafUserModel user) async {
     final Database db = await database;
     await db.rawUpdate('UPDATE `Users` SET '
-        "Role = '${user.role}', "
+        "Role = '${user.role.index}', "
         "RoleName = '${user.roleName}', "
         "Username = '${user.username}', "
         "DisplayName = '${user.displayName}', "
