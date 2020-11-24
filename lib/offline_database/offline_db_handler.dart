@@ -467,7 +467,7 @@ class OfflineDbHandler {
   Future<bool> deleteAccount(String id) async {
     final Database db = await database;
     final int res =
-        await db.rawDelete("DELETE * FROM `Users` WHERE `Id` == '$id'");
+        await db.rawDelete("DELETE FROM `Users` WHERE `Id` == '$id'");
     return res == 1;
   }
 
@@ -492,10 +492,10 @@ class OfflineDbHandler {
       insertActivityQuery['TimerKey'] = activity.timer.key;
       insertTimerQuery = <String, dynamic>{
         'Key': activity.timer.key,
-        'StartTime': activity.timer.startTime,
+        'StartTime': activity.timer.startTime.millisecondsSinceEpoch,
         'Progress': activity.timer.progress,
         'FullLength': activity.timer.fullLength,
-        'Paused': activity.timer.paused,
+        'Paused': activity.timer.paused ? 1:0,
       };
     }
 
@@ -582,7 +582,7 @@ class OfflineDbHandler {
         db.insert('`Timers`', insertTimerQuery);
       } else {
         await db.rawUpdate('UPDATE `Timers` SET '
-            "StartTime = '${activity.timer.startTime}', "
+            "StartTime = '${activity.timer.startTime.millisecondsSinceEpoch}', "
             "Progress = '${activity.timer.progress}', "
             "FullLength = '${activity.timer.fullLength}', "
             "Paused = '${activity.timer.paused}' "

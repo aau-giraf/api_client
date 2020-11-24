@@ -139,8 +139,9 @@ Future<void> main() async {
       expect(fakeUserRes.username, jamesbondTestUser.username);
       expect(fakeUserRes.displayName, jamesbondTestUser.displayName);
       expect(fakeUserRes.role, Role.Citizen);
+      await killAll(dbHandler);
     } finally {
-      cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
   test('Test if it is possible to register the same account twice', () async {
@@ -156,9 +157,9 @@ Future<void> main() async {
       await dbHandler.registerAccount(body);
       expect(() => dbHandler.registerAccount(body),
           throwsA(isInstanceOf<Exception>()));
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     } finally {
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
   test('Add activity test', () async {
@@ -176,13 +177,30 @@ Future<void> main() async {
       expect(lege.id, fakeactivityModel.id);
       expect(lege.state, fakeactivityModel.state);
     } finally {
-      await cleanActivities(dbHandler);
-      await cleanUsers(dbHandler);
-      await cleanPictograms(dbHandler);
-      await cleanPictogramRelations(dbHandler);
+      await killAll(dbHandler);
     }
   });
+  test('Add activity test with timer', () async {
+    try {
+      //arrange
+      //add pictograms to offline database
+      final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
+      final PictogramModel fakePicto2 =
+          await dbHandler.createPictogram(extreme);
+      //act
+      lege.pictograms = <PictogramModel>[fakePicto1, fakePicto2];
+      lege.timer = timer;
+      final ActivityModel fakeactivityModel = await dbHandler.addActivity(
+          lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
 
+      //assert
+      expect(lege.id, fakeactivityModel.id);
+      expect(lege.state, fakeactivityModel.state);
+      expect(lege.timer.key, fakeactivityModel.timer.key);
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
   test('Perform a correct login attempt', () async {
     try {
       const String testPassword = 'MyPassword32';
@@ -198,7 +216,7 @@ Future<void> main() async {
           await dbHandler.login(jamesbondTestUser.username, testPassword);
       expect(testLogin, true);
     } finally {
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -217,7 +235,7 @@ Future<void> main() async {
           await dbHandler.login(jamesbondTestUser.username, testPassword);
       expect(testLogin, true);
     } finally {
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -237,7 +255,7 @@ Future<void> main() async {
           await dbHandler.login(jamesbondTestUser.username, wrongPassword);
       expect(testLogin, false);
     } finally {
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -257,7 +275,7 @@ Future<void> main() async {
           await dbHandler.login(jamesbondTestUser.username, wrongPassword);
       expect(testLogin, false);
     } finally {
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
   test('Create a pictogram in the offline database', () async {
@@ -266,7 +284,7 @@ Future<void> main() async {
       final PictogramModel dbPicto = await dbHandler.getPictogramID(scrum.id);
       expect(dbPicto.id, scrum.id);
     } finally {
-      await cleanPictograms(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -281,7 +299,7 @@ Future<void> main() async {
       expect(updatedPicto.id, scrum2.id);
       expect(updatedPicto.title, scrum2.title);
     } finally {
-      await cleanPictograms(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -292,7 +310,7 @@ Future<void> main() async {
       final bool wasDeleted = await dbHandler.deletePictogram(dbPicto.id);
       expect(wasDeleted, true);
     } finally {
-      await cleanPictograms(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -321,7 +339,7 @@ Future<void> main() async {
       expect(newUInt8, pictoUInt8);
       newSavedPicto.delete();
     } finally {
-      await cleanPictograms(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -346,7 +364,7 @@ Future<void> main() async {
           await dbHandler.login(fakeUserRes.username, newPass);
       expect(loginNew, true);
     } finally {
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -368,7 +386,7 @@ Future<void> main() async {
       sameLogin = await dbHandler.login(fakeUserRes.username, oldPass);
       expect(sameLogin, false);
     } finally {
-      cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -386,7 +404,7 @@ Future<void> main() async {
       expect(() => dbHandler.deleteAccount(user),
           throwsA(isInstanceOf<Exception>()));
     } finally {
-      await cleanUsers(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -459,8 +477,7 @@ Future<void> main() async {
       expect(guardianList[0].role, citizenList[0].role);
       expect(guardianList[1].role, citizenList[1].role);
     } finally {
-      await cleanUsers(dbHandler);
-      await cleanGuardianRelations(dbHandler);
+      await killAll(dbHandler);
     }
   });
   test('update an activity with timer is null', () async {
@@ -484,10 +501,7 @@ Future<void> main() async {
       final ActivityModel res = await dbHandler.updateActivity(model, '33');
       expect(res.order, 0);
     } finally {
-      await cleanPictogramRelations(dbHandler);
-      await cleanUsers(dbHandler);
-      await cleanActivities(dbHandler);
-      await cleanPictograms(dbHandler);
+      await killAll(dbHandler);
     }
   });
 
@@ -513,11 +527,7 @@ Future<void> main() async {
       final ActivityModel res = await dbHandler.updateActivity(model, '33');
       expect(res.order, 0);
     } finally {
-      await cleanPictogramRelations(dbHandler);
-      await cleanUsers(dbHandler);
-      await cleanActivities(dbHandler);
-      await cleanPictograms(dbHandler);
-      await cleanTimers(dbHandler);
+      await killAll(dbHandler);
     }
   });
 }
@@ -537,7 +547,7 @@ Future<void> cleanGuardianRelations(OfflineDbHandler dbHandler) async {
   await db.delete('`GuardianRelations`');
 }
 
-Future<void> cleaWeekTemplates(OfflineDbHandler dbHandler) async {
+Future<void> cleanWeekTemplates(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
   await db.delete('`WeekTemplates`');
 }
@@ -580,4 +590,19 @@ Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
 Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
   await db.delete('`WeekDayColors`');
+}
+
+Future<void> killAll(OfflineDbHandler dbHandler) async {
+  await cleanWeekDayColors(dbHandler);
+  await cleanFailedOnlineTransactions(dbHandler);
+  await cleanTimers(dbHandler);
+  await cleanPictogramRelations(dbHandler);
+  await cleanActivities(dbHandler);
+  await cleanPictograms(dbHandler);
+  await cleanWeek(dbHandler);
+  await cleanWeekdays(dbHandler);
+  await cleanWeekTemplates(dbHandler);
+  await cleanGuardianRelations(dbHandler);
+  await cleanSettings(dbHandler);
+  await cleanUsers(dbHandler);
 }
