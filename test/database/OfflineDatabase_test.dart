@@ -579,6 +579,36 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
+
+  test('Create and find a pictogram', () async {
+    try {
+      final PictogramModel tempPicto = scrum;
+      final PictogramModel pictoTest =
+          await dbHandler.createPictogram(tempPicto);
+      final String tempDir = Directory.current.path;
+      Directory pictoDir;
+      if (tempDir.split(separator).last == 'test') {
+        pictoDir = Directory(join(tempDir, 'pictograms'));
+      } else {
+        pictoDir = Directory(join(tempDir, 'test', 'pictograms'));
+      }
+      final File pictoPath = File(join(pictoDir.path, 'giraf.png'));
+      final File newPictoPath =
+          File(join(pictoDir.path, '${tempPicto.id}.png'));
+      final Uint8List testImage = await pictoPath.readAsBytes();
+      await dbHandler.updateImageInPictogram(pictoTest.id, testImage);
+      final Image foundImage = await dbHandler.getPictogramImage(pictoTest.id);
+      expect(foundImage.image, Image.file(newPictoPath).image);
+      try {
+        newPictoPath.delete();
+      } on FileSystemException {
+        //Exception can be thrown if there is no file to delete
+        //if it was never created
+      }
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
 }
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {

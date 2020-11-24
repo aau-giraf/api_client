@@ -495,7 +495,7 @@ class OfflineDbHandler {
         'StartTime': activity.timer.startTime.millisecondsSinceEpoch,
         'Progress': activity.timer.progress,
         'FullLength': activity.timer.fullLength,
-        'Paused': activity.timer.paused ? 1:0,
+        'Paused': activity.timer.paused ? 1 : 0,
       };
     }
 
