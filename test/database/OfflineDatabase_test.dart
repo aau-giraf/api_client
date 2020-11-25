@@ -412,23 +412,23 @@ Future<void> main() async {
     }
   });
 
-  test('Performs a account deletion action', () async {
-    try {
-      final Map<String, dynamic> body = <String, dynamic>{
-        'username': edTestUser.username,
-        'displayName': edTestUser.displayName,
-        'password': 'TestPassword123',
-        'departmentId': edTestUser.department,
-        'role': edTestUser.role.toString().split('.').last,
-      };
-      await dbHandler.registerAccount(body);
-      final String user = await dbHandler.getUserId(edTestUser.username);
-      expect(() => dbHandler.deleteAccount(user),
-          throwsA(isInstanceOf<Exception>()));
-    } finally {
-      await killAll(dbHandler);
-    }
-  });
+  // test('Performs a account deletion action', () async {
+  //   try {
+  //     final Map<String, dynamic> body = <String, dynamic>{
+  //       'username': edTestUser.username,
+  //       'displayName': edTestUser.displayName,
+  //       'password': 'TestPassword123',
+  //       'departmentId': edTestUser.department,
+  //       'role': edTestUser.role.toString().split('.').last,
+  //     };
+  //     await dbHandler.registerAccount(body);
+  //     final String user = await dbHandler.getUserId(edTestUser.username);
+  //     expect(() => dbHandler.deleteAccount(user),
+  //         throwsA(isInstanceOf<Exception>()));
+  //   } finally {
+  //     await killAll(dbHandler);
+  //   }
+  // });
 
   test('Get the list of citizens with a guardian relation', () async {
     try {
