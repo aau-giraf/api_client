@@ -60,17 +60,17 @@ class SettingsModel implements Model {
           '[SettingModel]: Cannot initialize from null');
     }
 
-    orientation = Orientation.values[(settingsJson['Orientation'])];
-    completeMark = CompleteMark.values[(settingsJson['CompleteMark']) ];
-    cancelMark = CancelMark.values[(settingsJson['CancelMark'])];
-    defaultTimer = DefaultTimer.values[(settingsJson['DefaultTimer'])];
-    timerSeconds = settingsJson['TimerSeconds'];
-    activitiesCount = settingsJson['ActivitiesCount'];
-    theme = GirafTheme.values[(settingsJson['Theme'])];
-    nrOfDaysToDisplay = settingsJson['NrOfDaysToDisplay'];
-    lockTimerControl = settingsJson['LockTimerControl']==1;
-    pictogramText = settingsJson['PictogramText']==1;
-    greyscale = settingsJson['GreyScale']==1;
+    orientation = Orientation.values[(settingsJson['orientation']) - 1];
+    completeMark = CompleteMark.values[(settingsJson['completeMark']) - 1];
+    cancelMark = CancelMark.values[(settingsJson['cancelMark']) - 1];
+    defaultTimer = DefaultTimer.values[(settingsJson['defaultTimer']) - 1];
+    timerSeconds = settingsJson['timerSeconds'];
+    activitiesCount = settingsJson['activitiesCount'];
+    theme = GirafTheme.values[(settingsJson['theme']) - 1];
+    nrOfDaysToDisplay = settingsJson['nrOfDaysToDisplay'];
+    lockTimerControl = settingsJson['lockTimerControl'];
+    pictogramText = settingsJson['pictogramText'];
+    greyscale = settingsJson['greyScale'];
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map(

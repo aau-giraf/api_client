@@ -755,7 +755,7 @@ class OfflineDbHandler {
             "`Key` == (SELECT `SettingsKey` FROM `Users` WHERE `Id` == '$id')");
     final List<Map<String, dynamic>> resWeekdayColors =
         await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
-            "`SettingId` == '${resSettings[0]['Key']}'");
+            "`Id` == '${resSettings[0]['Key']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
 

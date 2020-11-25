@@ -13,8 +13,8 @@ class WeekdayColorModel implements Model {
           '[WeekdayColorModel]: Cannot initialize from null');
     }
 
-    hexColor = json['HexColor'];
-    day = Weekday.values[json['Day']];
+    hexColor = json['hexColor'];
+    day = Weekday.values[json['day'] - 1];
   }
 
   /// The color of the day in Hex format
