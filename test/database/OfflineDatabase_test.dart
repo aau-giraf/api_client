@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
@@ -552,6 +552,25 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
+  test('Get a user setting with GetUserSettings ', () async {
+    try {
+      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
+        'username': jamesbondTestUser.username,
+        'displayName': jamesbondTestUser.displayName,
+        'Rolename': jamesbondTestUser.roleName,
+        'offlineid': jamesbondTestUser.offlineId,
+        'id': jamesbondTestUser.id,
+        'Role': jamesbondTestUser.role,
+        'password': '007'
+      };
+      final GirafUserModel body =
+          await dbHandler.registerAccount(jamesBondBody);
+      final SettingsModel res = await dbHandler.getUserSettings(body.id);
+      expect(res, isNot(null));
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
 
   test('Delete an activity from weekplan', () async {
     try {
@@ -605,6 +624,15 @@ Future<void> main() async {
         //Exception can be thrown if there is no file to delete
         //if it was never created
       }
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
+  test('Set and get a \'Me\' user', () async {
+    try {
+      dbHandler.setMe(jamesbondTestUser);
+      expect(dbHandler.getMe(), jamesbondTestUser);
+      expect(dbHandler.getMe(), isNot(edTestUser));
     } finally {
       await killAll(dbHandler);
     }
