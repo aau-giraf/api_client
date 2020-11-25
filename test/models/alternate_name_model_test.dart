@@ -15,7 +15,7 @@ void main() {
       'name': 'Test_name'
     };
 
-    AlternateNameModel model = AlternateNameModel.fromJson(json);
+    final AlternateNameModel model = AlternateNameModel.fromJson(json);
 
     expect(model.id, json['id']);
     expect(model.citizen, json['citizen']);
@@ -31,7 +31,7 @@ void main() {
       'name': 'Test_name'
     };
 
-    AlternateNameModel model = AlternateNameModel.fromJson(json);
+    final AlternateNameModel model = AlternateNameModel.fromJson(json);
     expect(model.toJson(), json);
   });
 }
