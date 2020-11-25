@@ -61,20 +61,20 @@ class SettingsModel implements Model {
     }
 
     orientation = Orientation.values[(settingsJson['Orientation'])];
-    completeMark = CompleteMark.values[(settingsJson['CompleteMark']) ];
+    completeMark = CompleteMark.values[(settingsJson['CompleteMark'])];
     cancelMark = CancelMark.values[(settingsJson['CancelMark'])];
     defaultTimer = DefaultTimer.values[(settingsJson['DefaultTimer'])];
     timerSeconds = settingsJson['TimerSeconds'];
     activitiesCount = settingsJson['ActivitiesCount'];
     theme = GirafTheme.values[(settingsJson['Theme'])];
     nrOfDaysToDisplay = settingsJson['NrOfDaysToDisplay'];
-    lockTimerControl = settingsJson['LockTimerControl']==1;
-    pictogramText = settingsJson['PictogramText']==1;
-    greyscale = settingsJson['GreyScale']==1;
+    lockTimerControl = settingsJson['LockTimerControl'] == 1;
+    pictogramText = settingsJson['PictogramText'] == 1;
+    greyscale = settingsJson['GreyScale'] == 1;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
-          .map(
-              (Map<String, dynamic> value) => WeekdayColorModel.fromJson(value))
+          .map((Map<String, dynamic> value) =>
+              WeekdayColorModel.fromDatabase(value))
           .toList();
     } else {
       // TODO(TobiasPalludan): Throw appropriate error.

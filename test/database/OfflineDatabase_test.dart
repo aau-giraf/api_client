@@ -17,7 +17,6 @@ import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/timer_model.dart';
-import 'package:api_client/models/weekday_color_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -587,7 +586,7 @@ Future<void> main() async {
           await dbHandler.registerAccount(jamesBondBody);
       final SettingsModel res = await dbHandler.getUserSettings(body.id);
       expect(res, isNot(null));
-    } finally{
+    } finally {
       await killAll(dbHandler);
     }
   });
@@ -644,6 +643,15 @@ Future<void> main() async {
         //Exception can be thrown if there is no file to delete
         //if it was never created
       }
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
+  test('Set and get a \'Me\' user', () async {
+    try {
+      dbHandler.setMe(jamesbondTestUser);
+      expect(dbHandler.getMe(), jamesbondTestUser);
+      expect(dbHandler.getMe(), isNot(edTestUser));
     } finally {
       await killAll(dbHandler);
     }

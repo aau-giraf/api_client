@@ -13,6 +13,17 @@ class WeekdayColorModel implements Model {
           '[WeekdayColorModel]: Cannot initialize from null');
     }
 
+    hexColor = json['hexColor'];
+    day = Weekday.values[json['day'] - 1];
+  }
+
+  /// Construct from Database
+  WeekdayColorModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[WeekdayColorModel]: Cannot initialize from null');
+    }
+
     hexColor = json['HexColor'];
     day = Weekday.values[json['Day']];
   }
@@ -27,5 +38,4 @@ class WeekdayColorModel implements Model {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{'hexColor': hexColor, 'day': day.index + 1};
   }
-
 }
