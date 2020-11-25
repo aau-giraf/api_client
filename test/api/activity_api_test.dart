@@ -29,7 +29,8 @@ void main() {
       state: ActivityState.Normal,
       isChoiceBoard: false,
       order: 0,
-      pictograms: <PictogramModel>[mockPictogram]);
+      pictograms: <PictogramModel>[mockPictogram],
+      title: '');
 
   final WeekModel mockWeek = WeekModel(
       thumbnail: mockPictogram,

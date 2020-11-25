@@ -56,7 +56,8 @@ void main() {
       'state': 1,
       'id': 1044,
       'isChoiceBoard': false,
-      'timer': null
+      'timer': null,
+      'title': ''
     };
 
     final ActivityModel model = ActivityModel.fromJson(json);
