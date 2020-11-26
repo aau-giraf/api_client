@@ -766,17 +766,17 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT `SettingsKey` FROM `Users` '
-            'WHERE `Id` == $id');
-    final String settingsKey = res[0]['SettingsKey'];
+            "WHERE `Id` == '$id'");
+    final String settingsKey = res[0]['SettingsKey'].toString();
     db.rawUpdate('UPDATE `Setting` SET '
         "`ActivitiesCount` = '${settings.activitiesCount}', "
-        "`CancelMark` = '${settings.cancelMark}', "
-        "`CompleteMark` = '${settings.completeMark}', "
-        "`DefaultTimer` = '${settings.defaultTimer}', "
+        "`CancelMark` = '${settings.cancelMark.index}', "
+        "`CompleteMark` = '${settings.completeMark.index}', "
+        "`DefaultTimer` = '${settings.defaultTimer.index}', "
         "`GreyScale` = '${settings.greyscale}', "
         "`NrOfDaysToDisplay` = '${settings.nrOfDaysToDisplay}', "
-        "`Orientation` = '${settings.orientation}', "
-        "`Theme` = '${settings.theme}', "
+        "`Orientation` = '${settings.orientation.index}', "
+        "`Theme` = '${settings.theme.index}', "
         "`TimerSeconds` = '${settings.timerSeconds}', "
         "`LockTimerControl` = '${settings.lockTimerControl}', "
         "`PictogramText` = '${settings.pictogramText}' WHERE "

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
@@ -598,6 +599,25 @@ Future<void> main() async {
       final GirafUserModel body = await dbHandler.registerAccount(jamesBody);
       final SettingsModel res = await dbHandler.getUserSettings(body.id);
       expect(res, isNot(null));
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
+
+  test('Update a user setting with another setting', () async {
+    try {
+      final GirafUserModel body = await dbHandler.registerAccount(jamesBody);
+      final SettingsModel res1 = await dbHandler.getUserSettings(body.id);
+      
+      final SettingsModel resFinal = SettingsModel(
+        
+      );
+
+      resFinal.cancelMark = CancelMark.Removed;
+      resFinal.activitiesCount = 44;
+      final SettingsModel fakeUpdate =
+          await dbHandler.updateUserSettings(body.id, resFinal);
+      expect(fakeUpdate.cancelMark, res1.cancelMark);
     } finally {
       await killAll(dbHandler);
     }
