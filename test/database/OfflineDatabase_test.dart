@@ -172,6 +172,18 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
+
+  test('Find a user ID through their username', () async {
+    try {
+      final GirafUserModel jamesUser =
+          await dbHandler.registerAccount(jamesBody);
+
+      final String idReturn = await dbHandler.getUserId(jamesUser.username);
+      expect(idReturn, jamesUser.id);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
+  });
   test('Add activity test', () async {
     try {
       //arrange
@@ -417,7 +429,7 @@ Future<void> main() async {
     expect(delAction, false);
   });
 
-  test('Get the list of citizens with a guardian relation', () async {
+  test('Get the list of citizens related to a guardian through ID', () async {
     try {
       final GirafUserModel newGuardian = GirafUserModel(
           role: Role.Guardian,
@@ -474,7 +486,7 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
-  test('Get the list of citizens with a guardian relation', () async {
+  test('Get the list of guardians related to a citizen through ID', () async {
     try {
       final GirafUserModel newGuardian = GirafUserModel(
           role: Role.Guardian,
@@ -548,15 +560,18 @@ Future<void> main() async {
   });
   test('update an activity with timer is null', () async {
     try {
-      await dbHandler.registerAccount(jamesBody);
+      final GirafUserModel jamesUser =
+          await dbHandler.registerAccount(jamesBody);
       final PictogramModel fakePictogram =
           await dbHandler.createPictogram(scrum);
       lege.pictograms = <PictogramModel>[fakePictogram];
       final ActivityModel model = await dbHandler.addActivity(
-          lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
-      model.order = 0;
-      final ActivityModel res = await dbHandler.updateActivity(model, '33');
-      expect(res.order, 0);
+          lege, jamesUser.id, 'weekplanName', 2020, 43, Weekday.Monday);
+      expect(model.state, ActivityState.Active);
+      model.state = ActivityState.Completed;
+      final ActivityModel res =
+          await dbHandler.updateActivity(model, jamesUser.id);
+      expect(res.state, ActivityState.Completed);
     } finally {
       await killAll(dbHandler);
     }
@@ -578,11 +593,19 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
-  test('Get a user setting with GetUserSettings ', () async {
+  test('Get a user\'s settings', () async {
     try {
       final GirafUserModel body = await dbHandler.registerAccount(jamesBody);
       final SettingsModel res = await dbHandler.getUserSettings(body.id);
       expect(res, isNot(null));
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
+
+  test('Update a user\'s settings', () async {
+    try {
+      //test to be created
     } finally {
       await killAll(dbHandler);
     }

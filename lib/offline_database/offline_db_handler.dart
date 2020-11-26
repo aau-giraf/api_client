@@ -555,7 +555,7 @@ class OfflineDbHandler {
         .rawQuery("SELECT * FROM `Activities` WHERE `Key` == '${activity.id}'");
     if (activity.timer == null) {
       if (res.isNotEmpty) {
-        db.rawDelete(
+        await db.rawDelete(
             "DELETE FROM `Timers` WHERE `Key` == '${res[0]['TimerKey']}'");
       }
       await db.rawUpdate('UPDATE `Activities` SET '
@@ -725,8 +725,7 @@ class OfflineDbHandler {
     return GirafUserModel.fromDatabase(res[0]);
   }
 
-  //Get User Id
-  // ignore: public_member_api_docs
+  /// Return the ID of a user through its username
   Future<String> getUserId(String userName) async {
     final Database db = await database;
     final List<Map<String, dynamic>> id = await db
@@ -821,7 +820,7 @@ class OfflineDbHandler {
         .toList();
   }
 
-  ///
+  /// return list of guardians from database based on citizen id
   Future<List<DisplayNameModel>> getGuardians(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -858,7 +857,7 @@ class OfflineDbHandler {
         .toList();
   }
 
-  /// Get a week base on
+  /// Get a week based on
   /// [id] (User id)
   /// [year]
   /// [weekNumber]
