@@ -41,19 +41,24 @@ class AccountApi {
     } else {
       yield online;
     }
-    //Hydrate user
     if (online && !offlineSuccess) {
-      final GirafUserModel me = await _userApiHttp
-          .get('/')
-          .map((Response res) => GirafUserModel.fromJson(res.json['data']))
-          .first;
-      final Map<String, dynamic> body = me.toJson();
-      body['role'] = me.roleName;
-      body['password'] = password;
-      final GirafUserModel temp =
-          await OfflineDbHandler.instance.registerAccount(body);
-      await OfflineDbHandler.instance.replaceTempIdUsers(temp.id, me.id);
+      hydrateUser(password);
     }
+  }
+
+  /// Hydrate user
+  /// [password] is the users password
+  Future<void> hydrateUser(String password) async {
+    final GirafUserModel me = await _userApiHttp
+        .get('/')
+        .map((Response res) => GirafUserModel.fromJson(res.json['data']))
+        .first;
+    final Map<String, dynamic> body = me.toJson();
+    body['role'] = me.roleName;
+    body['password'] = password;
+    final GirafUserModel temp =
+        await OfflineDbHandler.instance.registerAccount(body);
+    await OfflineDbHandler.instance.replaceTempIdUsers(temp.id, me.id);
   }
 
   /// Register a new user
