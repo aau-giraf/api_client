@@ -29,7 +29,8 @@ void main() {
       state: ActivityState.Normal,
       isChoiceBoard: false,
       order: 0,
-      pictograms: <PictogramModel>[mockPictogram]);
+      pictograms: <PictogramModel>[mockPictogram],
+      title: 'Test');
 
   final WeekModel mockWeek = WeekModel(
       thumbnail: mockPictogram,
@@ -53,7 +54,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/${mockUser.id}/update', method: Method.patch)
+        .expectOne(url: '/${mockUser.id}/update', method: Method.put)
         .flush(<String, dynamic>{
       'data': mockActivity.toJson(),
       'success': true,
