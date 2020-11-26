@@ -21,6 +21,7 @@ class AccountApi {
   /// [password] The users password
   Stream<bool> login(String username, String password) async* {
     int responseCode;
+    bool offlineSuccess = false;
     final bool online = await _http.post('/login', <String, String>{
       'username': username,
       'password': password,
@@ -30,9 +31,24 @@ class AccountApi {
       return Stream<bool>.value(res.success());
     }).first;
     if (!online && responseCode != 400 && responseCode != 401) {
-      yield await OfflineDbHandler.instance.login(username, password);
+      offlineSuccess =
+          await OfflineDbHandler.instance.login(username, password);
+      yield offlineSuccess;
     } else {
       yield online;
+    }
+    //Hydrate user
+    if (online && !offlineSuccess) {
+      final GirafUserModel me = await _http
+          .get('/')
+          .map((Response res) => GirafUserModel.fromJson(res.json['data']))
+          .first;
+      final Map<String, dynamic> body = me.toJson();
+      body['role'] = me.roleName;
+      body['password'] = password;
+      final GirafUserModel temp =
+          await OfflineDbHandler.instance.registerAccount(body);
+      await OfflineDbHandler.instance.replaceTempIdUsers(temp.id, me.id);
     }
   }
 
