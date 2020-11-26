@@ -474,6 +474,78 @@ Future<void> main() async {
       await killAll(dbHandler);
     }
   });
+  test('Get the list of citizens with a guardian relation', () async {
+    try {
+      final GirafUserModel newGuardian = GirafUserModel(
+          role: Role.Guardian,
+          username: 'Alex Jones',
+          displayName: 'AJones',
+          department: 1);
+
+      final Map<String, dynamic> guardBody = <String, dynamic>{
+        'username': newGuardian.username,
+        'displayName': newGuardian.displayName,
+        'password': 'pwd1234',
+        'departmentId': newGuardian.department,
+        'role': newGuardian.role.toString().split('.').last,
+      };
+      final GirafUserModel newGuardian2 = GirafUserModel(
+          role: Role.Guardian,
+          username: 'Eminem',
+          displayName: 'Em',
+          department: 1);
+
+      final Map<String, dynamic> guardBody2 = <String, dynamic>{
+        'username': newGuardian2.username,
+        'displayName': newGuardian2.displayName,
+        'password': 'namedrop69',
+        'departmentId': newGuardian2.department,
+        'role': newGuardian2.role.toString().split('.').last,
+      };
+      final GirafUserModel citizen1Res =
+          await dbHandler.registerAccount(jamesBody);
+      final GirafUserModel guardian1Res =
+          await dbHandler.registerAccount(guardBody);
+      final GirafUserModel guardian2Res =
+          await dbHandler.registerAccount(guardBody2);
+
+      expect(citizen1Res.username, jamesbondTestUser.username);
+      expect(citizen1Res.role, Role.Citizen);
+
+      expect(guardian1Res.username, newGuardian.username);
+      expect(guardian1Res.role, Role.Guardian);
+
+      expect(guardian2Res.username, newGuardian2.username);
+      expect(guardian2Res.role, Role.Guardian);
+
+      await dbHandler.addCitizenToGuardian(guardian1Res.id, citizen1Res.id);
+      await dbHandler.addCitizenToGuardian(guardian2Res.id, citizen1Res.id);
+
+      final DisplayNameModel guard1 = DisplayNameModel(
+          id: guardian1Res.id,
+          displayName: guardian1Res.displayName,
+          role: guardian1Res.role.toString().split('.').last);
+      final DisplayNameModel guard2 = DisplayNameModel(
+          id: guardian2Res.id,
+          displayName: guardian2Res.displayName,
+          role: guardian2Res.role.toString().split('.').last);
+
+      final List<DisplayNameModel> guardianListexp = <DisplayNameModel>[
+        guard1,
+        guard2
+      ];
+      final List<DisplayNameModel> guardianList =
+          await dbHandler.getGuardians(citizen1Res.id);
+      expect(guardianList[0].id, guardianListexp[0].id);
+      expect(guardianList[1].id, guardianListexp[1].id);
+      expect(guardianList[0].displayName, guardianListexp[0].displayName);
+      expect(guardianList[1].displayName, guardianListexp[1].displayName);
+      expect(guardianList[0].role, guardianListexp[0].role);
+      expect(guardianList[1].role, guardianListexp[1].role);
+    } finally {
+      await killAll(dbHandler);
+    }
+  });
   test('update an activity with timer is null', () async {
     try {
       await dbHandler.registerAccount(jamesBody);
