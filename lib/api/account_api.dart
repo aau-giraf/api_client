@@ -25,7 +25,6 @@ class AccountApi {
   /// [password] The users password
   Stream<bool> login(String username, String password) async* {
     int responseCode;
-    bool offlineSuccess = false;
     final bool online = await _http.post('/login', <String, String>{
       'username': username,
       'password': password,
@@ -35,13 +34,12 @@ class AccountApi {
       return Stream<bool>.value(res.success());
     }).first;
     if (!online && responseCode != 400 && responseCode != 401) {
-      offlineSuccess =
-          await OfflineDbHandler.instance.login(username, password);
-      yield offlineSuccess;
+      yield await OfflineDbHandler.instance.login(username, password);
     } else {
       yield online;
     }
-    if (online && !offlineSuccess) {
+    if (online &&
+        !(await OfflineDbHandler.instance.login(username, password))) {
       hydrateUser(password);
     }
   }
