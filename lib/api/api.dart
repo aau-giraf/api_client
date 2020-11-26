@@ -23,7 +23,12 @@ class Api {
             persist: persist,
             tokenKey: tokenKey,
             timeout: timeout),
-        persist);
+        persist,
+        HttpClient(
+            baseUrl: '$baseUrl/v1/User',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout));
     status = StatusApi(HttpClient(
         baseUrl: '$baseUrl/v1/Status',
         persist: persist,

@@ -9,10 +9,14 @@ import 'package:api_client/persistence/persistence.dart';
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
-  AccountApi(this._http, this._persist);
+  AccountApi(this._http, this._persist, this._userApiHttp);
 
   final Http _http;
   final Persistence _persist;
+
+  /// Used to get a GirafuserModel for hydrating the offline
+  /// database when logging in
+  final Http _userApiHttp;
 
   /// This endpoint allows the user to sign in to his/her account by providing
   /// valid username and password
@@ -39,7 +43,7 @@ class AccountApi {
     }
     //Hydrate user
     if (online && !offlineSuccess) {
-      final GirafUserModel me = await _http
+      final GirafUserModel me = await _userApiHttp
           .get('/')
           .map((Response res) => GirafUserModel.fromJson(res.json['data']))
           .first;
