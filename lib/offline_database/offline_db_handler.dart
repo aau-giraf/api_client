@@ -59,10 +59,12 @@ class OfflineDbHandler {
 
   /// Initiate the database
   Future<Database> initializeDatabase() async {
-    return openDatabase(join(await getDatabasesPath(), 'offlineGiraf'),
+    _database = await openDatabase(
+        join(await getDatabasesPath(), 'offlineGiraf'),
         version: 1, onCreate: (Database db, int version) async {
       createTables(db);
     });
+    return _database;
   }
 
   ///Creates all of the tables in the DB
