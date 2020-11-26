@@ -53,6 +53,7 @@ class MockOfflineDbHandler extends OfflineDbHandler {
   }
 }
 
+//Test GirafUserModel 1
 final GirafUserModel jamesbondTestUser = GirafUserModel(
     username: 'JamesBond007',
     department: 1,
@@ -61,7 +62,15 @@ final GirafUserModel jamesbondTestUser = GirafUserModel(
     id: 'james007bond',
     role: Role.Citizen,
     offlineId: 1);
-
+// Test account body 1
+final Map<String, dynamic> jamesBody = <String, dynamic>{
+  'username': jamesbondTestUser.username,
+  'displayName': jamesbondTestUser.displayName,
+  'password': 'TestPassword123',
+  'department': jamesbondTestUser.department,
+  'role': jamesbondTestUser.role.toString().split('.').last
+};
+//Test GirafUserModel 2
 final GirafUserModel edTestUser = GirafUserModel(
     department: 34,
     offlineId: 34,
@@ -70,7 +79,15 @@ final GirafUserModel edTestUser = GirafUserModel(
     roleName: 'Citizen',
     displayName: 'Ed McNiel',
     username: 'EdMcNiel34');
-
+//Test account body 2
+final Map<String, dynamic> edBody = <String, dynamic>{
+  'username': edTestUser.username,
+  'displayName': edTestUser.displayName,
+  'password': 'MyPassword42',
+  'department': edTestUser.department,
+  'role': edTestUser.role.toString().split('.').last
+};
+//Test Pictogram 1
 final PictogramModel scrum = PictogramModel(
     accessLevel: AccessLevel.PUBLIC,
     id: 44,
@@ -78,6 +95,7 @@ final PictogramModel scrum = PictogramModel(
     lastEdit: DateTime.now(),
     userId: '1');
 
+//Test Pictogram 2
 final PictogramModel extreme = PictogramModel(
     accessLevel: AccessLevel.PROTECTED,
     id: 20,
@@ -85,9 +103,11 @@ final PictogramModel extreme = PictogramModel(
     lastEdit: DateTime.now(),
     userId: '3');
 
+//Lists of test pictograms
 List<PictogramModel> testListe = <PictogramModel>[scrum];
 List<PictogramModel> testListe2 = <PictogramModel>[extreme];
 
+//Test ActivityModel 1
 final ActivityModel lege = ActivityModel(
   id: 69,
   isChoiceBoard: true,
@@ -97,14 +117,8 @@ final ActivityModel lege = ActivityModel(
   state: ActivityState.Active,
   timer: null,
 );
-final TimerModel timer = TimerModel(
-  startTime: DateTime.now(),
-  progress: 1,
-  fullLength: 10,
-  paused: false,
-  key: 44,
-);
 
+//Test ActivityModel 2
 final ActivityModel spise = ActivityModel(
   id: 70,
   pictograms: testListe2,
@@ -113,6 +127,15 @@ final ActivityModel spise = ActivityModel(
   isChoiceBoard: true,
   choiceBoardName: 'Testsecondchoice',
   timer: null,
+);
+
+//Test Timer
+final TimerModel timer = TimerModel(
+  startTime: DateTime.now(),
+  progress: 1,
+  fullLength: 10,
+  paused: false,
+  key: 44,
 );
 
 Future<void> main() async {
@@ -128,34 +151,21 @@ Future<void> main() async {
   test('Register an account in the offline db', () async {
     //create fake account
     try {
-      final Map<String, dynamic> body = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'password': 'TestPassword123',
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
-      };
-      final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
+      final GirafUserModel fakeUserRes =
+          await dbHandler.registerAccount(jamesBody);
       expect(fakeUserRes.username, jamesbondTestUser.username);
       expect(fakeUserRes.displayName, jamesbondTestUser.displayName);
       expect(fakeUserRes.role, Role.Citizen);
-      await killAll(dbHandler);
+      await cleanUsers(dbHandler);
     } finally {
-      await killAll(dbHandler);
+      await cleanUsers(dbHandler);
     }
   });
   test('Test if it is possible to register the same account twice', () async {
     try {
       //create fake account
-      final Map<String, dynamic> body = <String, dynamic>{
-        'username': edTestUser.username,
-        'displayName': edTestUser.displayName,
-        'password': 'TestPassword123',
-        'departmentId': edTestUser.department,
-        'role': edTestUser.role.toString().split('.').last,
-      };
-      await dbHandler.registerAccount(body);
-      expect(() => dbHandler.registerAccount(body),
+      await dbHandler.registerAccount(jamesBody);
+      expect(() => dbHandler.registerAccount(jamesBody),
           throwsA(isInstanceOf<Exception>()));
       await killAll(dbHandler);
     } finally {
@@ -203,93 +213,73 @@ Future<void> main() async {
   });
   test('Perform a correct login attempt', () async {
     try {
-      const String testPassword = 'MyPassword32';
-      final Map<String, dynamic> dbUser = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'password': testPassword,
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
-      };
-      await dbHandler.registerAccount(dbUser);
+      // The correct Password for the jamesBody user is 'TestPassword123'
+      const String passAttempt = 'TestPassword123';
+      await dbHandler.registerAccount(jamesBody);
       final bool testLogin =
-          await dbHandler.login(jamesbondTestUser.username, testPassword);
+          await dbHandler.login(jamesbondTestUser.username, passAttempt);
       expect(testLogin, true);
     } finally {
-      await killAll(dbHandler);
+      await cleanUsers(dbHandler);
     }
   });
 
   test('Perform a correct login attempt 2', () async {
     try {
+      const String testUsername = 'JacobPed';
       const String testPassword = 'hunter2';
       final Map<String, dynamic> dbUser = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
+        'username': testUsername,
+        'displayName': 'Jacob Pedersen',
         'password': testPassword,
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
+        'departmentId': 1,
+        'role': 'Citizen',
       };
       await dbHandler.registerAccount(dbUser);
-      final bool testLogin =
-          await dbHandler.login(jamesbondTestUser.username, testPassword);
+      final bool testLogin = await dbHandler.login(testUsername, testPassword);
       expect(testLogin, true);
     } finally {
-      await killAll(dbHandler);
+      await cleanUsers(dbHandler);
     }
   });
 
   test('Perform a incorrect login attempt', () async {
     try {
-      const String testPassword = 'MyPassword32';
-      const String wrongPassword = 'PasswordGuess128';
-      final Map<String, dynamic> dbUser = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'password': testPassword,
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
-      };
-      await dbHandler.registerAccount(dbUser);
+      // The correct Password for the jamesBody user is 'TestPassword123'
+      const String passAttempt = 'GoldenGun';
+      await dbHandler.registerAccount(jamesBody);
       final bool testLogin =
-          await dbHandler.login(jamesbondTestUser.username, wrongPassword);
+          await dbHandler.login(jamesbondTestUser.username, passAttempt);
       expect(testLogin, false);
     } finally {
-      await killAll(dbHandler);
+      await cleanUsers(dbHandler);
     }
   });
 
   test('Perform a incorrect login attempt 2', () async {
     try {
+      const String testUsername = 'SErikson';
       const String testPassword = 'hejmeddig123';
-      const String wrongPassword = 'Hejmeddig123';
+      const String passAttempt = 'Hejmeddig123';
       final Map<String, dynamic> dbUser = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
+        'username': testUsername,
+        'displayName': 'Simon Erikson',
         'password': testPassword,
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
+        'departmentId': 1,
+        'role': 'Guardian',
       };
       await dbHandler.registerAccount(dbUser);
-      final bool testLogin =
-          await dbHandler.login(jamesbondTestUser.username, wrongPassword);
+      final bool testLogin = await dbHandler.login(testUsername, passAttempt);
       expect(testLogin, false);
     } finally {
-      await killAll(dbHandler);
+      await cleanUsers(dbHandler);
     }
   });
 
   test('Update a user with a new attribute', () async {
     try {
-      final Map<String, dynamic> jbTestUser = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'password': 'testPassword',
-        'department': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
-      };
       final GirafUserModel formerUser =
-          await dbHandler.registerAccount(jbTestUser);
+          await dbHandler.registerAccount(jamesBody);
       expect(formerUser.username, jamesbondTestUser.username);
       final GirafUserModel updatedUser = formerUser;
       updatedUser.username = 'DoubleOhSeven';
@@ -374,7 +364,7 @@ Future<void> main() async {
         'username': jamesbondTestUser.username,
         'displayName': jamesbondTestUser.displayName,
         'password': oldPass,
-        'departmentId': jamesbondTestUser.department,
+        'department': jamesbondTestUser.department,
         'role': jamesbondTestUser.role.toString().split('.').last,
       };
       final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
@@ -412,23 +402,20 @@ Future<void> main() async {
     }
   });
 
-  // test('Performs a account deletion action', () async {
-  //   try {
-  //     final Map<String, dynamic> body = <String, dynamic>{
-  //       'username': edTestUser.username,
-  //       'displayName': edTestUser.displayName,
-  //       'password': 'TestPassword123',
-  //       'departmentId': edTestUser.department,
-  //       'role': edTestUser.role.toString().split('.').last,
-  //     };
-  //     await dbHandler.registerAccount(body);
-  //     final String user = await dbHandler.getUserId(edTestUser.username);
-  //     expect(() => dbHandler.deleteAccount(user),
-  //         throwsA(isInstanceOf<Exception>()));
-  //   } finally {
-  //     await killAll(dbHandler);
-  //   }
-  // });
+  test('Performs a account deletion action', () async {
+    try {
+      final GirafUserModel edUser = await dbHandler.registerAccount(edBody);
+      final bool delAction = await dbHandler.deleteAccount(edUser.id);
+      expect(delAction, true);
+    } finally {
+      await cleanUsers(dbHandler);
+    }
+  });
+
+  test('Attempt to delete an non-matching account', () async {
+    final bool delAction = await dbHandler.deleteAccount('50');
+    expect(delAction, false);
+  });
 
   test('Get the list of citizens with a guardian relation', () async {
     try {
@@ -437,21 +424,7 @@ Future<void> main() async {
           username: 'Alex Jones',
           displayName: 'AJones',
           department: 1);
-      final Map<String, dynamic> cit1Body = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'password': 'pwd1234',
-        'departmentId': jamesbondTestUser.department,
-        'role': jamesbondTestUser.role.toString().split('.').last,
-      };
 
-      final Map<String, dynamic> cit2Body = <String, dynamic>{
-        'username': edTestUser.username,
-        'displayName': edTestUser.displayName,
-        'password': 'pwd1234',
-        'departmentId': edTestUser.department,
-        'role': edTestUser.role.toString().split('.').last,
-      };
       final Map<String, dynamic> guardBody = <String, dynamic>{
         'username': newGuardian.username,
         'displayName': newGuardian.displayName,
@@ -459,11 +432,10 @@ Future<void> main() async {
         'departmentId': newGuardian.department,
         'role': newGuardian.role.toString().split('.').last,
       };
-
       final GirafUserModel citizen1Res =
-          await dbHandler.registerAccount(cit1Body);
+          await dbHandler.registerAccount(jamesBody);
       final GirafUserModel citizen2Res =
-          await dbHandler.registerAccount(cit2Body);
+          await dbHandler.registerAccount(edBody);
       final GirafUserModel guardianRes =
           await dbHandler.registerAccount(guardBody);
 
@@ -504,16 +476,7 @@ Future<void> main() async {
   });
   test('update an activity with timer is null', () async {
     try {
-      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'Rolename': jamesbondTestUser.roleName,
-        'offlineid': jamesbondTestUser.offlineId,
-        'id': jamesbondTestUser.id,
-        'Role': jamesbondTestUser.role,
-        'password': '007'
-      };
-      await dbHandler.registerAccount(jamesBondBody);
+      await dbHandler.registerAccount(jamesBody);
       final PictogramModel fakePictogram =
           await dbHandler.createPictogram(scrum);
       lege.pictograms = <PictogramModel>[fakePictogram];
@@ -529,16 +492,7 @@ Future<void> main() async {
 
   test('update an activity with timer', () async {
     try {
-      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'Rolename': jamesbondTestUser.roleName,
-        'offlineid': jamesbondTestUser.offlineId,
-        'id': jamesbondTestUser.id,
-        'Role': jamesbondTestUser.role,
-        'password': '007'
-      };
-      await dbHandler.registerAccount(jamesBondBody);
+      await dbHandler.registerAccount(jamesBody);
       final PictogramModel fakePictogram =
           await dbHandler.createPictogram(scrum);
       lege.pictograms = <PictogramModel>[fakePictogram];
@@ -554,17 +508,7 @@ Future<void> main() async {
   });
   test('Get a user setting with GetUserSettings ', () async {
     try {
-      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'Rolename': jamesbondTestUser.roleName,
-        'offlineid': jamesbondTestUser.offlineId,
-        'id': jamesbondTestUser.id,
-        'Role': jamesbondTestUser.role,
-        'password': '007'
-      };
-      final GirafUserModel body =
-          await dbHandler.registerAccount(jamesBondBody);
+      final GirafUserModel body = await dbHandler.registerAccount(jamesBody);
       final SettingsModel res = await dbHandler.getUserSettings(body.id);
       expect(res, isNot(null));
     } finally {
@@ -574,19 +518,10 @@ Future<void> main() async {
 
   test('Delete an activity from weekplan', () async {
     try {
-      final Map<String, dynamic> jamesBondBody = <String, dynamic>{
-        'username': jamesbondTestUser.username,
-        'displayName': jamesbondTestUser.displayName,
-        'Rolename': jamesbondTestUser.roleName,
-        'offlineid': jamesbondTestUser.offlineId,
-        'id': jamesbondTestUser.id,
-        'Role': jamesbondTestUser.role,
-        'password': '007'
-      };
       final ActivityModel testActivity = lege;
       testActivity.pictograms = <PictogramModel>[scrum];
       testActivity.timer = timer;
-      await dbHandler.registerAccount(jamesBondBody);
+      await dbHandler.registerAccount(jamesBody);
       final ActivityModel fakeActivity = await dbHandler.addActivity(
           lege, jamesbondTestUser.id, 'weekplanName', 2020, 43, Weekday.Friday);
 
