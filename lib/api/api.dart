@@ -20,7 +20,7 @@ class Api {
     final Persistence persist = PersistenceClient();
     account = AccountApi(
         HttpClient(
-            baseUrl: '$baseUrl/v1',
+            baseUrl: '$baseUrl/v2/Account',
             persist: persist,
             tokenKey: tokenKey,
             timeout: timeout),
@@ -36,7 +36,7 @@ class Api {
         tokenKey: tokenKey,
         timeout: timeout));
     week = WeekApi(HttpClient(
-        baseUrl: '$baseUrl/v1/User',
+        baseUrl: '$baseUrl/v1/Week',
         persist: persist,
         tokenKey: tokenKey,
         timeout: timeout));
