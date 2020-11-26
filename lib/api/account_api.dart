@@ -9,10 +9,14 @@ import 'package:api_client/persistence/persistence.dart';
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
-  AccountApi(this._http, this._persist);
+  AccountApi(this._http, this._persist, this._userApiHttp);
 
   final Http _http;
   final Persistence _persist;
+
+  /// Used to get a GirafuserModel for hydrating the offline
+  /// database when logging in
+  final Http _userApiHttp;
 
   /// This endpoint allows the user to sign in to his/her account by providing
   /// valid username and password
@@ -34,6 +38,25 @@ class AccountApi {
     } else {
       yield online;
     }
+    if (online &&
+        !(await OfflineDbHandler.instance.login(username, password))) {
+      hydrateUser(password);
+    }
+  }
+
+  /// Hydrate user
+  /// [password] is the users password
+  Future<void> hydrateUser(String password) async {
+    final GirafUserModel me = await _userApiHttp
+        .get('/')
+        .map((Response res) => GirafUserModel.fromJson(res.json['data']))
+        .first;
+    final Map<String, dynamic> body = me.toJson();
+    body['role'] = me.roleName;
+    body['password'] = password;
+    final GirafUserModel temp =
+        await OfflineDbHandler.instance.registerAccount(body);
+    await OfflineDbHandler.instance.replaceTempIdUsers(temp.id, me.id);
   }
 
   /// Register a new user
