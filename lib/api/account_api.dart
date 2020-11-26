@@ -25,14 +25,18 @@ class AccountApi {
   /// [password] The users password
   Stream<bool> login(String username, String password) async* {
     int responseCode;
-    final bool online = await _http.post('/login', <String, String>{
-      'username': username,
-      'password': password,
-    }).flatMap<bool>((Response res) {
-      responseCode = res.statusCode();
-      _persist.set('token', res.json['data']);
-      return Stream<bool>.value(res.success());
-    }).first;
+    final bool online = await _http
+        .post('/login', <String, String>{
+          'username': username,
+          'password': password,
+        })
+        .flatMap<bool>((Response res) {
+          responseCode = res.statusCode();
+          _persist.set('token', res.json['data']);
+          return Stream<bool>.value(res.success());
+        })
+        .first
+        .timeout(const Duration(seconds: 5), onTimeout: () => false);
     if (!online && responseCode != 400 && responseCode != 401) {
       yield await OfflineDbHandler.instance.login(username, password);
     } else {
