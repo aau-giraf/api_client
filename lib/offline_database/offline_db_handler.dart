@@ -645,11 +645,11 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `Pictograms` '
             "WHERE Title LIKE '%$query%'");
-    List<PictogramModel> allPictograms;
+    final List<PictogramModel> allPictograms = <PictogramModel>[];
     for (Map<String, dynamic> pictogram in res) {
       allPictograms.add(PictogramModel.fromDatabase(pictogram));
     }
-    List<List<PictogramModel>> possibleResults;
+    final List<List<PictogramModel>> possibleResults = <List<PictogramModel>>[];
     for (int i = 0; i < allPictograms.length; i += pageSize) {
       possibleResults.add(allPictograms.sublist(
           i,
@@ -772,7 +772,7 @@ class OfflineDbHandler {
             "`Key` == (SELECT `SettingsKey` FROM `Users` WHERE `Id` == '$id')");
     final List<Map<String, dynamic>> resWeekdayColors =
         await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
-            "`Id` == '${resSettings[0]['Key']}'");
+            "`SettingId` == '${resSettings[0]['Key']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
 
@@ -801,7 +801,7 @@ class OfflineDbHandler {
       final int day = dayColor.day.index;
       db.rawUpdate('UPDATE `WeekDayColors` SET '
           "`HexColor` = '${dayColor.hexColor}' WHERE "
-          "`SettingsId` == '$settingsKey' AND "
+          "`SettingId` == '$settingsKey' AND "
           "`Day` == '$day'");
     }
     return getUserSettings(id);
