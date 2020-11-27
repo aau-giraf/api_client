@@ -52,6 +52,11 @@ class WeekApi {
     });
   }
 
+  /// Updates a single weekday
+  ///
+  /// [id] User Id
+  /// [year] Year the week is in
+  /// [weekNumber] The week-number of the week
   Stream<WeekdayModel> updateDay(
       String id, int year, int weekNumber, WeekdayModel weekday) {
     return _http
@@ -60,15 +65,7 @@ class WeekApi {
       return WeekdayModel.fromJson(res.json['data']);
     });
   }
-
-  Stream<WeekModel> patch(
-      String id, int year, int weekNumber, WeekModel week) {
-    return _http
-        .patch('/$id/week/$year/$weekNumber', week.toJson())
-        .map((Response res) {
-      return WeekModel.fromJson(res.json['data']);
-    });
-  }
+  
 
   /// Deletes all information for the entire week with the given year and week
   /// number.
