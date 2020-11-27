@@ -1,28 +1,34 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:api_client/models/enums/cancel_mark_enum.dart';
-import 'package:api_client/models/enums/complete_mark_enum.dart';
-import 'package:api_client/models/enums/orientation_enum.dart' as orient;
-import 'package:api_client/models/settings_model.dart';
+
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
+import 'package:api_client/models/enums/cancel_mark_enum.dart';
+import 'package:api_client/models/enums/complete_mark_enum.dart';
+import 'package:api_client/models/enums/default_timer_enum.dart';
+import 'package:api_client/models/enums/giraf_theme_enum.dart';
+import 'package:api_client/models/enums/orientation_enum.dart' as orient;
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
-import 'package:api_client/models/timer_model.dart';
+import 'package:api_client/models/settings_model.dart';
+import 'package:api_client/models/week_template_model.dart';
+import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
-import 'package:api_client/models/enums/giraf_theme_enum.dart';
-import 'package:api_client/models/enums/default_timer_enum.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+import 'Offline_models.dart';
+
+
 
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
@@ -58,92 +64,6 @@ class MockOfflineDbHandler extends OfflineDbHandler {
     return imageDirectory.path;
   }
 }
-
-//Test GirafUserModel 1
-final GirafUserModel jamesbondTestUser = GirafUserModel(
-    username: 'JamesBond007',
-    department: 1,
-    displayName: 'James Bond',
-    roleName: 'Citizen',
-    id: 'james007bond',
-    role: Role.Citizen,
-    offlineId: 1);
-// Test account body 1
-final Map<String, dynamic> jamesBody = <String, dynamic>{
-  'username': jamesbondTestUser.username,
-  'displayName': jamesbondTestUser.displayName,
-  'password': 'TestPassword123',
-  'department': jamesbondTestUser.department,
-  'role': jamesbondTestUser.role.toString().split('.').last
-};
-//Test GirafUserModel 2
-final GirafUserModel edTestUser = GirafUserModel(
-    department: 34,
-    offlineId: 34,
-    role: Role.Citizen,
-    id: 'edmcniel01',
-    roleName: 'Citizen',
-    displayName: 'Ed McNiel',
-    username: 'EdMcNiel34');
-//Test account body 2
-final Map<String, dynamic> edBody = <String, dynamic>{
-  'username': edTestUser.username,
-  'displayName': edTestUser.displayName,
-  'password': 'MyPassword42',
-  'department': edTestUser.department,
-  'role': edTestUser.role.toString().split('.').last
-};
-//Test Pictogram 1
-final PictogramModel scrum = PictogramModel(
-    accessLevel: AccessLevel.PUBLIC,
-    id: 44,
-    title: 'Picture of Scrum',
-    lastEdit: DateTime.now(),
-    userId: '1');
-
-//Test Pictogram 2
-final PictogramModel extreme = PictogramModel(
-    accessLevel: AccessLevel.PROTECTED,
-    id: 20,
-    title: 'Picture of XP',
-    lastEdit: DateTime.now(),
-    userId: '3');
-
-//Lists of test pictograms
-List<PictogramModel> testListe = <PictogramModel>[scrum];
-List<PictogramModel> testListe2 = <PictogramModel>[extreme];
-
-//Test ActivityModel 1
-final ActivityModel lege = ActivityModel(
-  id: 69,
-  isChoiceBoard: true,
-  order: 1,
-  pictograms: testListe,
-  choiceBoardName: 'Testchoice',
-  state: ActivityState.Active,
-  timer: null,
-);
-
-//Test ActivityModel 2
-final ActivityModel spise = ActivityModel(
-  id: 70,
-  pictograms: testListe2,
-  order: 2,
-  state: ActivityState.Active,
-  isChoiceBoard: true,
-  choiceBoardName: 'Testsecondchoice',
-  timer: null,
-);
-
-//Test Timer
-final TimerModel timer = TimerModel(
-  startTime: DateTime.now(),
-  progress: 1,
-  fullLength: 10,
-  paused: false,
-  key: 44,
-);
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
@@ -587,6 +507,24 @@ Future<void> main() async {
     dbHandler.setMe(jamesbondTestUser);
     expect(dbHandler.getMe(), jamesbondTestUser);
     expect(dbHandler.getMe(), isNot(edTestUser));
+  });
+
+  
+  test('Test getting a template', () async {
+    final WeekTemplateModel weekTemp1 = weekTemplate1;
+    final WeekTemplateModel weekTemp2 = weekTemplate2;
+
+    await dbHandler.createTemplate(weekTemp1);
+    await dbHandler.createTemplate(weekTemp2);
+    final List<WeekTemplateModel> res = <WeekTemplateModel>[
+      weekTemp1,
+      weekTemp2
+    ];
+
+    final List<WeekTemplateNameModel> resTest =
+        await dbHandler.getTemplateNames();
+
+    expect(resTest, res);
   });
 }
 
