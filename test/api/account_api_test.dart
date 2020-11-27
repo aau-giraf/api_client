@@ -27,7 +27,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/Account/login', method: Method.post)
+        .expectOne(url: '/login', method: Method.post)
         .flush(<String, dynamic>{
       'data': 'TestToken',
       'message': '',
@@ -42,7 +42,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/Account/login', method: Method.post)
+        .expectOne(url: '/login', method: Method.post)
         .throwError(ApiException(Response(null, <String, dynamic>{
           'success': false,
           'message': '',
@@ -59,8 +59,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(
-            url: '/User/$id/Account/password-reset-token', method: Method.get)
+        .expectOne(url: '/password-reset-token/$id', method: Method.get)
         .flush(<String, dynamic>{
       'data': token,
       'message': '',
@@ -77,8 +76,8 @@ void main() {
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, displayName, password, departmentId: departmentId,
-          role: role)
+        .register(username, displayName, password,
+            departmentId: departmentId, role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);
       expect(res.displayName, displayName);
@@ -88,7 +87,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/Account/register', method: Method.post)
+        .expectOne(url: '/register', method: Method.post)
         .flush(<String, dynamic>{
       'data': <String, dynamic>{
         'role': 1,
@@ -115,7 +114,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/User/$id/Account/password', method: Method.put)
+        .expectOne(url: '/password/$id', method: Method.put)
         .flush(<String, dynamic>{
       'message': '',
       'errorKey': 'NoError',
@@ -134,7 +133,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/User/$id/Account/password', method: Method.post)
+        .expectOne(url: '/password/$id', method: Method.post)
         .flush(<String, dynamic>{
       'message': '',
       'errorKey': 'NoError',
@@ -148,7 +147,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/Account/user/$id', method: Method.delete, statusCode: 400)
+        .expectOne(url: '/user/$id', method: Method.delete, statusCode: 400)
         .flush(<String, dynamic>{
       'message': '',
       'errorKey': 'NoError',
