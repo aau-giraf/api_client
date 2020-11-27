@@ -216,6 +216,28 @@ Future<void> main() async {
     expect(wasDeleted, true);
   });
 
+  test('Retrieve all pictograms', () async {
+    await dbHandler.createPictogram(scrum);
+    await dbHandler.createPictogram(extreme);
+    final List<PictogramModel> pictoList = <PictogramModel>[scrum, extreme];
+    final List<PictogramModel> retrievedList = await dbHandler.getAllPictograms(
+        query: 'Picture', page: 0, pageSize: 10);
+    expect(retrievedList[0].title, pictoList[0].title);
+    expect(retrievedList[1].title, pictoList[1].title);
+  });
+
+  test('Retrieve all pictograms from a different page', () async {
+    await dbHandler.createPictogram(scrum);
+    await dbHandler.createPictogram(extreme);
+    final List<PictogramModel> pictoList = <PictogramModel>[scrum, extreme];
+    final List<PictogramModel> retrievedList = await dbHandler.getAllPictograms(
+        query: 'Picture', page: 0, pageSize: 1);
+    expect(retrievedList[0].title, pictoList[0].title);
+    final List<PictogramModel> retrievedList2 = await dbHandler
+        .getAllPictograms(query: 'Picture', page: 1, pageSize: 1);
+    expect(retrievedList2[0].title, pictoList[1].title);
+  });
+
   test('Update the image contained in a pictogram', () async {
     final String tempDir = Directory.current.path;
     Directory pictoDir;
@@ -455,6 +477,7 @@ Future<void> main() async {
         lockTimerControl: uSettings.lockTimerControl,
         activitiesCount: uSettings.activitiesCount,
         weekDayColors: uSettings.weekDayColors);
+    newSettings.weekDayColors[0].hexColor = 'ffffff';
 
     final SettingsModel testUpdate =
         await dbHandler.updateUserSettings(body.id, newSettings);
