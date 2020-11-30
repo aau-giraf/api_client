@@ -34,7 +34,7 @@ class ActivityApi {
   /// [userId] User ID
   Stream<ActivityModel> update(ActivityModel activity, String userId) {
     return _http
-        .patch('/$userId/update', activity.toJson())
+        .put('/$userId/update', activity.toJson())
         .map((Response res) {
       return ActivityModel.fromJson(res.json['data']);
     });
