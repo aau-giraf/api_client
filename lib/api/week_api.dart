@@ -60,7 +60,7 @@ class WeekApi {
   Stream<WeekdayModel> updateDay(
       String id, int year, int weekNumber, WeekdayModel weekday) {
     return _http
-        .patch('/$id/week/$year/$weekNumber', weekday.toJson())
+        .put('/$id/week/$year/$weekNumber', weekday.toJson())
         .map((Response res) {
       return WeekdayModel.fromJson(res.json['data']);
     });
