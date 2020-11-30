@@ -16,6 +16,7 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
@@ -637,6 +638,16 @@ Future<void> main() async {
   });
   test('Test to create a week template in offline database', () async {
     //arrange
+    //create pictogram in local db
+    PictogramModel fakpictogram = PictogramModel(
+        id: 1,
+        title: 'Picto',
+        lastEdit: DateTime.now(),
+        imageUrl: 'http://',
+        //imageHash: '#',
+        accessLevel: AccessLevel.PUBLIC);
+    final PictogramModel fakePictogram2 =
+        await dbHandler.createPictogram(fakpictogram);
     // create fake WeekTemplateModel
     final WeekTemplateModel fakeWeekTemplate = WeekTemplateModel(
         name: 'Week 1',
@@ -645,19 +656,13 @@ Future<void> main() async {
           WeekdayModel(day: Weekday.Monday, activities: <ActivityModel>[])
         ],
         departmentKey: 5,
-        thumbnail: PictogramModel(
-            id: 1,
-            title: 'Picto',
-            lastEdit: DateTime.now(),
-            imageUrl: 'http://',
-            imageHash: '#',
-            accessLevel: AccessLevel.PUBLIC));
+        thumbnail: fakePictogram2);
     //act
     // add fakeWeekTemplate to the offline database
     final WeekTemplateModel createFakeWeekTemplate =
         await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
-    //expect(lege.id, fakeactivityModel.id);
+    expect(fakeWeekTemplate.name,createFakeWeekTemplate.name);
   });
 }
 
