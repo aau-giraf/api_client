@@ -1,20 +1,23 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:api_client/models/enums/cancel_mark_enum.dart';
-import 'package:api_client/models/enums/complete_mark_enum.dart';
-import 'package:api_client/models/enums/orientation_enum.dart' as orient;
-import 'package:api_client/models/settings_model.dart';
+
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
+import 'package:api_client/models/enums/cancel_mark_enum.dart';
+import 'package:api_client/models/enums/complete_mark_enum.dart';
+import 'package:api_client/models/enums/default_timer_enum.dart';
+import 'package:api_client/models/enums/giraf_theme_enum.dart';
+import 'package:api_client/models/enums/orientation_enum.dart' as orient;
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
-import 'package:api_client/models/timer_model.dart';
+import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/week_template_model.dart';
+import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:api_client/models/enums/giraf_theme_enum.dart';
@@ -25,6 +28,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+import 'Offline_models.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
@@ -298,6 +303,28 @@ Future<void> main() async {
     expect(wasDeleted, true);
   });
 
+  test('Retrieve all pictograms', () async {
+    await dbHandler.createPictogram(scrum);
+    await dbHandler.createPictogram(extreme);
+    final List<PictogramModel> pictoList = <PictogramModel>[scrum, extreme];
+    final List<PictogramModel> retrievedList = await dbHandler.getAllPictograms(
+        query: 'Picture', page: 0, pageSize: 10);
+    expect(retrievedList[0].title, pictoList[0].title);
+    expect(retrievedList[1].title, pictoList[1].title);
+  });
+
+  test('Retrieve all pictograms from a different page', () async {
+    await dbHandler.createPictogram(scrum);
+    await dbHandler.createPictogram(extreme);
+    final List<PictogramModel> pictoList = <PictogramModel>[scrum, extreme];
+    final List<PictogramModel> retrievedList = await dbHandler.getAllPictograms(
+        query: 'Picture', page: 0, pageSize: 1);
+    expect(retrievedList[0].title, pictoList[0].title);
+    final List<PictogramModel> retrievedList2 = await dbHandler
+        .getAllPictograms(query: 'Picture', page: 1, pageSize: 1);
+    expect(retrievedList2[0].title, pictoList[1].title);
+  });
+
   test('Update the image contained in a pictogram', () async {
     final String tempDir = Directory.current.path;
     Directory pictoDir;
@@ -537,6 +564,7 @@ Future<void> main() async {
         lockTimerControl: uSettings.lockTimerControl,
         activitiesCount: uSettings.activitiesCount,
         weekDayColors: uSettings.weekDayColors);
+    newSettings.weekDayColors[0].hexColor = 'ffffff';
 
     final SettingsModel testUpdate =
         await dbHandler.updateUserSettings(body.id, newSettings);
@@ -589,6 +617,23 @@ Future<void> main() async {
     dbHandler.setMe(jamesbondTestUser);
     expect(dbHandler.getMe(), jamesbondTestUser);
     expect(dbHandler.getMe(), isNot(edTestUser));
+  });
+
+  test('Test getting a template', () async {
+    final WeekTemplateModel weekTemp1 = weekTemplate1;
+    final WeekTemplateModel weekTemp2 = weekTemplate2;
+
+    await dbHandler.createTemplate(weekTemp1);
+    await dbHandler.createTemplate(weekTemp2);
+    final List<WeekTemplateModel> res = <WeekTemplateModel>[
+      weekTemp1,
+      weekTemp2
+    ];
+
+    final List<WeekTemplateNameModel> resTest =
+        await dbHandler.getTemplateNames();
+
+    expect(resTest, res);
   });
   test('Test to create a week template in offline database', () async {
     //arrange

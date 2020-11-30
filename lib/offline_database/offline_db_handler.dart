@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:api_client/api_client.dart';
@@ -20,6 +21,7 @@ import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_color_model.dart';
+import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/persistence/persistence_client.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -482,10 +484,21 @@ class OfflineDbHandler {
       int weekYear,
       int weekNumber,
       Weekday weekDay) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> dbWeek =
+        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
+            "GirafUserId == '$userId' AND "
+            "WeekYear == '$weekYear' AND "
+            "WeekNumber == '$weekNumber'");
+    final List<Map<String, dynamic>> dbDay =
+        await db.rawQuery('SELECT * FROM `Weekdays` WHERE'
+            "Day == '${weekDay.index}' AND "
+            "WeekId == '${dbWeek[0]['id']}'");
+
     final Map<String, dynamic> insertActivityQuery = <String, dynamic>{
       'Key': activity.id,
       'Order': activity.order,
-      'OtherKey': weekNumber,
+      'OtherKey': dbDay[0]['id'],
       'State': activity.state.index,
       'IsChoiceBoard': activity.isChoiceBoard ? 1 : 0,
     };
@@ -501,7 +514,6 @@ class OfflineDbHandler {
       };
     }
 
-    final Database db = await database;
     db.transaction((Transaction txn) async {
       for (PictogramModel pictogram in activity.pictograms) {
         await txn.insert('PictogramRelations', <String, dynamic>{
@@ -520,12 +532,16 @@ class OfflineDbHandler {
   Future<ActivityModel> _getActivity(int key, Database db) async {
     final List<Map<String, dynamic>> listResult =
         await db.rawQuery("SELECT * FROM `Activities` WHERE `Key` == '$key'");
+    if (listResult.isEmpty) {
+      return null;
+    }
     final Map<String, dynamic> result = listResult[0];
     TimerModel timerModel;
     if (result != null && result['TimerKey'] != null) {
       timerModel = await _getTimer(result['TimerKey']);
     }
     final List<PictogramModel> pictoList = await _getActivityPictograms(key);
+
     return ActivityModel.fromDatabase(result, timerModel, pictoList);
   }
 
@@ -629,11 +645,11 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `Pictograms` '
             "WHERE Title LIKE '%$query%'");
-    List<PictogramModel> allPictograms;
+    final List<PictogramModel> allPictograms = <PictogramModel>[];
     for (Map<String, dynamic> pictogram in res) {
       allPictograms.add(PictogramModel.fromDatabase(pictogram));
     }
-    List<List<PictogramModel>> possibleResults;
+    final List<List<PictogramModel>> possibleResults = <List<PictogramModel>>[];
     for (int i = 0; i < allPictograms.length; i += pageSize) {
       possibleResults.add(allPictograms.sublist(
           i,
@@ -756,7 +772,7 @@ class OfflineDbHandler {
             "`Key` == (SELECT `SettingsKey` FROM `Users` WHERE `Id` == '$id')");
     final List<Map<String, dynamic>> resWeekdayColors =
         await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
-            "`Id` == '${resSettings[0]['Key']}'");
+            "`SettingId` == '${resSettings[0]['Key']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
 
@@ -785,7 +801,7 @@ class OfflineDbHandler {
       final int day = dayColor.day.index;
       db.rawUpdate('UPDATE `WeekDayColors` SET '
           "`HexColor` = '${dayColor.hexColor}' WHERE "
-          "`SettingsId` == '$settingsKey' AND "
+          "`SettingId` == '$settingsKey' AND "
           "`Day` == '$day'");
     }
     return getUserSettings(id);
@@ -883,6 +899,14 @@ class OfflineDbHandler {
   Future<WeekModel> updateWeek(
       String id, int year, int weekNumber, WeekModel week) async {
     final Database db = await database;
+    final List<Map<String, dynamic>> dbWeek =
+        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
+            "GirafUserId == '$id' AND "
+            "WeekYear == '$year' AND "
+            "WeekNumber == '$weekNumber'");
+    if (dbWeek.isEmpty) {
+      _createWeek(db, week, id);
+    }
     await db.rawUpdate("UPDATE `Weeks` SET WeekYear = '${week.weekYear}', "
         "Name = '${week.name}', "
         "ThumbnailKey = '${week.thumbnail.id}', "
@@ -891,6 +915,42 @@ class OfflineDbHandler {
         "WeekYear == '$year' AND "
         "WeekNumber == '$weekNumber'");
     return getWeek(id, year, weekNumber);
+  }
+
+  Future<void> _createWeek(Database db, WeekModel week, String id) async {
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'Name': week.name,
+      'ThumbnailKey': week.thumbnail.id,
+      'WeekNumber': week.weekNumber,
+      'GirafUserId': id,
+      'WeekYear': week.weekYear
+    };
+    await db.insert('`Weeks`', insertQuery);
+    final List<Map<String, dynamic>> dbWeek =
+        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
+            "GirafUserId == '$id' AND "
+            "WeekYear == '${week.weekYear}' AND "
+            "WeekNumber == '${week.weekNumber}'");
+    for (WeekdayModel day in week.days) {
+      await _insertWeekday(dbWeek[0]['id'], day, db, id, week);
+    }
+  }
+
+  Future<void> _insertWeekday(String weekId, WeekdayModel day, Database db,
+      String userId, WeekModel week) async {
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'Day': day.day.index,
+      'WeekId': weekId
+    };
+    db.insert('`Weekdays`', insertQuery);
+    for (ActivityModel activity in day.activities) {
+      if (_getActivity(activity.id, db) == null) {
+        addActivity(activity, userId, week.name, week.weekYear, week.weekNumber,
+            day.day);
+      } else {
+        updateActivity(activity, userId);
+      }
+    }
   }
 
   /// Delete a Week With the userid [id]
