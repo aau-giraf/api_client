@@ -14,6 +14,8 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/timer_model.dart';
+import 'package:api_client/models/week_template_model.dart';
+import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
@@ -587,6 +589,30 @@ Future<void> main() async {
     dbHandler.setMe(jamesbondTestUser);
     expect(dbHandler.getMe(), jamesbondTestUser);
     expect(dbHandler.getMe(), isNot(edTestUser));
+  });
+  test('Test to create a week template in offline database', () async {
+    //arrange
+    // create fake WeekTemplateModel
+    final WeekTemplateModel fakeWeekTemplate = WeekTemplateModel(
+        name: 'Week 1',
+        id: 1234,
+        days: <WeekdayModel>[
+          WeekdayModel(day: Weekday.Monday, activities: <ActivityModel>[])
+        ],
+        departmentKey: 5,
+        thumbnail: PictogramModel(
+            id: 1,
+            title: 'Picto',
+            lastEdit: DateTime.now(),
+            imageUrl: 'http://',
+            imageHash: '#',
+            accessLevel: AccessLevel.PUBLIC));
+    //act
+    // add fakeWeekTemplate to the offline database
+    final WeekTemplateModel createFakeWeekTemplate =
+        await dbHandler.createTemplate(fakeWeekTemplate);
+    //assert
+    //expect(lege.id, fakeactivityModel.id);
   });
 }
 
