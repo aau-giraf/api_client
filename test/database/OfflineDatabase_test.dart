@@ -16,6 +16,7 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
@@ -174,6 +175,23 @@ Future<void> main() async {
     expect(fakeUserRes.role, Role.Citizen);
     await cleanUsers(dbHandler);
   });
+
+  test('Save data in the table for failed transactions', () async {
+    const String testTransType = 'put';
+    const String testBaseUrl = 'http://10.0.2.2:5000';
+    const String testUrl = '/register';
+    const String testTable = 'Users';
+    const String testId = '1';
+    dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
+        body: jamesBody, tableAffected: testTable, tempId: testId);
+    final Database db = await dbHandler.database;
+    final List<Map<String, dynamic>> dbRes =
+        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
+            "WHERE TempId == '$testId'");
+    expect(dbRes[0]['TempId'], testId);
+    expect(dbRes[0]['Body'], jamesBody.toString());
+  });
+
   test('Test if it is possible to register the same account twice', () async {
     //create fake account
     await dbHandler.registerAccount(jamesBody);
