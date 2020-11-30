@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
 
+
 class PictogramModel implements Model {
 
   /// Constructor
@@ -47,6 +48,8 @@ class PictogramModel implements Model {
   String imageHash;
 
   String userId;
+
+
 
   @override
   Map<String, dynamic> toJson() {
