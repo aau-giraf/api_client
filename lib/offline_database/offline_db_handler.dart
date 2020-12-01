@@ -287,7 +287,7 @@ class OfflineDbHandler {
       Map<String, dynamic> json, String table, int tempId) async {
     switch (table) {
       case 'Users':
-        replaceTempIdUsers(tempId, json['id']);
+        replaceTempIdUsers(tempId, int.tryParse(json['id']));
         break;
       case 'Pictograms':
         replaceTempIdPictogram(tempId, json['id']);
