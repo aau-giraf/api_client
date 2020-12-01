@@ -998,8 +998,13 @@ class OfflineDbHandler {
         await db.rawQuery('SELECT * FROM `WeekTemplates` WHERE '
             "OnlineId == '$id'");
     final Map<String, dynamic> template = res[0];
-    template['Thumbnail'] = getPictogramID(template['ThumbnailKey']);
-    return WeekTemplateModel.fromDatabase(template);
+    // get the first record
+    Map<String, dynamic> template1 = Map<String, dynamic>.from(template);
+    template1['Thumbnail'] =
+        (await getPictogramID(template1['ThumbnailKey'])).toJson();
+    return WeekTemplateModel.fromDatabase(template1);
+    //   template['Thumbnail'] = getPictogramID(template['ThumbnailKey']);
+    //     return WeekTemplateModel.fromDatabase(template);
   }
 
   /// Update a template with all the values from [template]
