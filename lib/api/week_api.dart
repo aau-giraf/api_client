@@ -1,4 +1,5 @@
 import 'package:api_client/http/http.dart';
+import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
@@ -34,6 +35,18 @@ class WeekApi {
   Stream<WeekModel> get(String id, int year, int weekNumber) {
     return _http.get('/$id/$year/$weekNumber').map((Response res) {
       return WeekModel.fromJson(res.json['data']);
+    });
+  }
+
+  /// Get a single weekday from the specified week
+  ///
+  /// [id] User ID
+  /// [year] The year of the week
+  /// [weekNumber] The number of the week
+  /// [day] The day of the week
+  Stream<WeekdayModel> getDay(String id, int year, int weekNumber, Weekday day){
+    return _http.get('/$id/$year/$weekNumber/${day.index}').map((Response res) {
+      return WeekdayModel.fromJson(res.json['data']);
     });
   }
 
