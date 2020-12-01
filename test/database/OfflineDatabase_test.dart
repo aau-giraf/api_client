@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
@@ -66,47 +67,11 @@ class MockOfflineDbHandler extends OfflineDbHandler {
   }
 }
 
-//Test GirafUserModel 1
-final GirafUserModel jamesbondTestUser = GirafUserModel(
-    username: 'JamesBond007',
-    department: 1,
-    displayName: 'James Bond',
-    roleName: 'Citizen',
-    id: 'james007bond',
-    role: Role.Citizen,
-    offlineId: 1);
-// Test account body 1
-final Map<String, dynamic> jamesBody = <String, dynamic>{
-  'username': jamesbondTestUser.username,
-  'displayName': jamesbondTestUser.displayName,
-  'password': 'TestPassword123',
-  'department': jamesbondTestUser.department,
-  'role': jamesbondTestUser.role.toString().split('.').last
-};
-//Test GirafUserModel 2
-final GirafUserModel edTestUser = GirafUserModel(
-    department: 34,
-    offlineId: 34,
-    role: Role.Citizen,
-    id: 'edmcniel01',
-    roleName: 'Citizen',
-    displayName: 'Ed McNiel',
-    username: 'EdMcNiel34');
-//Test account body 2
-final Map<String, dynamic> edBody = <String, dynamic>{
-  'username': edTestUser.username,
-  'displayName': edTestUser.displayName,
-  'password': 'MyPassword42',
-  'department': edTestUser.department,
-  'role': edTestUser.role.toString().split('.').last
-};
-//Test Pictogram 1
-final PictogramModel scrum = PictogramModel(
-    accessLevel: AccessLevel.PUBLIC,
-    id: 44,
-    title: 'Picture of Scrum',
-    lastEdit: DateTime.now(),
-    userId: '1');
+Future<void> main() async {
+  HttpMock httpMock;
+  setUp(() {
+    httpMock = HttpMock();
+  });
 
 //Test Pictogram 2
 final PictogramModel extreme = PictogramModel(
@@ -191,6 +156,22 @@ Future<void> main() async {
     expect(dbRes[0]['Body'], jamesBody.toString());
   });
 
+  test('Save data in the table for failed transactions', () async {
+    const String testTransType = 'put';
+    const String testBaseUrl = 'http://10.0.2.2:5000';
+    const String testUrl = '/register';
+    const String testTable = 'Users';
+    const String testId = '1';
+    dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
+        body: jamesBody, tableAffected: testTable, tempId: testId);
+    final Database db = await dbHandler.database;
+    final List<Map<String, dynamic>> dbRes =
+        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
+            "WHERE TempId == '$testId'");
+    expect(dbRes[0]['TempId'], testId);
+    expect(dbRes[0]['Body'], jamesBody.toString());
+  });
+
   test('Test if it is possible to register the same account twice', () async {
     //create fake account
     await dbHandler.registerAccount(jamesBody);
@@ -206,17 +187,19 @@ Future<void> main() async {
     expect(idReturn, jamesUser.id);
   });
   test('Add activity test', () async {
-    //arrange
-    //add pictograms to offline database
-    final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
-    final PictogramModel fakePicto2 = await dbHandler.createPictogram(extreme);
-    //act
-    lege.pictograms = <PictogramModel>[fakePicto1, fakePicto2];
-    final ActivityModel fakeactivityModel = await dbHandler.addActivity(
-        lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
-    //assert
-    expect(lege.id, fakeactivityModel.id);
-    expect(lege.state, fakeactivityModel.state);
+    final WeekModel testWeek = blankTestWeek;
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+
+    final WeekModel userWeek = await dbHandler.updateWeek(
+        jamesUser.id, testWeek.weekYear, testWeek.weekNumber, testWeek);
+    expect(userWeek.days[0].day, testWeek.days[0].day);
+    expect(userWeek.thumbnail.id, testWeek.thumbnail.id);
+    await dbHandler.addActivity(spise, jamesUser.id, testWeek.name,
+        testWeek.weekYear, testWeek.weekNumber, Weekday.Friday);
+    expect(testWeek.days[0].activities, isNot(userWeek.days[0].activities));
+    pictoImage.delete();
   });
   test('Add activity test with timer', () async {
     //arrange

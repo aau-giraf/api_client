@@ -15,7 +15,7 @@ class PictogramModel implements Model {
     this.userId,
   });
 
-  /// Cunstroctor from Json
+  /// Constructor from Json
   PictogramModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
