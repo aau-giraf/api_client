@@ -20,6 +20,7 @@ import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
+import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
@@ -123,6 +124,20 @@ Future<void> main() async {
     expect(updatedActivity.timer.progress, 0);
     await pictoImage.delete();
   });
+
+  test('Test if getweeknames gets all weeks connected to user', () async {
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    await dbHandler.updateWeek(jamesUser.id, blankTestWeek.weekYear,
+        blankTestWeek.weekNumber, blankTestWeek);
+    await dbHandler.updateWeek(jamesUser.id, testWeekModel.weekYear,
+        testWeekModel.weekNumber, testWeekModel);
+    final List<WeekNameModel> res = await dbHandler.getWeekNames(jamesUser.id);
+    expect(res.length == 2, true);
+    await pictoImage.delete();
+  });
+
   test('Register an account in the offline db', () async {
     //create fake account
 
