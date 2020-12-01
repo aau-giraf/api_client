@@ -279,12 +279,12 @@ class OfflineDbHandler {
     return HttpClient(baseUrl: '', persist: PersistenceClient());
   }
 
-  /// Update the an Id in the database with a new one from the online database,
+  /// Update an Id in the offline DB with a new one from the online database,
   /// once the online is done creating them. The [json] contains the key
   /// [table] is the table to be changed
   /// [tempId] is the id assigned when the object was created offline
   Future<void> updateIdInOfflineDb(
-      Map<String, dynamic> json, String table, String tempId) async {
+      Map<String, dynamic> json, String table, int tempId) async {
     switch (table) {
       case 'Users':
         replaceTempIdUsers(tempId, json['id']);
@@ -303,7 +303,7 @@ class OfflineDbHandler {
   /// Replace the id of a User
   /// Should be called to replace the id given by this class with the one in the
   /// online database, such that they are synchonized
-  Future<void> replaceTempIdUsers(String oldId, String newId) async {
+  Future<void> replaceTempIdUsers(int oldId, int newId) async {
     final Database db = await database;
     db.rawUpdate("UPDATE `Users` SET Id = '$newId' "
         "WHERE Id == '$oldId'");
@@ -318,9 +318,9 @@ class OfflineDbHandler {
   /// Replace the id of a Pictogram
   /// Should be called to replace the id given by this class with the one in the
   /// online database, such that they are synchonized
-  Future<void> replaceTempIdPictogram(String oldId, String newId) async {
+  Future<void> replaceTempIdPictogram(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate("UPDATE `Pictogram` SET Id = '$newId' "
+    db.rawUpdate("UPDATE `Pictograms` SET Id = '$newId' "
         "WHERE Id == '$oldId'");
     db.rawUpdate("UPDATE `WeekTemplates` SET ThumbnailKey = '$newId'"
         " WHERE ThumbnailKey == '$oldId'");
@@ -333,7 +333,7 @@ class OfflineDbHandler {
   /// Replace the id of a Pictogram
   /// Should be called to replace the id given by this class with the one in the
   /// online database, such that they are synchonized
-  Future<void> replaceTempIdWeekTemplate(String oldId, String newId) async {
+  Future<void> replaceTempIdWeekTemplate(int oldId, int newId) async {
     final Database db = await database;
     db.rawUpdate("UPDATE `WeekTemplates` SET OnlineId = '$newId' "
         "Where OnlineId == '$oldId'");
@@ -814,24 +814,24 @@ class OfflineDbHandler {
   }
 
   /// Delete a users icon. as users do not have an icon,
-  /// this is not yet implementet
+  /// this is not yet implemented
   Future<bool> deleteUserIcon(String id) {
     throw UnimplementedError();
   }
 
   /// Get a users icon. as users do not have an icon,
-  /// this is not yet implementet
+  /// this is not yet implemented
   Future<Image> getUserIcon(String id) {
     throw UnimplementedError();
   }
 
   /// Update a users icon. as users do not have an icon,
-  /// this is not yet implementet
+  /// this is not yet implemented
   Future<bool> updateUserIcon() {
     throw UnimplementedError();
   }
 
-  /// return list of citizens from database based on guardian id
+  /// Return list of citizens from database based on guardian id
   Future<List<DisplayNameModel>> getCitizens(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -844,7 +844,7 @@ class OfflineDbHandler {
         .toList();
   }
 
-  /// return list of guardians from database based on citizen id
+  /// Return list of guardians from database based on citizen id
   Future<List<DisplayNameModel>> getGuardians(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -892,7 +892,6 @@ class OfflineDbHandler {
             "`GirafUserId` == '$id' AND "
             "`WeekYear` == '$year' AND "
             "`WeekNumber` == '$weekNumber'");
-
     final Map<String, dynamic> weekModel = Map<String, dynamic>.from(res[0]);
     weekModel['Thumbnail'] =
         (await getPictogramID(res[0]['ThumbnailKey'])).toJson();
@@ -1017,7 +1016,7 @@ class OfflineDbHandler {
     return getTemplate(template.id);
   }
 
-  /// get a template by its [id]
+  /// Get a template by its [id]
   Future<WeekTemplateModel> getTemplate(int id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -1049,7 +1048,7 @@ class OfflineDbHandler {
     final Database db = await database;
     final int deleteCount =
         await db.rawDelete('DELETE FROM `WeekTemplates` WHERE '
-            "OfflineID =='$id'");
+            "OnlineID =='$id'");
     return deleteCount > 0;
   }
 

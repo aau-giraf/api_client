@@ -30,6 +30,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 import 'Offline_models.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
@@ -918,6 +919,59 @@ Future<void> main() async {
         await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
+  });
+  // test('Test create week with a user id', () async {
+  //   //arrange
+  //   //Add a fake james user to offlinedb
+  //   final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
+  //
+  //   //act
+  //   final WeekModel testWeek =
+  //       await dbHandler.updateWeek(fakeUser.id, 2020, 1, testWeekModel);
+  //   //assert
+  //   expect(testWeek.weekNumber, 1);
+  //   expect(testWeek.weekYear, 2020);
+  // });
+
+  test('Test changing id for a pictogram in the offline DB', () async {
+    final PictogramModel testPictogram = scrum;
+    testPictogram.id = 20;
+    dbHandler.createPictogram(scrum);
+    dbHandler.updateIdInOfflineDb(testPictogram.toJson(), 'Pictograms', 44);
+    final Database db = await dbHandler.database;
+    final List<Map<String, dynamic>> dbRes =
+        await db.rawQuery('SELECT * FROM `Pictograms` '
+            "WHERE OnlineId == '${testPictogram.id}'");
+    expect(dbRes.isEmpty, false);
+  });
+
+  test('Test deletion of a week template', () async {
+    //arrange
+    //create pictogram in local db
+    final PictogramModel fakpictogram = PictogramModel(
+        id: 1,
+        title: 'Picto',
+        lastEdit: DateTime.now(),
+        imageUrl: 'http://',
+        //imageHash: '#',
+        accessLevel: AccessLevel.PUBLIC);
+    final PictogramModel fakePictogram2 =
+        await dbHandler.createPictogram(fakpictogram);
+    // create fake WeekTemplateModel
+    final WeekTemplateModel fakeWeekTemplate = WeekTemplateModel(
+        name: 'Week 1',
+        id: 1234,
+        days: <WeekdayModel>[
+          WeekdayModel(day: Weekday.Monday, activities: <ActivityModel>[])
+        ],
+        departmentKey: 5,
+        thumbnail: fakePictogram2);
+    //act
+    // add fakeWeekTemplate to the offline database
+    await dbHandler.createTemplate(fakeWeekTemplate);
+    final bool res = await dbHandler.deleteTemplate(fakeWeekTemplate.id);
+    //assert
+    expect(res, true);
   });
 }
 
