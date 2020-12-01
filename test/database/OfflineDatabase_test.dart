@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:api_client/api/api_exception.dart';
-import 'package:api_client/http/http.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
@@ -19,8 +17,10 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
+import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +29,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 import 'Offline_models.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
@@ -64,16 +65,13 @@ class MockOfflineDbHandler extends OfflineDbHandler {
     imageDirectory.createSync(recursive: true);
     return imageDirectory.path;
   }
-
-  @override
-  Http getHttpObject() {
-    return httpMock;
-  }
 }
 
-final HttpMock httpMock = HttpMock();
-
 Future<void> main() async {
+  HttpMock httpMock;
+  setUp(() {
+    httpMock = HttpMock();
+  });
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   final MockOfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
@@ -99,7 +97,7 @@ Future<void> main() async {
   });
 
   test('Save data in the table for failed transactions', () async {
-    const String testTransType = 'PUT';
+    const String testTransType = 'put';
     const String testBaseUrl = 'http://10.0.2.2:5000';
     const String testUrl = '/register';
     const String testTable = 'Users';
@@ -114,256 +112,20 @@ Future<void> main() async {
     expect(dbRes[0]['Body'], jamesBody.toString());
   });
 
-  test('Retry failed put transaction', () async {
-    const String testTransType = 'PUT';
+  test('Save data in the table for failed transactions', () async {
+    const String testTransType = 'put';
     const String testBaseUrl = 'http://10.0.2.2:5000';
     const String testUrl = '/register';
     const String testTable = 'Users';
     const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
+    dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
         body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.put)
-        .flush(<String, dynamic>{
-      'data': <String, dynamic>{
-        'role': jamesBody['role'],
-        'roleName': 'Citizen',
-        'id': '1',
-        'username': jamesBody['username'],
-        'displayName': jamesBody['displayname'],
-        'department': jamesBody['department'],
-      },
-      'message': '',
-      'errorKey': 'NoError',
-    });
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, true);
-  });
-
-  test('Retry failed put transaction, failed', () async {
-    const String testTransType = 'PUT';
-    const String testBaseUrl = 'http://10.0.2.2:5000';
-    const String testUrl = '/register';
-    const String testTable = 'Users';
-    const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
-        body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.put)
-        .throwError(ApiException(Response(null, <String, dynamic>{
-          'success': false,
-          'message': '',
-          'errorKey': 'InvalidCredentials',
-        })));
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, false);
-  });
-
-  test('Retry failed delete transaction', () async {
-    const String testTransType = 'DELETE';
-    const String testBaseUrl = 'http://10.0.2.2:5000';
-    const String testUrl = '/register';
-    const String testTable = 'Users';
-    const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
-        body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.delete)
-        .flush(<String, dynamic>{
-      'data': <String, dynamic>{
-        'role': jamesBody['role'],
-        'roleName': 'Citizen',
-        'id': '1',
-        'username': jamesBody['username'],
-        'displayName': jamesBody['displayname'],
-        'department': jamesBody['department'],
-      },
-      'message': '',
-      'errorKey': 'NoError',
-    });
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, true);
-  });
-
-  test('Retry failed delete transaction, failed', () async {
-    const String testTransType = 'DELETE';
-    const String testBaseUrl = 'http://10.0.2.2:5000';
-    const String testUrl = '/register';
-    const String testTable = 'Users';
-    const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
-        body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.delete)
-        .throwError(ApiException(Response(null, <String, dynamic>{
-          'success': false,
-          'message': '',
-          'errorKey': 'InvalidCredentials',
-        })));
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, false);
-  });
-
-  test('Retry failed post transaction', () async {
-    const String testTransType = 'POST';
-    const String testBaseUrl = 'http://10.0.2.2:5000';
-    const String testUrl = '/register';
-    const String testTable = 'Users';
-    const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
-        body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.post)
-        .flush(<String, dynamic>{
-      'data': <String, dynamic>{
-        'role': jamesBody['role'],
-        'roleName': 'Citizen',
-        'id': '1',
-        'username': jamesBody['username'],
-        'displayName': jamesBody['displayname'],
-        'department': jamesBody['department'],
-      },
-      'message': '',
-      'errorKey': 'NoError',
-    });
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, true);
-  });
-
-  test('Retry failed post transaction, failed', () async {
-    const String testTransType = 'POST';
-    const String testBaseUrl = 'http://10.0.2.2:5000';
-    const String testUrl = '/register';
-    const String testTable = 'Users';
-    const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
-        body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.post)
-        .throwError(ApiException(Response(null, <String, dynamic>{
-          'success': false,
-          'message': '',
-          'errorKey': 'InvalidCredentials',
-        })));
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, false);
-  });
-
-  test('Retry failed patch transaction', () async {
-    const String testTransType = 'PATCH';
-    const String testBaseUrl = 'http://10.0.2.2:5000';
-    const String testUrl = '/register';
-    const String testTable = 'Users';
-    const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
-        body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.patch)
-        .flush(<String, dynamic>{
-      'data': <String, dynamic>{
-        'role': jamesBody['role'],
-        'roleName': 'Citizen',
-        'id': '1',
-        'username': jamesBody['username'],
-        'displayName': jamesBody['displayname'],
-        'department': jamesBody['department'],
-      },
-      'message': '',
-      'errorKey': 'NoError',
-    });
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, true);
-  });
-
-  test('Retry failed patch transaction, failed', () async {
-    const String testTransType = 'PATCH';
-    const String testBaseUrl = 'http://10.0.2.2:5000';
-    const String testUrl = '/register';
-    const String testTable = 'Users';
-    const String testId = '1';
-    await dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
-        body: jamesBody, tableAffected: testTable, tempId: testId);
-    await dbHandler.retryFailedTransactions();
-
-    httpMock
-        .expectOne(url: 'http://10.0.2.2:5000/register', method: Method.patch)
-        .throwError(ApiException(Response(null, <String, dynamic>{
-          'success': false,
-          'message': '',
-          'errorKey': 'InvalidCredentials',
-        })));
-
-    List<Map<String, dynamic>> res;
-    await Future<void>.delayed(const Duration(milliseconds: 10))
-        .then((_) async {
-      res = await (await dbHandler.database)
-          .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
-    });
-    expect(res.isEmpty, false);
+    final Database db = await dbHandler.database;
+    final List<Map<String, dynamic>> dbRes =
+        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
+            "WHERE TempId == '$testId'");
+    expect(dbRes[0]['TempId'], testId);
+    expect(dbRes[0]['Body'], jamesBody.toString());
   });
 
   test('Test if it is possible to register the same account twice', () async {
@@ -841,17 +603,34 @@ Future<void> main() async {
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
   });
-  test('Test create week with a user id', () async {
-    //arrange
-    //Add a fake james user to offlinedb
-    final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
 
+  test('Test deletion of a week template', () async {
+    //arrange
+    //create pictogram in local db
+    final PictogramModel fakpictogram = PictogramModel(
+        id: 1,
+        title: 'Picto',
+        lastEdit: DateTime.now(),
+        imageUrl: 'http://',
+        //imageHash: '#',
+        accessLevel: AccessLevel.PUBLIC);
+    final PictogramModel fakePictogram2 =
+        await dbHandler.createPictogram(fakpictogram);
+    // create fake WeekTemplateModel
+    final WeekTemplateModel fakeWeekTemplate = WeekTemplateModel(
+        name: 'Week 1',
+        id: 1234,
+        days: <WeekdayModel>[
+          WeekdayModel(day: Weekday.Monday, activities: <ActivityModel>[])
+        ],
+        departmentKey: 5,
+        thumbnail: fakePictogram2);
     //act
-    final WeekModel testWeek =
-        await dbHandler.updateWeek(fakeUser.id, 2020, 1, testWeekModel);
+    // add fakeWeekTemplate to the offline database
+    await dbHandler.createTemplate(fakeWeekTemplate);
+    final bool res = await dbHandler.deleteTemplate(fakeWeekTemplate.id);
     //assert
-    expect(testWeek.weekNumber, 1);
-    expect(testWeek.weekYear, 2020);
+    expect(res, true);
   });
 }
 

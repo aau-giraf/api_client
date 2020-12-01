@@ -1043,7 +1043,7 @@ class OfflineDbHandler {
     final Database db = await database;
     final int deleteCount =
         await db.rawDelete('DELETE FROM `WeekTemplates` WHERE '
-            "OfflineID =='$id'");
+            "OnlineID =='$id'");
     return deleteCount > 0;
   }
 
