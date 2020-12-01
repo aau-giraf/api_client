@@ -964,6 +964,41 @@ Future<void> main() async {
     await pictoImage.delete();
   });
 
+  test('Delete a weekplan', () async {
+    final WeekdayModel exampleWeekDay =
+        WeekdayModel(activities: null, day: Weekday.Monday);
+    final List<WeekdayModel> exampleDayList = <WeekdayModel>[exampleWeekDay];
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    final WeekModel exampleWeek = WeekModel(
+        days: exampleDayList,
+        thumbnail: testPicto,
+        name: 'Lang ugeplan',
+        weekNumber: 21,
+        weekYear: 2020);
+    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
+        exampleWeek.weekYear, exampleWeek.weekNumber, exampleWeek);
+
+    expect(userWeek.days[0].day, exampleWeek.days[0].day);
+    expect(userWeek.thumbnail.id, exampleWeek.thumbnail.id);
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        lege,
+        jamesUser.id,
+        exampleWeek.name,
+        exampleWeek.weekYear,
+        exampleWeek.weekNumber,
+        Weekday.Monday);
+
+    exampleWeek.days[0].activities = <ActivityModel>[testActivity];
+    final ActivityModel updatedActivity =
+        await dbHandler.updateActivity(testActivity, jamesUser.id);
+    expect(updatedActivity.id, lege.id);
+    final bool delResult = await dbHandler.deleteWeek(
+        jamesUser.id, exampleWeek.weekYear, exampleWeek.weekNumber);
+    expect(delResult, true);
+    await pictoImage.delete();
+  });
   test('Create and find a pictogram', () async {
     final PictogramModel tempPicto = scrum;
     final PictogramModel pictoTest = await dbHandler.createPictogram(tempPicto);
