@@ -49,7 +49,9 @@ class WeekTemplateModel extends WeekBaseModel implements Model {
       'id': id,
       'thumbnail': thumbnail.toJson(),
       'name': name,
-      'days': days.map((WeekdayModel element) => element.toJson()).toList()
+      'days': days != null
+          ? days.map((WeekdayModel element) => element.toJson()).toList()
+          : null
     };
   }
 }

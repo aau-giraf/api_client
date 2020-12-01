@@ -50,6 +50,25 @@ final Map<String, dynamic> edBody = <String, dynamic>{
   'department': edTestUser.department,
   'role': edTestUser.role.toString().split('.').last
 };
+
+//Test GirafUserModel 3
+final GirafUserModel jamesbondSuperUser = GirafUserModel(
+    username: 'JamesBond007',
+    department: 1,
+    displayName: 'James Bond',
+    roleName: 'SuperUser',
+    id: 'james007bond',
+    role: Role.SuperUser,
+    offlineId: 1);
+// Test account body 3
+final Map<String, dynamic> jamesBodySuper = <String, dynamic>{
+  'username': jamesbondTestUser.username,
+  'displayName': jamesbondTestUser.displayName,
+  'password': 'TestPassword123',
+  'department': jamesbondTestUser.department,
+  'role': jamesbondSuperUser.role.toString().split('.').last
+};
+
 //Test Pictogram 1
 final PictogramModel scrum = PictogramModel(
     accessLevel: AccessLevel.PUBLIC,

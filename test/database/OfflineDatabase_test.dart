@@ -100,6 +100,16 @@ Future<void> main() async {
     await cleanUsers(dbHandler);
   });
 
+  test('Register an account in the offline db', () async {
+    //create fake account
+    final GirafUserModel fakeUserRes =
+        await dbHandler.registerAccount(jamesBodySuper);
+    expect(fakeUserRes.username, jamesbondSuperUser.username);
+    expect(fakeUserRes.displayName, jamesbondSuperUser.displayName);
+    expect(fakeUserRes.role, Role.SuperUser);
+    await cleanUsers(dbHandler);
+  });
+
   test('Save data in the table for failed transactions', () async {
     const String testTransType = 'PUT';
     const String testBaseUrl = 'http://10.0.2.2:5000';
@@ -798,6 +808,36 @@ Future<void> main() async {
     expect(updatedActivity.timer.key, sandkasse.timer.key);
     await pictoImage.delete();
   });
+
+  test('update an activity without timer to one that has timer', () async {
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
+        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
+
+    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
+    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        spise,
+        jamesUser.id,
+        blankTestWeek.name,
+        blankTestWeek.weekYear,
+        blankTestWeek.weekNumber,
+        Weekday.Friday);
+
+    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
+    testActivity.timer = TimerModel(
+        startTime: DateTime(1, 1, 1, 1),
+        progress: 0,
+        fullLength: 0,
+        paused: false);
+    final ActivityModel updatedActivity =
+        await dbHandler.updateActivity(testActivity, jamesUser.id);
+    expect(updatedActivity.timer.progress, 0);
+    await pictoImage.delete();
+  });
+
   test('Get a user\'s settings', () async {
     final GirafUserModel body = await dbHandler.registerAccount(jamesBody);
     final SettingsModel res = await dbHandler.getUserSettings(body.id);
