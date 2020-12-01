@@ -67,62 +67,19 @@ class MockOfflineDbHandler extends OfflineDbHandler {
   }
 }
 
+
 Future<void> main() async {
   HttpMock httpMock;
   setUp(() {
     httpMock = HttpMock();
   });
-
-//Test Pictogram 2
-final PictogramModel extreme = PictogramModel(
-    accessLevel: AccessLevel.PROTECTED,
-    id: 20,
-    title: 'Picture of XP',
-    lastEdit: DateTime.now(),
-    userId: '3');
-
-//Lists of test pictograms
-List<PictogramModel> testListe = <PictogramModel>[scrum];
-List<PictogramModel> testListe2 = <PictogramModel>[extreme];
-
-//Test ActivityModel 1
-final ActivityModel lege = ActivityModel(
-  id: 69,
-  isChoiceBoard: true,
-  order: 1,
-  pictograms: testListe,
-  choiceBoardName: 'Testchoice',
-  state: ActivityState.Active,
-  timer: null,
-);
-
-//Test ActivityModel 2
-final ActivityModel spise = ActivityModel(
-  id: 70,
-  pictograms: testListe2,
-  order: 2,
-  state: ActivityState.Active,
-  isChoiceBoard: true,
-  choiceBoardName: 'Testsecondchoice',
-  timer: null,
-);
-
-//Test Timer
-final TimerModel timer = TimerModel(
-  startTime: DateTime.now(),
-  progress: 1,
-  fullLength: 10,
-  paused: false,
-  key: 44,
-);
-
-Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   final MockOfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
   tearDown(() async {
     await killAll(dbHandler);
   });
+
   test('Try to create the test db', () async {
     expect(await dbHandler.getCurrentDBVersion(), 1);
     // We might need this if somthing is wrong
@@ -133,7 +90,7 @@ Future<void> main() async {
     //create fake account
 
     final GirafUserModel fakeUserRes =
-        await dbHandler.registerAccount(jamesBody);
+    await dbHandler.registerAccount(jamesBody);
     expect(fakeUserRes.username, jamesbondTestUser.username);
     expect(fakeUserRes.displayName, jamesbondTestUser.displayName);
     expect(fakeUserRes.role, Role.Citizen);
@@ -150,8 +107,8 @@ Future<void> main() async {
         body: jamesBody, tableAffected: testTable, tempId: testId);
     final Database db = await dbHandler.database;
     final List<Map<String, dynamic>> dbRes =
-        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-            "WHERE TempId == '$testId'");
+    await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
+        "WHERE TempId == '$testId'");
     expect(dbRes[0]['TempId'], testId);
     expect(dbRes[0]['Body'], jamesBody.toString());
   });
@@ -166,8 +123,8 @@ Future<void> main() async {
         body: jamesBody, tableAffected: testTable, tempId: testId);
     final Database db = await dbHandler.database;
     final List<Map<String, dynamic>> dbRes =
-        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-            "WHERE TempId == '$testId'");
+    await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
+        "WHERE TempId == '$testId'");
     expect(dbRes[0]['TempId'], testId);
     expect(dbRes[0]['Body'], jamesBody.toString());
   });
@@ -222,7 +179,7 @@ Future<void> main() async {
     const String passAttempt = 'TestPassword123';
     await dbHandler.registerAccount(jamesBody);
     final bool testLogin =
-        await dbHandler.login(jamesbondTestUser.username, passAttempt);
+    await dbHandler.login(jamesbondTestUser.username, passAttempt);
     expect(testLogin, true);
   });
 
@@ -246,7 +203,7 @@ Future<void> main() async {
     const String passAttempt = 'GoldenGun';
     await dbHandler.registerAccount(jamesBody);
     final bool testLogin =
-        await dbHandler.login(jamesbondTestUser.username, passAttempt);
+    await dbHandler.login(jamesbondTestUser.username, passAttempt);
     expect(testLogin, false);
   });
 
@@ -268,7 +225,7 @@ Future<void> main() async {
 
   test('Update a user with a new attribute', () async {
     final GirafUserModel formerUser =
-        await dbHandler.registerAccount(jamesBody);
+    await dbHandler.registerAccount(jamesBody);
     expect(formerUser.username, jamesbondTestUser.username);
     final GirafUserModel updatedUser = formerUser;
     updatedUser.username = 'DoubleOhSeven';
@@ -329,7 +286,9 @@ Future<void> main() async {
     final String tempDir = Directory.current.path;
     Directory pictoDir;
     Directory newPictoDir;
-    if (tempDir.split(separator).last == 'test') {
+    if (tempDir
+        .split(separator)
+        .last == 'test') {
       pictoDir = Directory(join(tempDir, 'pictograms', 'giraf.png'));
     } else {
       pictoDir = Directory(join(tempDir, 'test', 'pictograms', 'giraf.png'));
@@ -338,7 +297,9 @@ Future<void> main() async {
     final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
     await dbHandler.createPictogram(scrum);
     await dbHandler.updateImageInPictogram(scrum.id, pictoUInt8);
-    if (tempDir.split(separator).last == 'test') {
+    if (tempDir
+        .split(separator)
+        .last == 'test') {
       newPictoDir = Directory(join(tempDir, 'pictograms'));
     } else {
       newPictoDir = Directory(join(tempDir, 'test', 'pictograms'));
@@ -358,7 +319,10 @@ Future<void> main() async {
       'displayName': jamesbondTestUser.displayName,
       'password': oldPass,
       'department': jamesbondTestUser.department,
-      'role': jamesbondTestUser.role.toString().split('.').last,
+      'role': jamesbondTestUser.role
+          .toString()
+          .split('.')
+          .last,
     };
     final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
     final bool loginOld = await dbHandler.login(fakeUserRes.username, oldPass);
@@ -376,7 +340,10 @@ Future<void> main() async {
       'displayName': jamesbondTestUser.displayName,
       'password': oldPass,
       'departmentId': jamesbondTestUser.department,
-      'role': jamesbondTestUser.role.toString().split('.').last,
+      'role': jamesbondTestUser.role
+          .toString()
+          .split('.')
+          .last,
     };
     final GirafUserModel fakeUserRes = await dbHandler.registerAccount(body);
     bool sameLogin = await dbHandler.login(fakeUserRes.username, oldPass);
@@ -409,13 +376,16 @@ Future<void> main() async {
       'displayName': newGuardian.displayName,
       'password': 'pwd1234',
       'departmentId': newGuardian.department,
-      'role': newGuardian.role.toString().split('.').last,
+      'role': newGuardian.role
+          .toString()
+          .split('.')
+          .last,
     };
     final GirafUserModel citizen1Res =
-        await dbHandler.registerAccount(jamesBody);
+    await dbHandler.registerAccount(jamesBody);
     final GirafUserModel citizen2Res = await dbHandler.registerAccount(edBody);
     final GirafUserModel guardianRes =
-        await dbHandler.registerAccount(guardBody);
+    await dbHandler.registerAccount(guardBody);
 
     expect(citizen1Res.username, jamesbondTestUser.username);
     expect(citizen1Res.role, Role.Citizen);
@@ -432,16 +402,22 @@ Future<void> main() async {
     final DisplayNameModel cit1 = DisplayNameModel(
         id: citizen1Res.id,
         displayName: citizen1Res.displayName,
-        role: citizen1Res.role.toString().split('.').last);
+        role: citizen1Res.role
+            .toString()
+            .split('.')
+            .last);
 
     final DisplayNameModel cit2 = DisplayNameModel(
         id: citizen2Res.id,
         displayName: citizen2Res.displayName,
-        role: citizen2Res.role.toString().split('.').last);
+        role: citizen2Res.role
+            .toString()
+            .split('.')
+            .last);
 
     final List<DisplayNameModel> citizenList = <DisplayNameModel>[cit1, cit2];
     final List<DisplayNameModel> guardianList =
-        await dbHandler.getCitizens(guardianRes.id);
+    await dbHandler.getCitizens(guardianRes.id);
     expect(guardianList[0].id, citizenList[0].id);
     expect(guardianList[1].id, citizenList[1].id);
     expect(guardianList[0].displayName, citizenList[0].displayName);
@@ -461,7 +437,10 @@ Future<void> main() async {
       'displayName': newGuardian.displayName,
       'password': 'pwd1234',
       'departmentId': newGuardian.department,
-      'role': newGuardian.role.toString().split('.').last,
+      'role': newGuardian.role
+          .toString()
+          .split('.')
+          .last,
     };
     final GirafUserModel newGuardian2 = GirafUserModel(
         role: Role.Guardian,
@@ -474,14 +453,17 @@ Future<void> main() async {
       'displayName': newGuardian2.displayName,
       'password': 'namedrop69',
       'departmentId': newGuardian2.department,
-      'role': newGuardian2.role.toString().split('.').last,
+      'role': newGuardian2.role
+          .toString()
+          .split('.')
+          .last,
     };
     final GirafUserModel citizen1Res =
-        await dbHandler.registerAccount(jamesBody);
+    await dbHandler.registerAccount(jamesBody);
     final GirafUserModel guardian1Res =
-        await dbHandler.registerAccount(guardBody);
+    await dbHandler.registerAccount(guardBody);
     final GirafUserModel guardian2Res =
-        await dbHandler.registerAccount(guardBody2);
+    await dbHandler.registerAccount(guardBody2);
 
     expect(citizen1Res.username, jamesbondTestUser.username);
     expect(citizen1Res.role, Role.Citizen);
@@ -498,18 +480,24 @@ Future<void> main() async {
     final DisplayNameModel guard1 = DisplayNameModel(
         id: guardian1Res.id,
         displayName: guardian1Res.displayName,
-        role: guardian1Res.role.toString().split('.').last);
+        role: guardian1Res.role
+            .toString()
+            .split('.')
+            .last);
     final DisplayNameModel guard2 = DisplayNameModel(
         id: guardian2Res.id,
         displayName: guardian2Res.displayName,
-        role: guardian2Res.role.toString().split('.').last);
+        role: guardian2Res.role
+            .toString()
+            .split('.')
+            .last);
 
     final List<DisplayNameModel> guardianListexp = <DisplayNameModel>[
       guard1,
       guard2
     ];
     final List<DisplayNameModel> guardianList =
-        await dbHandler.getGuardians(citizen1Res.id);
+    await dbHandler.getGuardians(citizen1Res.id);
     expect(guardianList[0].id, guardianListexp[0].id);
     expect(guardianList[1].id, guardianListexp[1].id);
     expect(guardianList[0].displayName, guardianListexp[0].displayName);
@@ -526,7 +514,7 @@ Future<void> main() async {
     expect(model.state, ActivityState.Active);
     model.state = ActivityState.Completed;
     final ActivityModel res =
-        await dbHandler.updateActivity(model, jamesUser.id);
+    await dbHandler.updateActivity(model, jamesUser.id);
     expect(res.state, ActivityState.Completed);
   });
 
@@ -567,7 +555,7 @@ Future<void> main() async {
     newSettings.weekDayColors[0].hexColor = 'ffffff';
 
     final SettingsModel testUpdate =
-        await dbHandler.updateUserSettings(body.id, newSettings);
+    await dbHandler.updateUserSettings(body.id, newSettings);
     expect(testUpdate.cancelMark, newSettings.cancelMark);
     expect(testUpdate.completeMark, isNot(uSettings.completeMark));
   });
@@ -586,7 +574,7 @@ Future<void> main() async {
 
     expect(fakeActivity.id, lege.id);
     final bool delResult =
-        await dbHandler.deleteActivity(fakeActivity.id, jamesbondTestUser.id);
+    await dbHandler.deleteActivity(fakeActivity.id, jamesbondTestUser.id);
     expect(delResult, true);
   });
 
@@ -595,7 +583,9 @@ Future<void> main() async {
     final PictogramModel pictoTest = await dbHandler.createPictogram(tempPicto);
     final String tempDir = Directory.current.path;
     Directory pictoDir;
-    if (tempDir.split(separator).last == 'test') {
+    if (tempDir
+        .split(separator)
+        .last == 'test') {
       pictoDir = Directory(join(tempDir, 'pictograms'));
     } else {
       pictoDir = Directory(join(tempDir, 'test', 'pictograms'));
@@ -605,7 +595,9 @@ Future<void> main() async {
     final Uint8List testImage = await pictoPath.readAsBytes();
     await dbHandler.updateImageInPictogram(pictoTest.id, testImage);
     final Image foundImage = await dbHandler.getPictogramImage(pictoTest.id);
-    expect(foundImage.image, Image.file(newPictoPath).image);
+    expect(foundImage.image, Image
+        .file(newPictoPath)
+        .image);
     try {
       newPictoPath.delete();
     } on FileSystemException {
@@ -630,7 +622,7 @@ Future<void> main() async {
         //imageHash: '#',
         accessLevel: AccessLevel.PUBLIC);
     final PictogramModel fakePictogram2 =
-        await dbHandler.createPictogram(fakpictogram);
+    await dbHandler.createPictogram(fakpictogram);
     // create fake WeekTemplateModel
     final WeekTemplateModel fakeWeekTemplate = WeekTemplateModel(
         name: 'Week 1',
@@ -643,7 +635,7 @@ Future<void> main() async {
     //act
     // add fakeWeekTemplate to the offline database
     final WeekTemplateModel createFakeWeekTemplate =
-        await dbHandler.createTemplate(fakeWeekTemplate);
+    await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
   });
@@ -654,85 +646,86 @@ Future<void> main() async {
 
     //act
     final WeekModel testWeek =
-        await dbHandler.updateWeek(fakeUser.id, 2020, 1, redditWeek1);
+    await dbHandler.updateWeek(fakeUser.id, 2020, 1, testWeekModel);
     //assert
-    expect(testWeek.weekNumber,1);
-    expect(testWeek.weekYear,2020);
+    expect(testWeek.weekNumber, 1);
+    expect(testWeek.weekYear, 2020);
   });
 }
 
-Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`Users`');
-}
+  Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`Users`');
+  }
 
-Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`Setting`');
-}
+  Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`Setting`');
+  }
 
-Future<void> cleanGuardianRelations(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`GuardianRelations`');
-}
+  Future<void> cleanGuardianRelations(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`GuardianRelations`');
+  }
 
-Future<void> cleanWeekTemplates(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`WeekTemplates`');
-}
+  Future<void> cleanWeekTemplates(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`WeekTemplates`');
+  }
 
-Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`Weeks`');
-}
+  Future<void> cleanWeek(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`Weeks`');
+  }
 
-Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`Weekdays`');
-}
+  Future<void> cleanWeekdays(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`Weekdays`');
+  }
 
-Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`Pictograms`');
-}
+  Future<void> cleanPictograms(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`Pictograms`');
+  }
 
-Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`Activities`');
-}
+  Future<void> cleanActivities(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`Activities`');
+  }
 
-Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`PictogramRelations`');
-}
+  Future<void> cleanPictogramRelations(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`PictogramRelations`');
+  }
 
-Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`Timers`');
-}
+  Future<void> cleanTimers(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`Timers`');
+  }
 
-Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`FailedOnlineTransactions`');
-}
+  Future<void> cleanFailedOnlineTransactions(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`FailedOnlineTransactions`');
+  }
 
-Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
-  final Database db = await dbHandler.database;
-  await db.delete('`WeekDayColors`');
-}
+  Future<void> cleanWeekDayColors(OfflineDbHandler dbHandler) async {
+    final Database db = await dbHandler.database;
+    await db.delete('`WeekDayColors`');
+  }
 
-/// Clear the testing database of all information
-Future<void> killAll(OfflineDbHandler dbHandler) async {
-  await cleanWeekDayColors(dbHandler);
-  await cleanFailedOnlineTransactions(dbHandler);
-  await cleanTimers(dbHandler);
-  await cleanPictogramRelations(dbHandler);
-  await cleanActivities(dbHandler);
-  await cleanPictograms(dbHandler);
-  await cleanWeek(dbHandler);
-  await cleanWeekdays(dbHandler);
-  await cleanWeekTemplates(dbHandler);
-  await cleanGuardianRelations(dbHandler);
-  await cleanSettings(dbHandler);
-  await cleanUsers(dbHandler);
-}
+  /// Clear the testing database of all information
+  Future<void> killAll(OfflineDbHandler dbHandler) async {
+    await cleanWeekDayColors(dbHandler);
+    await cleanFailedOnlineTransactions(dbHandler);
+    await cleanTimers(dbHandler);
+    await cleanPictogramRelations(dbHandler);
+    await cleanActivities(dbHandler);
+    await cleanPictograms(dbHandler);
+    await cleanWeek(dbHandler);
+    await cleanWeekdays(dbHandler);
+    await cleanWeekTemplates(dbHandler);
+    await cleanGuardianRelations(dbHandler);
+    await cleanSettings(dbHandler);
+    await cleanUsers(dbHandler);
+  }
+
