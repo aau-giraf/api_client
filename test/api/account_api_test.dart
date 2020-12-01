@@ -5,18 +5,9 @@ import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/api/account_api.dart';
 import 'package:api_client/http/http_mock.dart';
-import 'package:api_client/persistence/persistence.dart';
 import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-class MockAccountApi extends AccountApi {
-  MockAccountApi(Http http, Persistence persistence, Http userHttp)
-      : super(http, persistence, userHttp);
-
-  @override
-  Future<void> hydrateUser(String password) async {}
-}
 
 Future<void> main() async {
   sqfliteFfiInit();
@@ -26,22 +17,23 @@ Future<void> main() async {
   setUp(() {
     httpMock = HttpMock();
     persistenceMock = PersistenceMock();
-    accountApi = MockAccountApi(httpMock, persistenceMock, httpMock);
+    accountApi = AccountApi(httpMock, persistenceMock);
   });
 
-  test('Should call login endpoint', () async {
+  test('Should call login endpoint', () {
     accountApi
         .login('username', 'password')
         .listen(expectAsync1((bool success) {
       expect(success, isTrue);
     }));
-    Future<void>.delayed(const Duration(milliseconds: 10)).then((_) => httpMock
-            .expectOne(url: '/login', method: Method.post)
-            .flush(<String, dynamic>{
-          'data': 'TestToken',
-          'message': '',
-          'errorKey': 'NoError',
-        }));
+
+    httpMock
+        .expectOne(url: '/Account/login', method: Method.post)
+        .flush(<String, dynamic>{
+      'data': 'TestToken',
+      'message': '',
+      'errorKey': 'NoError',
+    });
   });
 
   test('Should throw on error', () {
@@ -50,13 +42,13 @@ Future<void> main() async {
       expect(error.errorKey, ErrorKey.InvalidCredentials);
     }));
 
-    Future<void>.delayed(const Duration(milliseconds: 10)).then((_) => httpMock
-        .expectOne(url: '/login', method: Method.post)
+    httpMock
+        .expectOne(url: '/Account/login', method: Method.post)
         .throwError(ApiException(Response(null, <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'InvalidCredentials',
-        }))));
+        })));
   });
 
   test('Should request reset password token', () {
