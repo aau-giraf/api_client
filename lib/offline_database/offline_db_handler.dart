@@ -985,11 +985,40 @@ class OfflineDbHandler {
   /// And Weeknumber [weekNumber]
   Future<bool> deleteWeek(String id, int year, int weekNumber) async {
     final Database db = await database;
+    final List<Map<String, dynamic>> weekRes =
+        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
+            "GirafUserId == '$id' AND "
+            "WeekYear == '$year' AND "
+            "WeekNumber == '$weekNumber'");
+    final List<Map<String, dynamic>> deleteDays =
+        await db.rawQuery('SELECT * FROM `Weekdays` WHERE'
+            "`WeekId` == '${weekRes[0]['id']}'");
+    bool allDaysDeleted = true;
+    for (Map<String, dynamic> day in deleteDays) {
+      if (!(await _deleteWeekDay(id, day['id'], db))) {
+        allDaysDeleted = false;
+      }
+    }
     final int deleteCount = await db.rawDelete('DELETE FROM `Weeks` WHERE '
-        "GirrafUserId == '$id' AND "
+        "GirafUserId == '$id' AND "
         "WeekYear == '$year' AND "
         "WeekNumber == '$weekNumber'");
-    return 0 < deleteCount;
+
+    return 0 < deleteCount && allDaysDeleted;
+  }
+
+  Future<bool> _deleteWeekDay(String userId, int weekDayId, Database db) async {
+    final List<Map<String, dynamic>> deleteActivities = await db.rawQuery(
+        "SELECT * FROM `Activities` WHERE `OtherKey` == '$weekDayId'");
+    bool activitiesDeleted = true;
+    for (Map<String, dynamic> activity in deleteActivities) {
+      if (!(await deleteActivity(activity['Key'], userId))) {
+        activitiesDeleted = false;
+      }
+    }
+    final int daysDeleted = await db.rawDelete('DELETE FROM `Weekdays` WHERE '
+        "id == '$weekDayId'");
+    return daysDeleted == deleteActivities.length && activitiesDeleted;
   }
 
   // Week Template API functions
