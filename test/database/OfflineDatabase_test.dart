@@ -858,13 +858,26 @@ Future<void> main() async {
   test('Test changing id for a pictogram in the offline DB', () async {
     final PictogramModel testPictogram = scrum;
     testPictogram.id = 20;
-    dbHandler.createPictogram(scrum);
-    dbHandler.updateIdInOfflineDb(testPictogram.toJson(), 'Pictograms', 44);
+    await dbHandler.createPictogram(scrum);
+    await dbHandler.updateIdInOfflineDb(
+        testPictogram.toJson(), 'Pictograms', scrum.id);
     final Database db = await dbHandler.database;
     final List<Map<String, dynamic>> dbRes =
         await db.rawQuery('SELECT * FROM `Pictograms` '
             "WHERE OnlineId == '${testPictogram.id}'");
     expect(dbRes.isEmpty, false);
+    expect(dbRes[0]['OnlineId'], testPictogram.id);
+  });
+
+  test('Test changing id for a user in the offline DB', () async {
+    final GirafUserModel testUser = jamesbondTestUser;
+    testUser.id = '20';
+    await dbHandler.registerAccount(jamesBody);
+    await dbHandler.updateIdInOfflineDb(
+        testUser.toJson(), 'Users', int.tryParse(jamesbondTestUser.id));
+    final String testUserId = await dbHandler.getUserId(testUser.username);
+    final GirafUserModel dbRes = await dbHandler.getUser(testUserId);
+    expect(dbRes == null, false);
   });
 
   test('Test deletion of a week template', () async {
