@@ -7,13 +7,12 @@ import 'package:api_client/api/account_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-Future<void> main() async {
-  sqfliteFfiInit();
+void main() {
   AccountApi accountApi;
   HttpMock httpMock;
   PersistenceMock persistenceMock;
+
   setUp(() {
     httpMock = HttpMock();
     persistenceMock = PersistenceMock();
@@ -28,7 +27,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/Account/login', method: Method.post)
+        .expectOne(url: '/login', method: Method.post)
         .flush(<String, dynamic>{
       'data': 'TestToken',
       'message': '',
@@ -43,7 +42,7 @@ Future<void> main() async {
     }));
 
     httpMock
-        .expectOne(url: '/Account/login', method: Method.post)
+        .expectOne(url: '/login', method: Method.post)
         .throwError(ApiException(Response(null, <String, dynamic>{
           'success': false,
           'message': '',

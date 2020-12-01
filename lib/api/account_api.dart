@@ -1,5 +1,4 @@
 import 'package:api_client/http/http.dart';
-import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/giraf_user_model.dart';

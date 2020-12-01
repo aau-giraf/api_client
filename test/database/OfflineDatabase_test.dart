@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
@@ -21,6 +22,7 @@ import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
+import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -151,6 +153,11 @@ final TimerModel timer = TimerModel(
 );
 
 Future<void> main() async {
+  HttpMock httpMock;
+  setUp(() {
+    httpMock = HttpMock();
+  });
+
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   final MockOfflineDbHandler dbHandler = MockOfflineDbHandler.instance;
@@ -172,6 +179,22 @@ Future<void> main() async {
     expect(fakeUserRes.displayName, jamesbondTestUser.displayName);
     expect(fakeUserRes.role, Role.Citizen);
     await cleanUsers(dbHandler);
+  });
+
+  test('Save data in the table for failed transactions', () async {
+    const String testTransType = 'put';
+    const String testBaseUrl = 'http://10.0.2.2:5000';
+    const String testUrl = '/register';
+    const String testTable = 'Users';
+    const String testId = '1';
+    dbHandler.saveFailedTransactions(testTransType, testBaseUrl, testUrl,
+        body: jamesBody, tableAffected: testTable, tempId: testId);
+    final Database db = await dbHandler.database;
+    final List<Map<String, dynamic>> dbRes =
+        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
+            "WHERE TempId == '$testId'");
+    expect(dbRes[0]['TempId'], testId);
+    expect(dbRes[0]['Body'], jamesBody.toString());
   });
 
   test('Save data in the table for failed transactions', () async {
