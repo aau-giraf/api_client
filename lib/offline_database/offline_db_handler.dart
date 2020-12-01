@@ -244,8 +244,10 @@ class OfflineDbHandler {
                 .listen((Response res) async {
               if (res.success()) {
                 await removeFailedTransaction(transaction);
-                await updateIdInOfflineDb(res.json,
-                    transaction['TableAffected'], transaction['TempId']);
+                await updateIdInOfflineDb(
+                    res.json['data'],
+                    transaction['TableAffected'],
+                    int.tryParse(transaction['TempId']));
               }
             }).onError((Object error) {});
             break;
