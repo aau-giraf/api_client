@@ -284,7 +284,7 @@ class OfflineDbHandler {
   /// [table] is the table to be changed
   /// [tempId] is the id assigned when the object was created offline
   Future<void> updateIdInOfflineDb(
-      Map<String, dynamic> json, String table, String tempId) async {
+      Map<String, dynamic> json, String table, int tempId) async {
     switch (table) {
       case 'Users':
         replaceTempIdUsers(tempId, json['id']);
@@ -303,7 +303,7 @@ class OfflineDbHandler {
   /// Replace the id of a User
   /// Should be called to replace the id given by this class with the one in the
   /// online database, such that they are synchonized
-  Future<void> replaceTempIdUsers(String oldId, String newId) async {
+  Future<void> replaceTempIdUsers(int oldId, int newId) async {
     final Database db = await database;
     db.rawUpdate("UPDATE `Users` SET Id = '$newId' "
         "WHERE Id == '$oldId'");
@@ -318,9 +318,9 @@ class OfflineDbHandler {
   /// Replace the id of a Pictogram
   /// Should be called to replace the id given by this class with the one in the
   /// online database, such that they are synchonized
-  Future<void> replaceTempIdPictogram(String oldId, String newId) async {
+  Future<void> replaceTempIdPictogram(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate("UPDATE `Pictogram` SET Id = '$newId' "
+    db.rawUpdate("UPDATE `Pictograms` SET Id = '$newId' "
         "WHERE Id == '$oldId'");
     db.rawUpdate("UPDATE `WeekTemplates` SET ThumbnailKey = '$newId'"
         " WHERE ThumbnailKey == '$oldId'");
@@ -333,7 +333,7 @@ class OfflineDbHandler {
   /// Replace the id of a Pictogram
   /// Should be called to replace the id given by this class with the one in the
   /// online database, such that they are synchonized
-  Future<void> replaceTempIdWeekTemplate(String oldId, String newId) async {
+  Future<void> replaceTempIdWeekTemplate(int oldId, int newId) async {
     final Database db = await database;
     db.rawUpdate("UPDATE `WeekTemplates` SET OnlineId = '$newId' "
         "Where OnlineId == '$oldId'");
