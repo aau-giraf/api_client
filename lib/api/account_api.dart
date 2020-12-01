@@ -9,58 +9,22 @@ import 'package:api_client/persistence/persistence.dart';
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
-  AccountApi(this._http, this._persist, this._userApiHttp);
+  AccountApi(this._http, this._persist);
 
   final Http _http;
   final Persistence _persist;
-
-  /// Used to get a GirafuserModel for hydrating the offline
-  /// database when logging in
-  final Http _userApiHttp;
 
   /// This endpoint allows the user to sign in to his/her account by providing
   /// valid username and password
   ///
   /// [username] The users username
   /// [password] The users password
-  Stream<bool> login(String username, String password) async* {
-    int responseCode;
-    final bool online = await _http
-        .post('/login', <String, String>{
-          'username': username,
-          'password': password,
-        })
-        .flatMap<bool>((Response res) {
-          responseCode = res.statusCode();
-          _persist.set('token', res.json['data']);
-          return Stream<bool>.value(res.success());
-        })
-        .first
-        .timeout(const Duration(seconds: 5), onTimeout: () => false);
-    if (!online && responseCode != 400 && responseCode != 401) {
-      yield await OfflineDbHandler.instance.login(username, password);
-    } else {
-      yield online;
-    }
-    if (online &&
-        !(await OfflineDbHandler.instance.login(username, password))) {
-      hydrateUser(password);
-    }
-  }
-
-  /// Hydrate user
-  /// [password] is the users password
-  Future<void> hydrateUser(String password) async {
-    final GirafUserModel me = await _userApiHttp
-        .get('/')
-        .map((Response res) => GirafUserModel.fromJson(res.json['data']))
-        .first;
-    final Map<String, dynamic> body = me.toJson();
-    body['role'] = me.roleName;
-    body['password'] = password;
-    final GirafUserModel temp =
-        await OfflineDbHandler.instance.registerAccount(body);
-    await OfflineDbHandler.instance.replaceTempIdUsers(temp.id, me.id);
+  Stream<bool> login(String username, String password) {
+    return _http.post('/login', <String, String>{
+      'username': username,
+      'password': password,
+    }).flatMap((Response res) =>
+        Stream<bool>.fromFuture(_persist.set('token', res.json['data'])));
   }
 
   /// Register a new user
