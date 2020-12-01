@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:api_client/api_client.dart';
@@ -999,7 +998,7 @@ class OfflineDbHandler {
             "OnlineId == '$id'");
     final Map<String, dynamic> template = res[0];
     // get the first record
-    Map<String, dynamic> template1 = Map<String, dynamic>.from(template);
+    final Map<String, dynamic> template1 = Map<String, dynamic>.from(template);
     template1['Thumbnail'] =
         (await getPictogramID(template1['ThumbnailKey'])).toJson();
     return WeekTemplateModel.fromDatabase(template1);

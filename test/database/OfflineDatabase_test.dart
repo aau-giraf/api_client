@@ -21,8 +21,6 @@ import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
-import 'package:api_client/models/enums/giraf_theme_enum.dart';
-import 'package:api_client/models/enums/default_timer_enum.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -656,7 +654,7 @@ Future<void> main() async {
   test('Test to create a week template in offline database', () async {
     //arrange
     //create pictogram in local db
-    PictogramModel fakpictogram = PictogramModel(
+    final PictogramModel fakpictogram = PictogramModel(
         id: 1,
         title: 'Picto',
         lastEdit: DateTime.now(),
@@ -679,7 +677,7 @@ Future<void> main() async {
     final WeekTemplateModel createFakeWeekTemplate =
         await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
-    expect(fakeWeekTemplate.name,createFakeWeekTemplate.name);
+    expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
   });
 }
 
