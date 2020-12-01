@@ -658,22 +658,6 @@ Future<void> main() async {
     expect(dbHandler.getMe(), isNot(edTestUser));
   });
 
-  test('Test getting a template', () async {
-    final WeekTemplateModel weekTemp1 = weekTemplate1;
-    final WeekTemplateModel weekTemp2 = weekTemplate2;
-
-    await dbHandler.createTemplate(weekTemp1);
-    await dbHandler.createTemplate(weekTemp2);
-    final List<WeekTemplateModel> res = <WeekTemplateModel>[
-      weekTemp1,
-      weekTemp2
-    ];
-
-    final List<WeekTemplateNameModel> resTest =
-        await dbHandler.getTemplateNames();
-
-    expect(resTest, res);
-  });
   test('Test to create a week template in offline database', () async {
     //arrange
     //create pictogram in local db
