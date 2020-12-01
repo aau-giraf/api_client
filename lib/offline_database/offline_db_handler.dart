@@ -935,7 +935,7 @@ class OfflineDbHandler {
     }
   }
 
-  Future<void> _insertWeekday(String weekId, WeekdayModel day, Database db,
+  Future<void> _insertWeekday(int weekId, WeekdayModel day, Database db,
       String userId, WeekModel week) async {
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Day': day.day.index,

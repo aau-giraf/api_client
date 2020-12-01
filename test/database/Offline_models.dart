@@ -105,7 +105,7 @@ final WeekdayModel redditday2 =
     WeekdayModel(day: Weekday.Friday, activities: legeday);
 
 final List<WeekdayModel> redditweek = <WeekdayModel>[redditday];
-final WeekModel redditWeek = WeekModel(
+final WeekModel redditWeek1 = WeekModel(
     days: redditweek,
     name: 'RedditWeek',
     thumbnail: scrum,

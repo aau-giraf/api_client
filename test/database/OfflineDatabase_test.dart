@@ -17,6 +17,7 @@ import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/timer_model.dart';
+import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
@@ -662,6 +663,18 @@ Future<void> main() async {
         await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
+  });
+  test('Test create week with a user id', () async {
+    //arrange
+    //Add a fake james user to offlinedb
+    final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
+
+    //act
+    final WeekModel testWeek =
+        await dbHandler.updateWeek(fakeUser.id, 2020, 1, redditWeek1);
+    //assert
+    expect(testWeek.weekNumber,1);
+    expect(testWeek.weekYear,2020);
   });
 }
 
