@@ -32,10 +32,10 @@ class WeekdayModel implements Model {
           '[WeekdayModel]: Cannot instantiate from null');
     }
 
-    day = Weekday.values[json['Day']];
+    day = Weekday.values[json['day']];
     if (json['activities'] is List) {
       activities = List<Map<String, dynamic>>.from(json['activities'])
-          .map((Map<String, dynamic> val) => ActivityModel.fromJson(val))
+          .map((Map<String, dynamic> val) => ActivityModel.fromDatabase(val))
           .toList();
     }
   }

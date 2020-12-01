@@ -73,7 +73,7 @@ List<PictogramModel> testListe2 = <PictogramModel>[extreme];
 //Test ActivityModel 1
 final ActivityModel lege = ActivityModel(
   id: 69,
-  isChoiceBoard: true,
+  isChoiceBoard: false,
   order: 1,
   pictograms: testListe,
   choiceBoardName: 'Testchoice',
@@ -99,6 +99,17 @@ final TimerModel timer = TimerModel(
   fullLength: 10,
   paused: false,
   key: 44,
+);
+
+//Test ActivityModel 3 (has Timer)
+final ActivityModel sandkasse = ActivityModel(
+  id: 71,
+  pictograms: testListe2,
+  order: 2,
+  state: ActivityState.Active,
+  isChoiceBoard: false,
+  choiceBoardName: 'testthirdchoice',
+  timer: timer,
 );
 
 final List<ActivityModel> legeday = <ActivityModel>[lege];
@@ -143,17 +154,16 @@ final WeekTemplateModel weekTemplate2 = WeekTemplateModel(
 Future<File> addImageToPictoGram(
     PictogramModel picto, MockOfflineDbHandler db) async {
   final String tempDir = Directory.current.path;
-  Directory pictoDir;
+  Directory pictoDirectory;
   if (tempDir.split(separator).last == 'test') {
-    pictoDir = Directory(join(tempDir, 'pictograms', 'giraf.png'));
+    pictoDirectory = Directory(join(tempDir, 'pictograms'));
   } else {
-    pictoDir = Directory(join(tempDir, 'test', 'pictograms', 'giraf.png'));
+    pictoDirectory = Directory(join(tempDir, 'test', 'pictograms'));
   }
-  final File pictoPath = File(pictoDir.path);
+  final File pictoPath = File(join(pictoDirectory.path, 'giraf.png'));
   final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
   await db.updateImageInPictogram(picto.id, pictoUInt8);
-  final File pictoImage =
-      File(join(tempDir, 'test', 'pictograms', '${picto.id}.png'));
+  final File pictoImage = File(join(pictoDirectory.path, '${picto.id}.png'));
 
   return pictoImage;
 }
