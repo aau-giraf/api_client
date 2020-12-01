@@ -812,24 +812,24 @@ class OfflineDbHandler {
   }
 
   /// Delete a users icon. as users do not have an icon,
-  /// this is not yet implementet
+  /// this is not yet implemented
   Future<bool> deleteUserIcon(String id) {
     throw UnimplementedError();
   }
 
   /// Get a users icon. as users do not have an icon,
-  /// this is not yet implementet
+  /// this is not yet implemented
   Future<Image> getUserIcon(String id) {
     throw UnimplementedError();
   }
 
   /// Update a users icon. as users do not have an icon,
-  /// this is not yet implementet
+  /// this is not yet implemented
   Future<bool> updateUserIcon() {
     throw UnimplementedError();
   }
 
-  /// return list of citizens from database based on guardian id
+  /// Return list of citizens from database based on guardian id
   Future<List<DisplayNameModel>> getCitizens(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -842,7 +842,7 @@ class OfflineDbHandler {
         .toList();
   }
 
-  /// return list of guardians from database based on citizen id
+  /// Return list of guardians from database based on citizen id
   Future<List<DisplayNameModel>> getGuardians(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -890,7 +890,6 @@ class OfflineDbHandler {
             "`GirafUserId` == '$id' AND "
             "`WeekYear` == '$year' AND "
             "`WeekNumber` == '$weekNumber'");
-
     final Map<String, dynamic> weekModel = Map<String, dynamic>.from(res[0]);
     weekModel['Thumbnail'] =
         (await getPictogramID(res[0]['ThumbnailKey'])).toJson();
@@ -1011,7 +1010,7 @@ class OfflineDbHandler {
     return getTemplate(template.id);
   }
 
-  /// get a template by its [id]
+  /// Get a template by its [id]
   Future<WeekTemplateModel> getTemplate(int id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
@@ -1043,7 +1042,7 @@ class OfflineDbHandler {
     final Database db = await database;
     final int deleteCount =
         await db.rawDelete('DELETE FROM `WeekTemplates` WHERE '
-            "OfflineID =='$id'");
+            "OnlineID =='$id'");
     return deleteCount > 0;
   }
 

@@ -19,8 +19,10 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
+import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +31,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 import 'Offline_models.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
@@ -853,6 +856,35 @@ Future<void> main() async {
   //   expect(testWeek.weekNumber, 1);
   //   expect(testWeek.weekYear, 2020);
   // });
+
+  test('Test deletion of a week template', () async {
+    //arrange
+    //create pictogram in local db
+    final PictogramModel fakpictogram = PictogramModel(
+        id: 1,
+        title: 'Picto',
+        lastEdit: DateTime.now(),
+        imageUrl: 'http://',
+        //imageHash: '#',
+        accessLevel: AccessLevel.PUBLIC);
+    final PictogramModel fakePictogram2 =
+        await dbHandler.createPictogram(fakpictogram);
+    // create fake WeekTemplateModel
+    final WeekTemplateModel fakeWeekTemplate = WeekTemplateModel(
+        name: 'Week 1',
+        id: 1234,
+        days: <WeekdayModel>[
+          WeekdayModel(day: Weekday.Monday, activities: <ActivityModel>[])
+        ],
+        departmentKey: 5,
+        thumbnail: fakePictogram2);
+    //act
+    // add fakeWeekTemplate to the offline database
+    await dbHandler.createTemplate(fakeWeekTemplate);
+    final bool res = await dbHandler.deleteTemplate(fakeWeekTemplate.id);
+    //assert
+    expect(res, true);
+  });
 }
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
