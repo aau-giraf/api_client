@@ -17,10 +17,8 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
-import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -602,6 +600,18 @@ Future<void> main() async {
         await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
+  });
+
+  test('Test changing id for a pictogram in the offline DB', () async {
+    final PictogramModel testPictogram = scrum;
+    testPictogram.id = 20;
+    dbHandler.createPictogram(scrum);
+    dbHandler.updateIdInOfflineDb(testPictogram.toJson(), 'Pictograms', 44);
+    final Database db = await dbHandler.database;
+    final List<Map<String, dynamic>> dbRes =
+        await db.rawQuery('SELECT * FROM `Pictograms` '
+            "WHERE OnlineId == '${testPictogram.id}'");
+    expect(dbRes.isEmpty, false);
   });
 
   test('Test deletion of a week template', () async {
