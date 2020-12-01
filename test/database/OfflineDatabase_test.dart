@@ -19,6 +19,7 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/weekday_model.dart';
@@ -381,35 +382,75 @@ Future<void> main() async {
     expect(idReturn, jamesUser.id);
   });
   test('Add activity test', () async {
-    final WeekModel testWeek = blankTestWeek;
-    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final WeekdayModel testDay =
+        WeekdayModel(day: Weekday.Friday, activities: null);
+    final List<WeekdayModel> testWeekDay = <WeekdayModel>[testDay];
+
+    final WeekModel testWeek = WeekModel(
+        days: testWeekDay,
+        name: 'Min Uge',
+        thumbnail: extreme,
+        weekNumber: 28,
+        weekYear: 2020);
+
+    final PictogramModel testPicto = await dbHandler.createPictogram(extreme);
     final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
-
     final WeekModel userWeek = await dbHandler.updateWeek(
         jamesUser.id, testWeek.weekYear, testWeek.weekNumber, testWeek);
+
     expect(userWeek.days[0].day, testWeek.days[0].day);
     expect(userWeek.thumbnail.id, testWeek.thumbnail.id);
-    await dbHandler.addActivity(spise, jamesUser.id, testWeek.name,
-        testWeek.weekYear, testWeek.weekNumber, Weekday.Friday);
-    expect(testWeek.days[0].activities, isNot(userWeek.days[0].activities));
-    pictoImage.delete();
+
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        lege,
+        jamesUser.id,
+        testWeek.name,
+        testWeek.weekYear,
+        testWeek.weekNumber,
+        Weekday.Friday);
+
+    testWeek.days[0].activities = <ActivityModel>[testActivity];
+    final WeekModel updatedWeek = await dbHandler.updateWeek(
+        jamesUser.id, userWeek.weekYear, userWeek.weekNumber, userWeek);
+    expect(updatedWeek.days[0].activities.isNotEmpty, true);
+    await pictoImage.delete();
   });
   test('Add activity test with timer', () async {
-    //arrange
-    //add pictograms to offline database
-    final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
-    final PictogramModel fakePicto2 = await dbHandler.createPictogram(extreme);
-    //act
-    lege.pictograms = <PictogramModel>[fakePicto1, fakePicto2];
-    lege.timer = timer;
-    final ActivityModel fakeactivityModel = await dbHandler.addActivity(
-        lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
+    final WeekdayModel testDay =
+        WeekdayModel(day: Weekday.Friday, activities: null);
+    final ActivityModel testAct = lege;
+    testAct.timer = timer;
+    final List<WeekdayModel> testWeekDay = <WeekdayModel>[testDay];
 
-    //assert
-    expect(lege.id, fakeactivityModel.id);
-    expect(lege.state, fakeactivityModel.state);
-    expect(lege.timer.key, fakeactivityModel.timer.key);
+    final WeekModel testWeek = WeekModel(
+        days: testWeekDay,
+        name: 'Min Uge',
+        thumbnail: extreme,
+        weekNumber: 28,
+        weekYear: 2020);
+
+    final PictogramModel testPicto = await dbHandler.createPictogram(extreme);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    final WeekModel userWeek = await dbHandler.updateWeek(
+        jamesUser.id, testWeek.weekYear, testWeek.weekNumber, testWeek);
+
+    expect(userWeek.days[0].day, testWeek.days[0].day);
+    expect(userWeek.thumbnail.id, testWeek.thumbnail.id);
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        testAct,
+        jamesUser.id,
+        testWeek.name,
+        testWeek.weekYear,
+        testWeek.weekNumber,
+        Weekday.Friday);
+
+    testWeek.days[0].activities = <ActivityModel>[testActivity];
+    final ActivityModel updatedActivity =
+        await dbHandler.updateActivity(testActivity, jamesUser.id);
+    expect(updatedActivity.timer.key, timer.key);
+    await pictoImage.delete();
   });
   test('Perform a correct login attempt', () async {
     // The correct Password for the jamesBody user is 'TestPassword123'
@@ -712,28 +753,51 @@ Future<void> main() async {
     expect(guardianList[1].role, guardianListexp[1].role);
   });
   test('update an activity with timer is null', () async {
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
-    final PictogramModel fakePictogram = await dbHandler.createPictogram(scrum);
-    lege.pictograms = <PictogramModel>[fakePictogram];
-    final ActivityModel model = await dbHandler.addActivity(
-        lege, jamesUser.id, 'weekplanName', 2020, 43, Weekday.Monday);
-    expect(model.state, ActivityState.Active);
-    model.state = ActivityState.Completed;
-    final ActivityModel res =
-        await dbHandler.updateActivity(model, jamesUser.id);
-    expect(res.state, ActivityState.Completed);
+    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
+        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
+
+    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
+    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        spise,
+        jamesUser.id,
+        blankTestWeek.name,
+        blankTestWeek.weekYear,
+        blankTestWeek.weekNumber,
+        Weekday.Friday);
+
+    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
+    final ActivityModel updatedActivity =
+        await dbHandler.updateActivity(testActivity, jamesUser.id);
+    expect(updatedActivity.timer, null);
+    await pictoImage.delete();
   });
 
   test('update an activity with timer', () async {
-    await dbHandler.registerAccount(jamesBody);
-    final PictogramModel fakePictogram = await dbHandler.createPictogram(scrum);
-    lege.pictograms = <PictogramModel>[fakePictogram];
-    final ActivityModel model = await dbHandler.addActivity(
-        lege, '33', 'weekplanName', 2020, 43, Weekday.Monday);
-    model.order = 0;
-    model.timer = timer;
-    final ActivityModel res = await dbHandler.updateActivity(model, '33');
-    expect(res.order, 0);
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
+        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
+
+    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
+    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        sandkasse,
+        jamesUser.id,
+        blankTestWeek.name,
+        blankTestWeek.weekYear,
+        blankTestWeek.weekNumber,
+        Weekday.Friday);
+
+    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
+    final ActivityModel updatedActivity =
+        await dbHandler.updateActivity(testActivity, jamesUser.id);
+    expect(updatedActivity.timer.key, sandkasse.timer.key);
+    await pictoImage.delete();
   });
   test('Get a user\'s settings', () async {
     final GirafUserModel body = await dbHandler.registerAccount(jamesBody);
@@ -771,17 +835,31 @@ Future<void> main() async {
   });
 
   test('Delete an activity from weekplan', () async {
-    final ActivityModel testActivity = lege;
-    testActivity.pictograms = <PictogramModel>[scrum];
-    testActivity.timer = timer;
-    await dbHandler.registerAccount(jamesBody);
-    final ActivityModel fakeActivity = await dbHandler.addActivity(
-        lege, jamesbondTestUser.id, 'weekplanName', 2020, 43, Weekday.Friday);
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
+        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
 
-    expect(fakeActivity.id, lege.id);
+    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
+    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        //??
+        lege,
+        jamesUser.id,
+        blankTestWeek.name,
+        blankTestWeek.weekYear,
+        blankTestWeek.weekNumber,
+        Weekday.Friday);
+
+    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
+    final ActivityModel updatedActivity =
+        await dbHandler.updateActivity(testActivity, jamesUser.id);
+    expect(updatedActivity.id, lege.id);
     final bool delResult =
-        await dbHandler.deleteActivity(fakeActivity.id, jamesbondTestUser.id);
+        await dbHandler.deleteActivity(updatedActivity.id, jamesUser.id);
     expect(delResult, true);
+    await pictoImage.delete();
   });
 
   test('Create and find a pictogram', () async {
@@ -840,18 +918,6 @@ Future<void> main() async {
         await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
-  });
-  test('Test create week with a user id', () async {
-    //arrange
-    //Add a fake james user to offlinedb
-    final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
-
-    //act
-    final WeekModel testWeek =
-        await dbHandler.updateWeek(fakeUser.id, 2020, 1, testWeekModel);
-    //assert
-    expect(testWeek.weekNumber, 1);
-    expect(testWeek.weekYear, 2020);
   });
 }
 

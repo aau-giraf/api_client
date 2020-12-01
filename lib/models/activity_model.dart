@@ -38,8 +38,8 @@ class ActivityModel implements Model {
   }
 
   /// Constructer from json for the offlineDb
-  ActivityModel.fromDatabase(
-      Map<String, dynamic> json, this.timer, this.pictograms) {
+  ActivityModel.fromDatabase(Map<String, dynamic> json,
+      {this.timer, this.pictograms}) {
     if (json == null) {
       throw const FormatException(
           '[ActivityModel]: Cannot initialize from null');

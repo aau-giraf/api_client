@@ -481,13 +481,9 @@ class OfflineDbHandler {
 
   // Activity API functions
   /// Add an activity to DB
-  Future<ActivityModel> addActivity(
-      ActivityModel activity,
-      String userId,
-      String weekplanName,
-      int weekYear,
-      int weekNumber,
-      Weekday weekDay) async {
+  Future<ActivityModel> addActivity(ActivityModel activity, String userId,
+      String weekplanName, int weekYear, int weekNumber, Weekday weekDay,
+      {TimerModel timer}) async {
     final Database db = await database;
     final List<Map<String, dynamic>> dbWeek =
         await db.rawQuery('SELECT * FROM `Weeks` WHERE '
@@ -546,7 +542,8 @@ class OfflineDbHandler {
     }
     final List<PictogramModel> pictoList = await _getActivityPictograms(key);
 
-    return ActivityModel.fromDatabase(result, timerModel, pictoList);
+    return ActivityModel.fromDatabase(result,
+        timer: timerModel, pictograms: pictoList);
   }
 
   Future<List<PictogramModel>> _getActivityPictograms(int activityKey) async {
@@ -632,8 +629,13 @@ class OfflineDbHandler {
     final int timerKey = res[0]['TimerKey'];
     final int activityChanged = await db
         .rawDelete("DELETE FROM `Activities` WHERE Key == '$activityId'");
-    final int timersChanged =
-        await db.rawDelete("DELETE FROM `Timers` WHERE Key == '$timerKey'");
+    int timersChanged;
+    if (timerKey != null) {
+      timersChanged =
+          await db.rawDelete("DELETE FROM `Timers` WHERE Key == '$timerKey'");
+    } else {
+      timersChanged = 1;
+    }
     final int relationsChanged = await db.rawDelete(
         "DELETE FROM `PictogramRelations` WHERE ActivityId == '$activityId'");
     return activityChanged == 1 && timersChanged == 1 && relationsChanged >= 1;
@@ -897,13 +899,17 @@ class OfflineDbHandler {
     final int weekId = res.single['id'];
     final List<Map<String, dynamic>> weekDaysFromDb = await db
         .rawQuery("SELECT * FROM `Weekdays` WHERE `WeekId` == '$weekId'");
-    final List<Map<String, dynamic>> weekDays =
-        List<Map<String, dynamic>>.from(weekDaysFromDb);
-    for (Map<String, dynamic> day in weekDays) {
+    final List<Map<String, dynamic>> weekDays = <Map<String, dynamic>>[];
+    for (Map<String, dynamic> day in weekDaysFromDb) {
       final List<Map<String, dynamic>> activityFromDb =
           await db.rawQuery('SELECT * FROM `Activities` WHERE '
               "OtherKey == '${day['id']}'");
-      day['activities'] = List<Map<String, dynamic>>.from(activityFromDb);
+      final Map<String, dynamic> dayRes = <String, dynamic>{
+        'day': day['Day'],
+        'id': day['id'],
+        'activities': List<Map<String, dynamic>>.from(activityFromDb)
+      };
+      weekDays.add(dayRes);
     }
     weekModel['Days'] = List<Map<String, dynamic>>.from(weekDays);
     return WeekModel.fromDatabase(weekModel);
