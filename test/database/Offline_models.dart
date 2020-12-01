@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
@@ -9,6 +12,9 @@ import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/weekday_model.dart';
+import 'package:path/path.dart';
+
+import 'OfflineDatabase_test.dart';
 
 //Test GirafUserModel 1
 final GirafUserModel jamesbondTestUser = GirafUserModel(
@@ -98,29 +104,56 @@ final TimerModel timer = TimerModel(
 final List<ActivityModel> legeday = <ActivityModel>[lege];
 final List<ActivityModel> spiseday = <ActivityModel>[spise];
 
-final WeekdayModel redditday =
+final WeekdayModel weekDay1 =
     WeekdayModel(day: Weekday.Tuesday, activities: legeday);
 
-final WeekdayModel redditday2 =
-    WeekdayModel(day: Weekday.Friday, activities: legeday);
+final WeekdayModel weekDay2 =
+    WeekdayModel(day: Weekday.Friday, activities: null);
 
-final List<WeekdayModel> redditweek = <WeekdayModel>[redditday];
-final WeekModel redditWeek = WeekModel(
-    days: redditweek,
-    name: 'RedditWeek',
+final List<WeekdayModel> testWeekList = <WeekdayModel>[weekDay1];
+final List<WeekdayModel> blankWeekList = <WeekdayModel>[weekDay2];
+
+final WeekModel blankTestWeek = WeekModel(
+    days: blankWeekList,
+    name: 'blankWeek',
+    thumbnail: scrum,
+    weekNumber: 25,
+    weekYear: 2020);
+
+final WeekModel testWeekModel = WeekModel(
+    days: testWeekList,
+    name: 'testWeek',
     thumbnail: scrum,
     weekNumber: 44,
     weekYear: 2020);
 
 final WeekTemplateModel weekTemplate1 = WeekTemplateModel(
-    days: redditweek,
+    days: testWeekList,
     name: 'TestReddit',
     departmentKey: 3,
     id: 44,
     thumbnail: extreme);
 final WeekTemplateModel weekTemplate2 = WeekTemplateModel(
-    days: redditweek,
+    days: testWeekList,
     name: 'TestReddit2',
     departmentKey: 2,
     id: 40,
     thumbnail: scrum);
+
+Future<File> addImageToPictoGram(
+    PictogramModel picto, MockOfflineDbHandler db) async {
+  final String tempDir = Directory.current.path;
+  Directory pictoDir;
+  if (tempDir.split(separator).last == 'test') {
+    pictoDir = Directory(join(tempDir, 'pictograms', 'giraf.png'));
+  } else {
+    pictoDir = Directory(join(tempDir, 'test', 'pictograms', 'giraf.png'));
+  }
+  final File pictoPath = File(pictoDir.path);
+  final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
+  await db.updateImageInPictogram(picto.id, pictoUInt8);
+  final File pictoImage =
+      File(join(tempDir, 'test', 'pictograms', '${picto.id}.png'));
+
+  return pictoImage;
+}

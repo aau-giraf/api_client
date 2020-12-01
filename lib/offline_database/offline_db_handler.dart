@@ -490,7 +490,7 @@ class OfflineDbHandler {
             "WeekYear == '$weekYear' AND "
             "WeekNumber == '$weekNumber'");
     final List<Map<String, dynamic>> dbDay =
-        await db.rawQuery('SELECT * FROM `Weekdays` WHERE'
+        await db.rawQuery('SELECT * FROM `Weekdays` WHERE '
             "Day == '${weekDay.index}' AND "
             "WeekId == '${dbWeek[0]['id']}'");
 
@@ -881,13 +881,18 @@ class OfflineDbHandler {
   Future<WeekModel> getWeek(String id, int year, int weekNumber) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Weeks` '
-            "Where GirafUserIdId == '$id' AND "
-            "`Year` == '$year' AND "
+        await db.rawQuery('SELECT * FROM `Weeks` WHERE'
+            "`GirafUserId` == '$id' AND "
+            "`WeekYear` == '$year' AND "
             "`WeekNumber` == '$weekNumber'");
-    final Map<String, dynamic> weekModel = res[0];
+
+    final Map<String, dynamic> weekModel = Map<String, dynamic>.from(res[0]);
     weekModel['Thumbnail'] =
         (await getPictogramID(res[0]['ThumbnailKey'])).toJson();
+    final int weekId = res.single['id'];
+    final List<Map<String, dynamic>> weekDays = await db
+        .rawQuery("SELECT * FROM `Weekdays` WHERE `WeekId` == '$weekId'");
+    weekModel['Days'] = List<Map<String, dynamic>>.from(weekDays);
     return WeekModel.fromDatabase(weekModel);
   }
 
@@ -906,7 +911,8 @@ class OfflineDbHandler {
     if (dbWeek.isEmpty) {
       _createWeek(db, week, id);
     }
-    await db.rawUpdate("UPDATE `Weeks` SET WeekYear = '${week.weekYear}', "
+    await db.rawUpdate('UPDATE `Weeks` SET '
+        "WeekYear = '${week.weekYear}', "
         "Name = '${week.name}', "
         "ThumbnailKey = '${week.thumbnail.id}', "
         "WeekNumber = '${week.weekNumber}' WHERE "
@@ -935,19 +941,21 @@ class OfflineDbHandler {
     }
   }
 
-  Future<void> _insertWeekday(String weekId, WeekdayModel day, Database db,
+  Future<void> _insertWeekday(int weekId, WeekdayModel day, Database db,
       String userId, WeekModel week) async {
     final Map<String, dynamic> insertQuery = <String, dynamic>{
       'Day': day.day.index,
       'WeekId': weekId
     };
     db.insert('`Weekdays`', insertQuery);
-    for (ActivityModel activity in day.activities) {
-      if (_getActivity(activity.id, db) == null) {
-        addActivity(activity, userId, week.name, week.weekYear, week.weekNumber,
-            day.day);
-      } else {
-        updateActivity(activity, userId);
+    if (day.activities != null) {
+      for (ActivityModel activity in day.activities) {
+        if (_getActivity(activity.id, db) == null) {
+          addActivity(activity, userId, week.name, week.weekYear,
+              week.weekNumber, day.day);
+        } else {
+          updateActivity(activity, userId);
+        }
       }
     }
   }
