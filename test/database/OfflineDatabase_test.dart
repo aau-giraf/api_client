@@ -420,8 +420,6 @@ Future<void> main() async {
   test('Add activity test with timer', () async {
     final WeekdayModel testDay =
         WeekdayModel(day: Weekday.Friday, activities: null);
-    final ActivityModel testAct = lege;
-    testAct.timer = timer;
     final List<WeekdayModel> testWeekDay = <WeekdayModel>[testDay];
 
     final WeekModel testWeek = WeekModel(
@@ -440,7 +438,7 @@ Future<void> main() async {
     expect(userWeek.days[0].day, testWeek.days[0].day);
     expect(userWeek.thumbnail.id, testWeek.thumbnail.id);
     final ActivityModel testActivity = await dbHandler.addActivity(
-        testAct,
+        sandkasse,
         jamesUser.id,
         testWeek.name,
         testWeek.weekYear,
@@ -836,24 +834,32 @@ Future<void> main() async {
   });
 
   test('Delete an activity from weekplan', () async {
+    final WeekdayModel exampleWeekDay =
+        WeekdayModel(activities: null, day: Weekday.Monday);
+    final List<WeekdayModel> exampleDayList = <WeekdayModel>[exampleWeekDay];
     final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
     final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    final WeekModel exampleWeek = WeekModel(
+        days: exampleDayList,
+        thumbnail: testPicto,
+        name: 'Lang ugeplan',
+        weekNumber: 21,
+        weekYear: 2020);
     final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
-        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
+        exampleWeek.weekYear, exampleWeek.weekNumber, exampleWeek);
 
-    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
-    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
+    expect(userWeek.days[0].day, exampleWeek.days[0].day);
+    expect(userWeek.thumbnail.id, exampleWeek.thumbnail.id);
     final ActivityModel testActivity = await dbHandler.addActivity(
-        //??
         lege,
         jamesUser.id,
-        blankTestWeek.name,
-        blankTestWeek.weekYear,
-        blankTestWeek.weekNumber,
-        Weekday.Friday);
+        exampleWeek.name,
+        exampleWeek.weekYear,
+        exampleWeek.weekNumber,
+        Weekday.Monday);
 
-    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
+    exampleWeek.days[0].activities = <ActivityModel>[testActivity];
     final ActivityModel updatedActivity =
         await dbHandler.updateActivity(testActivity, jamesUser.id);
     expect(updatedActivity.id, lege.id);
