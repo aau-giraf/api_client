@@ -47,7 +47,8 @@ abstract class WeekBaseModel {
     // WeekModel sometimes dont have days
     if (json['Days'] != null && json['Days'] is List) {
       days = List<Map<String, dynamic>>.from(json['Days'])
-          .map((Map<String, dynamic> element) => WeekdayModel.fromJson(element))
+          .map((Map<String, dynamic> element) =>
+              WeekdayModel.fromDatabase(element))
           .toList();
     }
   }

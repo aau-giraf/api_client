@@ -19,7 +19,7 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/timer_model.dart';
+import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
@@ -29,6 +29,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'Offline_models.dart';
 
 class MockOfflineDbHandler extends OfflineDbHandler {
   MockOfflineDbHandler._() : super();
@@ -72,91 +73,6 @@ class MockOfflineDbHandler extends OfflineDbHandler {
 
 final HttpMock httpMock = HttpMock();
 
-//Test GirafUserModel 1
-final GirafUserModel jamesbondTestUser = GirafUserModel(
-    username: 'JamesBond007',
-    department: 1,
-    displayName: 'James Bond',
-    roleName: 'Citizen',
-    id: 'james007bond',
-    role: Role.Citizen,
-    offlineId: 1);
-// Test account body 1
-final Map<String, dynamic> jamesBody = <String, dynamic>{
-  'username': jamesbondTestUser.username,
-  'displayName': jamesbondTestUser.displayName,
-  'password': 'TestPassword123',
-  'department': jamesbondTestUser.department,
-  'role': jamesbondTestUser.role.toString().split('.').last
-};
-//Test GirafUserModel 2
-final GirafUserModel edTestUser = GirafUserModel(
-    department: 34,
-    offlineId: 34,
-    role: Role.Citizen,
-    id: 'edmcniel01',
-    roleName: 'Citizen',
-    displayName: 'Ed McNiel',
-    username: 'EdMcNiel34');
-//Test account body 2
-final Map<String, dynamic> edBody = <String, dynamic>{
-  'username': edTestUser.username,
-  'displayName': edTestUser.displayName,
-  'password': 'MyPassword42',
-  'department': edTestUser.department,
-  'role': edTestUser.role.toString().split('.').last
-};
-//Test Pictogram 1
-final PictogramModel scrum = PictogramModel(
-    accessLevel: AccessLevel.PUBLIC,
-    id: 44,
-    title: 'Picture of Scrum',
-    lastEdit: DateTime.now(),
-    userId: '1');
-
-//Test Pictogram 2
-final PictogramModel extreme = PictogramModel(
-    accessLevel: AccessLevel.PROTECTED,
-    id: 20,
-    title: 'Picture of XP',
-    lastEdit: DateTime.now(),
-    userId: '3');
-
-//Lists of test pictograms
-List<PictogramModel> testListe = <PictogramModel>[scrum];
-List<PictogramModel> testListe2 = <PictogramModel>[extreme];
-
-//Test ActivityModel 1
-final ActivityModel lege = ActivityModel(
-  id: 69,
-  isChoiceBoard: true,
-  order: 1,
-  pictograms: testListe,
-  choiceBoardName: 'Testchoice',
-  state: ActivityState.Active,
-  timer: null,
-);
-
-//Test ActivityModel 2
-final ActivityModel spise = ActivityModel(
-  id: 70,
-  pictograms: testListe2,
-  order: 2,
-  state: ActivityState.Active,
-  isChoiceBoard: true,
-  choiceBoardName: 'Testsecondchoice',
-  timer: null,
-);
-
-//Test Timer
-final TimerModel timer = TimerModel(
-  startTime: DateTime.now(),
-  progress: 1,
-  fullLength: 10,
-  paused: false,
-  key: 44,
-);
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
@@ -164,6 +80,7 @@ Future<void> main() async {
   tearDown(() async {
     await killAll(dbHandler);
   });
+
   test('Try to create the test db', () async {
     expect(await dbHandler.getCurrentDBVersion(), 1);
     // We might need this if somthing is wrong
@@ -464,17 +381,19 @@ Future<void> main() async {
     expect(idReturn, jamesUser.id);
   });
   test('Add activity test', () async {
-    //arrange
-    //add pictograms to offline database
-    final PictogramModel fakePicto1 = await dbHandler.createPictogram(scrum);
-    final PictogramModel fakePicto2 = await dbHandler.createPictogram(extreme);
-    //act
-    lege.pictograms = <PictogramModel>[fakePicto1, fakePicto2];
-    final ActivityModel fakeactivityModel = await dbHandler.addActivity(
-        lege, '1', 'weekplanName', 2020, 50, Weekday.Friday);
-    //assert
-    expect(lege.id, fakeactivityModel.id);
-    expect(lege.state, fakeactivityModel.state);
+    final WeekModel testWeek = blankTestWeek;
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+
+    final WeekModel userWeek = await dbHandler.updateWeek(
+        jamesUser.id, testWeek.weekYear, testWeek.weekNumber, testWeek);
+    expect(userWeek.days[0].day, testWeek.days[0].day);
+    expect(userWeek.thumbnail.id, testWeek.thumbnail.id);
+    await dbHandler.addActivity(spise, jamesUser.id, testWeek.name,
+        testWeek.weekYear, testWeek.weekNumber, Weekday.Friday);
+    expect(testWeek.days[0].activities, isNot(userWeek.days[0].activities));
+    pictoImage.delete();
   });
   test('Add activity test with timer', () async {
     //arrange
@@ -921,6 +840,18 @@ Future<void> main() async {
         await dbHandler.createTemplate(fakeWeekTemplate);
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
+  });
+  test('Test create week with a user id', () async {
+    //arrange
+    //Add a fake james user to offlinedb
+    final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
+
+    //act
+    final WeekModel testWeek =
+        await dbHandler.updateWeek(fakeUser.id, 2020, 1, testWeekModel);
+    //assert
+    expect(testWeek.weekNumber, 1);
+    expect(testWeek.weekYear, 2020);
   });
 }
 
