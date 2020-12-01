@@ -89,6 +89,40 @@ Future<void> main() async {
     // in the tests and it doesn't close itself
     //dbHandler.closeDb();
   });
+  test('update an activity without timer to one that has timer', () async {
+    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
+    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
+        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
+
+    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
+    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
+    final ActivityModel testActivity = await dbHandler.addActivity(
+        spise,
+        jamesUser.id,
+        blankTestWeek.name,
+        blankTestWeek.weekYear,
+        blankTestWeek.weekNumber,
+        Weekday.Friday);
+    final TimerModel timer = TimerModel(
+        startTime: DateTime(1, 1, 1, 1),
+        progress: 0,
+        fullLength: 0,
+        paused: false);
+    final ActivityModel testActivityTimer = ActivityModel(
+        id: testActivity.id,
+        pictograms: testActivity.pictograms,
+        order: testActivity.order,
+        state: testActivity.state,
+        isChoiceBoard: testActivity.isChoiceBoard,
+        timer: timer);
+    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
+    final ActivityModel updatedActivity =
+        await dbHandler.updateActivity(testActivityTimer, jamesUser.id);
+    expect(updatedActivity.timer.progress, 0);
+    await pictoImage.delete();
+  });
   test('Register an account in the offline db', () async {
     //create fake account
 
@@ -806,41 +840,6 @@ Future<void> main() async {
     final ActivityModel updatedActivity =
         await dbHandler.updateActivity(testActivity, jamesUser.id);
     expect(updatedActivity.timer.key, sandkasse.timer.key);
-    await pictoImage.delete();
-  });
-
-  test('update an activity without timer to one that has timer', () async {
-    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
-    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
-    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
-        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
-
-    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
-    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
-    final ActivityModel testActivity = await dbHandler.addActivity(
-        spise,
-        jamesUser.id,
-        blankTestWeek.name,
-        blankTestWeek.weekYear,
-        blankTestWeek.weekNumber,
-        Weekday.Friday);
-    final TimerModel timer = TimerModel(
-        startTime: DateTime(1, 1, 1, 1),
-        progress: 0,
-        fullLength: 0,
-        paused: false);
-    final ActivityModel testActivityTimer = ActivityModel(
-        id: testActivity.id,
-        pictograms: testActivity.pictograms,
-        order: testActivity.order,
-        state: testActivity.state,
-        isChoiceBoard: testActivity.isChoiceBoard,
-        timer: timer);
-    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
-    final ActivityModel updatedActivity =
-        await dbHandler.updateActivity(testActivityTimer, jamesUser.id);
-    expect(updatedActivity.timer.progress, 0);
     await pictoImage.delete();
   });
 
