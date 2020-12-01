@@ -279,7 +279,7 @@ class OfflineDbHandler {
     return HttpClient(baseUrl: '', persist: PersistenceClient());
   }
 
-  /// Update the an Id in the database with a new one from the online database,
+  /// Update an Id in the offline DB with a new one from the online database,
   /// once the online is done creating them. The [json] contains the key
   /// [table] is the table to be changed
   /// [tempId] is the id assigned when the object was created offline
