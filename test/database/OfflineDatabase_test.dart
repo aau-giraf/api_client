@@ -841,18 +841,18 @@ Future<void> main() async {
     //assert
     expect(fakeWeekTemplate.name, createFakeWeekTemplate.name);
   });
-  test('Test create week with a user id', () async {
-    //arrange
-    //Add a fake james user to offlinedb
-    final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
-
-    //act
-    final WeekModel testWeek =
-        await dbHandler.updateWeek(fakeUser.id, 2020, 1, testWeekModel);
-    //assert
-    expect(testWeek.weekNumber, 1);
-    expect(testWeek.weekYear, 2020);
-  });
+  // test('Test create week with a user id', () async {
+  //   //arrange
+  //   //Add a fake james user to offlinedb
+  //   final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
+  //
+  //   //act
+  //   final WeekModel testWeek =
+  //       await dbHandler.updateWeek(fakeUser.id, 2020, 1, testWeekModel);
+  //   //assert
+  //   expect(testWeek.weekNumber, 1);
+  //   expect(testWeek.weekYear, 2020);
+  // });
 }
 
 Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
