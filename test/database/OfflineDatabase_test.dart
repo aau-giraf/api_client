@@ -8,7 +8,6 @@ import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
-import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
@@ -22,6 +21,7 @@ import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
+import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -838,6 +838,55 @@ Future<void> main() async {
     await pictoImage.delete();
   });
 
+  test('Get all weektemplate models', () async {
+    final PictogramModel fakpictogram = PictogramModel(
+        id: 1,
+        title: 'Picto',
+        lastEdit: DateTime.now(),
+        imageUrl: 'http://',
+        //imageHash: '#',
+        accessLevel: AccessLevel.PUBLIC);
+    final PictogramModel fakePictogram2 =
+        await dbHandler.createPictogram(fakpictogram);
+    // create fake WeekTemplateModel
+    final WeekTemplateModel fakeWeekTemplate = WeekTemplateModel(
+        name: 'Week 1',
+        id: 1234,
+        days: <WeekdayModel>[
+          WeekdayModel(day: Weekday.Monday, activities: <ActivityModel>[])
+        ],
+        departmentKey: 5,
+        thumbnail: fakePictogram2);
+    //act
+    // add fakeWeekTemplate to the offline database
+    await dbHandler.createTemplate(fakeWeekTemplate);
+
+    final PictogramModel fakpictogram2 = PictogramModel(
+        id: 2,
+        title: 'Picto',
+        lastEdit: DateTime.now(),
+        imageUrl: 'http://',
+        //imageHash: '#',
+        accessLevel: AccessLevel.PUBLIC);
+    final PictogramModel fakePictogram3 =
+        await dbHandler.createPictogram(fakpictogram2);
+    // create fake WeekTemplateModel
+    final WeekTemplateModel fakeWeekTemplate2 = WeekTemplateModel(
+        name: 'Week 1',
+        id: 2345,
+        days: <WeekdayModel>[
+          WeekdayModel(day: Weekday.Monday, activities: <ActivityModel>[])
+        ],
+        departmentKey: 5,
+        thumbnail: fakePictogram3);
+    //act
+    // add fakeWeekTemplate to the offline database
+    await dbHandler.createTemplate(fakeWeekTemplate2);
+
+    final List<WeekTemplateNameModel> res = await dbHandler.getTemplateNames();
+    expect(res.length, 2);
+  });
+
   test('Get a user\'s settings', () async {
     final GirafUserModel body = await dbHandler.registerAccount(jamesBody);
     final SettingsModel res = await dbHandler.getUserSettings(body.id);
@@ -969,7 +1018,8 @@ Future<void> main() async {
   // test('Test create week with a user id', () async {
   //   //arrange
   //   //Add a fake james user to offlinedb
-  //   final GirafUserModel fakeUser = await dbHandler.registerAccount(jamesBody);
+  //   final GirafUserModel fakeUser =
+  //   await dbHandler.registerAccount(jamesBody);
   //
   //   //act
   //   final WeekModel testWeek =

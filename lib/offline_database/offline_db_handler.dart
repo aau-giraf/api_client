@@ -999,10 +999,11 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `WeekTemplates`');
-    return res
-        .map((Map<String, dynamic> json) =>
-            WeekTemplateNameModel.fromDatabase(json))
-        .toList();
+    final List<WeekTemplateNameModel> weekTemplates = <WeekTemplateNameModel>[];
+    for (Map<String, dynamic> result in res) {
+      weekTemplates.add(WeekTemplateNameModel.fromDatabase(result));
+    }
+    return weekTemplates;
   }
 
   /// Create a week template in the database from [template]
