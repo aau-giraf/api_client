@@ -228,50 +228,55 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> dbRes =
         await db.rawQuery('SELECT * FROM `FailedOnlineTransactions`');
     if (dbRes.isNotEmpty) {
-      final Http _http = HttpClient(baseUrl: '', persist: PersistenceClient());
+      final Http _http = getHttpObject();
       for (Map<String, dynamic> transaction in dbRes) {
         switch (transaction['Type']) {
           case 'DELETE':
-            _http.delete(transaction['Url']).listen((Response res) {
+            _http.delete(transaction['Url']).listen((Response res) async {
               if (res.success()) {
-                removeFailedTransaction(transaction);
+                await removeFailedTransaction(transaction);
               }
-            });
+            }).onError((Object error) {});
             break;
           case 'POST':
             _http
                 .post(transaction['Url'], transaction['Body'])
-                .listen((Response res) {
+                .listen((Response res) async {
               if (res.success()) {
-                removeFailedTransaction(transaction);
-                updateIdInOfflineDb(res.json, transaction['TableAffected'],
-                    transaction['TempId']);
+                await removeFailedTransaction(transaction);
+                await updateIdInOfflineDb(res.json,
+                    transaction['TableAffected'], transaction['TempId']);
               }
-            });
+            }).onError((Object error) {});
             break;
           case 'PATCH':
             _http
                 .patch(transaction['Url'], transaction['Body'])
-                .listen((Response res) {
+                .listen((Response res) async {
               if (res.success()) {
-                removeFailedTransaction(transaction);
+                await removeFailedTransaction(transaction);
               }
-            });
+            }).onError((Object error) {});
             break;
           case 'PUT':
             _http
                 .put(transaction['Url'], transaction['Body'])
-                .listen((Response res) {
+                .listen((Response res) async {
               if (res.success()) {
-                removeFailedTransaction(transaction);
+                await removeFailedTransaction(transaction);
               }
-            });
+            }).onError((Object error) {});
             break;
           default:
             throw const HttpException('invalid request type');
         }
       }
     }
+  }
+
+  /// Exists to be able to override the http used for retry failed transactions
+  Http getHttpObject() {
+    return HttpClient(baseUrl: '', persist: PersistenceClient());
   }
 
   /// Update the an Id in the database with a new one from the online database,
@@ -340,7 +345,7 @@ class OfflineDbHandler {
   /// offline database when it succeeds
   Future<void> removeFailedTransaction(Map<String, dynamic> transaction) async {
     final Database db = await database;
-    db.rawDelete('DELETE * FROM `FailedOnlineTransactions` WHERE '
+    await db.rawDelete('DELETE FROM `FailedOnlineTransactions` WHERE '
         "Type == '${transaction['Type']}' AND "
         "Url == '${transaction['Url']}' AND "
         "Body == '${transaction['Body']}' AND "
