@@ -895,8 +895,16 @@ class OfflineDbHandler {
     weekModel['Thumbnail'] =
         (await getPictogramID(res[0]['ThumbnailKey'])).toJson();
     final int weekId = res.single['id'];
-    final List<Map<String, dynamic>> weekDays = await db
+    final List<Map<String, dynamic>> weekDaysFromDb = await db
         .rawQuery("SELECT * FROM `Weekdays` WHERE `WeekId` == '$weekId'");
+    final List<Map<String, dynamic>> weekDays =
+        List<Map<String, dynamic>>.from(weekDaysFromDb);
+    for (Map<String, dynamic> day in weekDays) {
+      final List<Map<String, dynamic>> activityFromDb =
+          await db.rawQuery('SELECT * FROM `Activities` WHERE '
+              "OtherKey == '${day['id']}'");
+      day['activities'] = List<Map<String, dynamic>>.from(activityFromDb);
+    }
     weekModel['Days'] = List<Map<String, dynamic>>.from(weekDays);
     return WeekModel.fromDatabase(weekModel);
   }
