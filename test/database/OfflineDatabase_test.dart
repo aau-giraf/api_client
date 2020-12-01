@@ -825,15 +825,21 @@ Future<void> main() async {
         blankTestWeek.weekYear,
         blankTestWeek.weekNumber,
         Weekday.Friday);
-
-    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
-    testActivity.timer = TimerModel(
+    final TimerModel timer = TimerModel(
         startTime: DateTime(1, 1, 1, 1),
         progress: 0,
         fullLength: 0,
         paused: false);
+    final ActivityModel testActivityTimer = ActivityModel(
+        id: testActivity.id,
+        pictograms: testActivity.pictograms,
+        order: testActivity.order,
+        state: testActivity.state,
+        isChoiceBoard: testActivity.isChoiceBoard,
+        timer: timer);
+    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
     final ActivityModel updatedActivity =
-        await dbHandler.updateActivity(testActivity, jamesUser.id);
+        await dbHandler.updateActivity(testActivityTimer, jamesUser.id);
     expect(updatedActivity.timer.progress, 0);
     await pictoImage.delete();
   });
