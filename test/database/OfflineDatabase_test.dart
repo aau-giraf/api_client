@@ -1002,7 +1002,12 @@ Future<void> main() async {
         exampleWeek.name,
         exampleWeek.weekYear,
         exampleWeek.weekNumber,
-        Weekday.Monday);
+        Weekday.Monday,
+        timer: TimerModel(
+            startTime: DateTime.now(),
+            progress: 0,
+            fullLength: 200,
+            paused: false));
 
     exampleWeek.days[0].activities = <ActivityModel>[testActivity];
     final ActivityModel updatedActivity =
