@@ -137,7 +137,7 @@ void main() {
     const int year = 2020;
     const int weekNumber = 42;
     const Weekday weekday = Weekday.Monday;
-    WeekdayModel weekdayModel = WeekdayModel(
+    final WeekdayModel weekdayModel = WeekdayModel(
           day: Weekday.Monday,
           activities: <ActivityModel>[]
       );
@@ -163,7 +163,7 @@ void main() {
     const String id = '1234';
     const int year = 2020;
     const int weekNumber = 42;
-    WeekdayModel weekdayModel = WeekdayModel(
+    final WeekdayModel weekdayModel = WeekdayModel(
         day: Weekday.Monday,
         activities: <ActivityModel>[]
     );
