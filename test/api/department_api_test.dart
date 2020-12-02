@@ -117,27 +117,6 @@ Future<void> main() async {
     });
   });
 
-  test('Should be able to add user to department', () {
-    departmentApi
-        .addUserToDepartment(
-            sampleDepartment.id, sampleDepartment.members[0].id)
-        .listen(expectAsync1((DepartmentModel response) {
-      expect(response.toJson(), sampleDepartment.toJson());
-    }));
-
-    httpMock
-        .expectOne(
-            url:
-                '/${sampleDepartment.id}/user/${sampleDepartment.members[0].id}',
-            method: Method.post)
-        .flush(<String, dynamic>{
-      'data': sampleDepartment.toJson(),
-      'success': true,
-      'message': '',
-      'errorKey': 'NoError',
-    });
-  });
-
   test('Should be able to change name of department', () {
     departmentApi
         .updateName(sampleDepartment.id, 'new Name')

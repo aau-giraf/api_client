@@ -45,7 +45,8 @@ void main(){
             'id': 1238,
             'isChoiceBoard': false,
             'choiceBoardName': null,
-            'timer' : null
+            'timer' : null,
+            'title' : ''
           }
         ]
       },
@@ -68,7 +69,8 @@ void main(){
             'id': 1239,
             'isChoiceBoard': false,
             'choiceBoardName': null,
-            'timer' : null
+            'timer' : null,
+            'title' : ''
           },
           <String, dynamic>{
             'pictograms': <dynamic>[
@@ -86,7 +88,8 @@ void main(){
             'id': 1240,
             'isChoiceBoard': false,
             'choiceBoardName': null,
-            'timer' : null
+            'timer' : null,
+            'title' : ''
           },
           <String, dynamic>{
             'pictograms': <dynamic>[
@@ -104,7 +107,8 @@ void main(){
             'id': 1241,
             'isChoiceBoard': false,
             'choiceBoardName': null,
-            'timer' : null
+            'timer' : null,
+            'title' : ''
           }
         ]
       },

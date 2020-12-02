@@ -28,7 +28,8 @@ void main() {
       'id': 1044,
       'isChoiceBoard': false,
       'choiceBoardName': null,
-      'timer' : null
+      'timer' : null,
+      'title' : ''
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
@@ -62,7 +63,8 @@ void main() {
       'id': 1044,
       'isChoiceBoard': false,
       'choiceBoardName': null,
-      'timer' : null
+      'timer' : null,
+      'title' : ''
     };
 
     final Map<String, dynamic> json = <String, dynamic>{

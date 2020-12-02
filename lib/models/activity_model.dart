@@ -14,7 +14,8 @@ class ActivityModel implements Model {
       @required this.state,
       @required this.isChoiceBoard,
       this.choiceBoardName,
-      this.timer});
+      this.timer,
+      this.title});
 
   /// Constructs the activityModel from json.
   ActivityModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +36,7 @@ class ActivityModel implements Model {
     if (json['timer'] != null) {
       timer = TimerModel.fromJson(json['timer']);
     }
+    title = json['title'];
   }
 
   /// Constructer from json for the offlineDb
@@ -80,10 +82,13 @@ class ActivityModel implements Model {
   /// The timer for the activity
   TimerModel timer;
 
+  ///The title of the activity
+  String title;
+
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'id': id,
+      'id': id ?? '',
       'pictograms': pictograms
           .map((PictogramModel pictogram) => pictogram.toJson())
           .toList(),
@@ -91,7 +96,8 @@ class ActivityModel implements Model {
       'state': state.index + 1,
       'isChoiceBoard': isChoiceBoard,
       'choiceBoardName': choiceBoardName,
-      'timer': timer != null ? timer.toJson() : null
+      'timer': timer != null ? timer.toJson() : null,
+      'title': title ?? ''
     };
   }
 }
