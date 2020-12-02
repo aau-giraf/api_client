@@ -9,13 +9,13 @@ class ActivityModel implements Model {
   /// Constructor for Activity
   ActivityModel(
       {@required this.id,
-        @required this.pictograms,
-        @required this.order,
-        @required this.state,
-        @required this.isChoiceBoard,
-        this.choiceBoardName,
-        this.timer,
-        this.title});
+      @required this.pictograms,
+      @required this.order,
+      @required this.state,
+      @required this.isChoiceBoard,
+      this.choiceBoardName,
+      this.timer,
+      this.title});
 
   /// Constructs the activityModel from json.
   ActivityModel.fromJson(Map<String, dynamic> json) {
@@ -37,6 +37,26 @@ class ActivityModel implements Model {
       timer = TimerModel.fromJson(json['timer']);
     }
     title = json['title'];
+  }
+
+  /// Constructer from json for the offlineDb
+  ActivityModel.fromDatabase(Map<String, dynamic> json,
+      {this.timer, this.pictograms}) {
+    if (json == null) {
+      throw const FormatException(
+          '[ActivityModel]: Cannot initialize from null');
+    }
+    id = json['Key'];
+    order = json['Order'];
+    int stateIndex;
+    if (json['State'] is int) {
+      stateIndex = json['State'];
+    } else {
+      final String stateString = json['State'];
+      stateIndex = int.tryParse(stateString);
+    }
+    state = ActivityState.values[stateIndex];
+    isChoiceBoard = json['IsChoiceBoard'] == 1;
   }
 
   /// The ID of the activity.

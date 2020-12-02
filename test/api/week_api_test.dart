@@ -6,8 +6,10 @@ import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/api/week_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  sqfliteFfiInit();
   WeekApi weekApi;
   HttpMock httpMock;
 

@@ -1,9 +1,14 @@
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 
+/// Base model for a week
 abstract class WeekBaseModel {
+  /// [Thumbnail] id for pictogram
+  /// [name] name for the weekmodel
+  /// [days] List of weekday models for the week
   WeekBaseModel({this.thumbnail, this.name, this.days});
 
+  /// Constructor from Json
   WeekBaseModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
@@ -25,9 +30,35 @@ abstract class WeekBaseModel {
     }
   }
 
+  /// Creates a weekbase model from offline database json
+  WeekBaseModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[WeekBaseModel]: Cannot initialize from null');
+    }
+
+    name = json['Name'];
+
+    // WeekModel sometimes don't have a thumbnail
+    if (json['Thumbnail'] != null) {
+      thumbnail = PictogramModel.fromJson(json['Thumbnail']);
+    }
+
+    // WeekModel sometimes dont have days
+    if (json['Days'] != null && json['Days'] is List) {
+      days = List<Map<String, dynamic>>.from(json['Days'])
+          .map((Map<String, dynamic> element) =>
+              WeekdayModel.fromDatabase(element))
+          .toList();
+    }
+  }
+
+  /// Id for a pictogram to be used as thumbnail
   PictogramModel thumbnail;
 
+  /// Name for the weekModel
   String name;
 
+  /// List of seven days connected to the week
   List<WeekdayModel> days;
 }

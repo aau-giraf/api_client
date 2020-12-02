@@ -25,6 +25,21 @@ class WeekdayModel implements Model {
     }
   }
 
+  /// Construct from Database
+  WeekdayModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[WeekdayModel]: Cannot instantiate from null');
+    }
+
+    day = Weekday.values[json['day']];
+    if (json['activities'] is List) {
+      activities = List<Map<String, dynamic>>.from(json['activities'])
+          .map((Map<String, dynamic> val) => ActivityModel.fromDatabase(val))
+          .toList();
+    }
+  }
+
   /// Day of the week
   Weekday day;
 

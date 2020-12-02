@@ -25,6 +25,17 @@ class WeekTemplateModel extends WeekBaseModel implements Model {
     id = json['id'];
   }
 
+  /// Construct from offline database JSON
+  WeekTemplateModel.fromDatabase(Map<String, dynamic> json)
+      : super.fromDatabase(json) {
+    if (json == null) {
+      throw const FormatException(
+          '[WeekTemplateModel]: Cannot initialize from null');
+    }
+    departmentKey = json['Department'];
+    id = json['id'];
+  }
+
   /// Key for the Department
   int departmentKey;
 
@@ -38,8 +49,9 @@ class WeekTemplateModel extends WeekBaseModel implements Model {
       'id': id,
       'thumbnail': thumbnail.toJson(),
       'name': name,
-      'days': days.map((WeekdayModel element) => element.toJson()).toList()
+      'days': days != null
+          ? days.map((WeekdayModel element) => element.toJson()).toList()
+          : null
     };
   }
-
 }

@@ -2,9 +2,8 @@ import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
 
-
+/// Model with a pictogram
 class PictogramModel implements Model {
-
   /// Constructor
   PictogramModel({
     this.id,
@@ -16,6 +15,7 @@ class PictogramModel implements Model {
     this.userId,
   });
 
+  /// Constructor from Json
   PictogramModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
@@ -24,7 +24,7 @@ class PictogramModel implements Model {
 
     id = json['id'];
     lastEdit =
-      json['lastEdit'] == null ? null : DateTime.tryParse(json['lastEdit']);
+        json['lastEdit'] == null ? null : DateTime.tryParse(json['lastEdit']);
     title = json['title'];
     accessLevel = AccessLevel.values[(json['accessLevel']) - 1];
     imageUrl = json['imageUrl'];
@@ -32,6 +32,22 @@ class PictogramModel implements Model {
     userId = json['userId'];
   }
 
+  /// Constructor for json from the database
+  PictogramModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[PictogramModel]: Cannot initialize from null');
+    }
+
+    id = json['OnlineId'];
+    lastEdit =
+        json['LastEdit'] == null ? null : DateTime.tryParse(json['LastEdit']);
+    title = json['Title'];
+    accessLevel = AccessLevel.values[(json['AccessLevel'])];
+    imageHash = json['ImageHash'];
+  }
+
+  /// pictogram id
   int id;
 
   /// The last time the pictogram was edited.
@@ -43,13 +59,14 @@ class PictogramModel implements Model {
   /// The access level of the pictogram.
   AccessLevel accessLevel;
 
+  /// Url for image
   String imageUrl;
 
+  /// Hash for image
   String imageHash;
 
+  /// Id of the user which the pictogram is owned by
   String userId;
-
-
 
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +91,7 @@ class PictogramModel implements Model {
       result['imageHash'] = imageHash;
     }
 
-    if(userId != null){
+    if (userId != null) {
       result['userId'] = userId;
     }
 

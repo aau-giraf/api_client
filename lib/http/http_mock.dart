@@ -70,9 +70,8 @@ class HttpMock implements Http {
     if (_calls.isNotEmpty) {
       throw Exception('Expected no requests, found: \n' +
           _calls
-              .map((Call call) => 
-                '[${call.method} ${call.statusCode}] ${call.url}'
-              )
+              .map((Call call) =>
+                  '[${call.method} ${call.statusCode}] ${call.url}')
               .join('\n'));
     }
   }
@@ -168,5 +167,10 @@ class HttpMock implements Http {
 
       return Response(httpResponse, json);
     });
+  }
+
+  @override
+  String getBaseUrl() {
+    throw UnimplementedError();
   }
 }

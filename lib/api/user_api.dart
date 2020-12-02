@@ -41,13 +41,11 @@ class UserApi {
   ///
   /// [id] Identifier of the GirafUser to get settings for
   Stream<SettingsModel> getSettings(String id) {
-    return _http
-        .get('/$id/settings')
-        .map((Response res){
-          if (res.success() == false) {
-            throw ApiException(res);
-          }
-          return SettingsModel.fromJson(res.json['data']);
+    return _http.get('/$id/settings').map((Response res) {
+      if (res.success() == false) {
+        throw ApiException(res);
+      }
+      return SettingsModel.fromJson(res.json['data']);
     });
   }
 
@@ -56,13 +54,11 @@ class UserApi {
   /// [id] Identifier of the GirafUser to update settings for
   /// [settings] reference to a Settings containing the new settings
   Stream<SettingsModel> updateSettings(String id, SettingsModel settings) {
-    return _http
-        .put('/$id/settings', settings.toJson())
-        .map((Response res){
-          if (res.success() == false) {
-            throw ApiException(res);
-          }
-          return SettingsModel.fromJson(res.json['data']);
+    return _http.put('/$id/settings', settings.toJson()).map((Response res) {
+      if (res.success() == false) {
+        throw ApiException(res);
+      }
+      return SettingsModel.fromJson(res.json['data']);
     });
   }
 
@@ -70,7 +66,9 @@ class UserApi {
   ///
   /// [id] Identifier fo the user to which the icon should be deleted
   Stream<bool> deleteIcon(String id) {
-    return _http.delete('/$id/icon').map((Response res) => res.statusCode() == 200);
+    return _http
+        .delete('/$id/icon')
+        .map((Response res) => res.statusCode() == 200);
   }
 
   /// Gets the raw user icon for a given user
@@ -82,6 +80,7 @@ class UserApi {
     });
   }
 
+  /// NYI
   Stream<bool> updateIcon() {
     // TODO(boginw): implement this
     return null;

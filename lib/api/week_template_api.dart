@@ -14,7 +14,7 @@ class WeekTemplateApi {
   Stream<List<WeekTemplateNameModel>> getNames() {
     return _http.get('/').map((Response res) {
       if (res.json['data'] is List) {
-        return List<Map<String,dynamic>>.from(res.json['data'])
+        return List<Map<String, dynamic>>.from(res.json['data'])
             .map((Map<String, dynamic> val) =>
                 WeekTemplateNameModel.fromJson(val))
             .toList();

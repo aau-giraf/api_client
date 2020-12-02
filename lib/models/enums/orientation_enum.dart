@@ -1,3 +1,2 @@
-enum Orientation{
- Portrait, Landscape
-}
+// ignore_for_file: public_member_api_docs
+enum Orientation { Portrait, Landscape }
