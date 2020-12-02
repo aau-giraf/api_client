@@ -18,7 +18,6 @@ import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/week_template_model.dart';
@@ -90,44 +89,9 @@ Future<void> main() async {
     // in the tests and it doesn't close itself
     //dbHandler.closeDb();
   });
-  test('update an activity without timer to one that has timer', () async {
-    final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
-    final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
-    final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
-        blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
-
-    expect(userWeek.days[0].day, blankTestWeek.days[0].day);
-    expect(userWeek.thumbnail.id, blankTestWeek.thumbnail.id);
-    final ActivityModel testActivity = await dbHandler.addActivity(
-        spise,
-        jamesUser.id,
-        blankTestWeek.name,
-        blankTestWeek.weekYear,
-        blankTestWeek.weekNumber,
-        Weekday.Friday);
-    final TimerModel timer = TimerModel(
-        startTime: DateTime(1, 1, 1, 1),
-        progress: 0,
-        fullLength: 0,
-        paused: false);
-    final ActivityModel testActivityTimer = ActivityModel(
-        id: testActivity.id,
-        pictograms: testActivity.pictograms,
-        order: testActivity.order,
-        state: testActivity.state,
-        isChoiceBoard: testActivity.isChoiceBoard,
-        timer: timer);
-    blankTestWeek.days[0].activities = <ActivityModel>[testActivity];
-    final ActivityModel updatedActivity =
-        await dbHandler.updateActivity(testActivityTimer, jamesUser.id);
-    expect(updatedActivity.timer.progress, 0);
-    await pictoImage.delete();
-  });
-
   test('Test if getweeknames gets all weeks connected to user', () async {
     final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final File pictoImage = await addImageToPictogram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
     await dbHandler.updateWeek(jamesUser.id, blankTestWeek.weekYear,
         blankTestWeek.weekNumber, blankTestWeek);
@@ -454,7 +418,7 @@ Future<void> main() async {
         weekYear: 2020);
 
     final PictogramModel testPicto = await dbHandler.createPictogram(extreme);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final File pictoImage = await addImageToPictogram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
     final WeekModel userWeek = await dbHandler.updateWeek(
         jamesUser.id, testWeek.weekYear, testWeek.weekNumber, testWeek);
@@ -489,7 +453,7 @@ Future<void> main() async {
         weekYear: 2020);
 
     final PictogramModel testPicto = await dbHandler.createPictogram(extreme);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final File pictoImage = await addImageToPictogram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
     final WeekModel userWeek = await dbHandler.updateWeek(
         jamesUser.id, testWeek.weekYear, testWeek.weekNumber, testWeek);
@@ -812,7 +776,7 @@ Future<void> main() async {
   });
   test('update an activity with timer is null', () async {
     final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final File pictoImage = await addImageToPictogram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
     final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
         blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
@@ -836,7 +800,7 @@ Future<void> main() async {
 
   test('update an activity with timer', () async {
     final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final File pictoImage = await addImageToPictogram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
     final WeekModel userWeek = await dbHandler.updateWeek(jamesUser.id,
         blankTestWeek.weekYear, blankTestWeek.weekNumber, blankTestWeek);
@@ -947,7 +911,7 @@ Future<void> main() async {
         WeekdayModel(activities: null, day: Weekday.Monday);
     final List<WeekdayModel> exampleDayList = <WeekdayModel>[exampleWeekDay];
     final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final File pictoImage = await addImageToPictogram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
     final WeekModel exampleWeek = WeekModel(
         days: exampleDayList,
@@ -983,7 +947,7 @@ Future<void> main() async {
         WeekdayModel(activities: null, day: Weekday.Monday);
     final List<WeekdayModel> exampleDayList = <WeekdayModel>[exampleWeekDay];
     final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
-    final File pictoImage = await addImageToPictoGram(testPicto, dbHandler);
+    final File pictoImage = await addImageToPictogram(testPicto, dbHandler);
     final GirafUserModel jamesUser = await dbHandler.registerAccount(jamesBody);
     final WeekModel exampleWeek = WeekModel(
         days: exampleDayList,
@@ -1112,6 +1076,45 @@ Future<void> main() async {
     final String testUserId = await dbHandler.getUserId(testUser.username);
     final GirafUserModel dbRes = await dbHandler.getUser(testUserId);
     expect(dbRes == null, false);
+  });
+
+  test('Test changing id for a weektemplate in the offline DB', () async {
+    await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictogram(scrum, dbHandler);
+    final WeekTemplateModel tempTemplate = WeekTemplateModel(
+        name: 'Standard Ugeplan',
+        thumbnail: scrum,
+        days: blankWeekList,
+        id: 101);
+    final WeekTemplateModel testTemplate =
+        await dbHandler.createTemplate(tempTemplate);
+    testTemplate.id = 500;
+    await dbHandler.updateIdInOfflineDb(
+        testTemplate.toJson(), 'WeekTemplates', tempTemplate.id);
+    final WeekTemplateModel dbRes =
+        await dbHandler.getTemplate(testTemplate.id);
+    expect(dbRes == null, false);
+    await pictoImage.delete();
+  });
+
+  test('Change values for a weekTemplate', () async {
+    await dbHandler.createPictogram(scrum);
+    final File pictoImage = await addImageToPictogram(scrum, dbHandler);
+    final WeekTemplateModel tempTemplate = WeekTemplateModel(
+        name: 'Travl Ugeplan', thumbnail: scrum, days: blankWeekList, id: 300);
+    final WeekTemplateModel testTemplate =
+        await dbHandler.createTemplate(tempTemplate);
+    expect(testTemplate.name, tempTemplate.name);
+    final WeekTemplateModel dbRes =
+        await dbHandler.getTemplate(tempTemplate.id);
+    expect(dbRes.id, testTemplate.id);
+    testTemplate.name = 'Stille Uge';
+    testTemplate.departmentKey = 3;
+    final WeekTemplateModel updatedRes =
+        await dbHandler.updateTemplate(testTemplate);
+    expect(updatedRes.name, testTemplate.name);
+    expect(updatedRes.departmentKey, testTemplate.departmentKey);
+    await pictoImage.delete();
   });
 
   test('Test deletion of a week template', () async {

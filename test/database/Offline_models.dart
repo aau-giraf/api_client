@@ -114,7 +114,7 @@ final ActivityModel spise = ActivityModel(
 //Test Timer
 final TimerModel timer = TimerModel(
   startTime: DateTime.now(),
-  progress: 1,
+  progress: 0,
   fullLength: 10,
   paused: false,
   key: 44,
@@ -170,7 +170,7 @@ final WeekTemplateModel weekTemplate2 = WeekTemplateModel(
     id: 40,
     thumbnail: scrum);
 
-Future<File> addImageToPictoGram(
+Future<File> addImageToPictogram(
     PictogramModel picto, MockOfflineDbHandler db) async {
   final String tempDir = Directory.current.path;
   Directory pictoDirectory;

@@ -1054,14 +1054,12 @@ class OfflineDbHandler {
     final List<Map<String, dynamic>> res =
         await db.rawQuery('SELECT * FROM `WeekTemplates` WHERE '
             "OnlineId == '$id'");
-    final Map<String, dynamic> template = res[0];
+    final Map<String, dynamic> tempRes = res[0];
     // get the first record
-    final Map<String, dynamic> template1 = Map<String, dynamic>.from(template);
-    template1['Thumbnail'] =
-        (await getPictogramID(template1['ThumbnailKey'])).toJson();
-    return WeekTemplateModel.fromDatabase(template1);
-    //   template['Thumbnail'] = getPictogramID(template['ThumbnailKey']);
-    //     return WeekTemplateModel.fromDatabase(template);
+    final Map<String, dynamic> template = Map<String, dynamic>.from(tempRes);
+    template['Thumbnail'] =
+        (await getPictogramID(template['ThumbnailKey'])).toJson();
+    return WeekTemplateModel.fromDatabase(template);
   }
 
   /// Update a template with all the values from [template]
@@ -1071,8 +1069,11 @@ class OfflineDbHandler {
         "Name = '${template.name}', "
         "ThumbnailKey = '${template.thumbnail.id}', "
         "Department = '${template.departmentKey}' WHERE "
-        "OfflineId == '${template.id}'");
-    return getTemplate(template.id);
+        "Id == '${template.id}'");
+    final List<Map<String, dynamic>> templateRes =
+        await db.rawQuery('SELECT `OnlineId` FROM `WeekTemplates` WHERE '
+            "id == ${template.id} AND Name == '${template.name}'");
+    return getTemplate(templateRes[0]['OnlineId']);
   }
 
   /// Delete a template with the id [id]
