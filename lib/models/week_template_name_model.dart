@@ -16,6 +16,17 @@ class WeekTemplateNameModel implements Model {
     id = json['templateId'];
   }
 
+  /// Construct from offline database JSON
+  WeekTemplateNameModel.fromDatabase(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException(
+          '[WeekTemplateNameModel]: Cannot initialize from null');
+    }
+
+    name = json['Name'];
+    id = json['OnlineId'];
+  }
+
   /// Name of the template
   String name;
 
@@ -26,5 +37,4 @@ class WeekTemplateNameModel implements Model {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{'name': name, 'templateId': id};
   }
-
 }

@@ -12,17 +12,17 @@ class SettingsModel implements Model {
   /// Constructor
   SettingsModel(
       {@required this.orientation,
-        @required this.completeMark,
-        @required this.cancelMark,
-        @required this.defaultTimer,
-        this.timerSeconds,
-        this.activitiesCount,
-        @required this.theme,
-        this.nrOfDaysToDisplay,
-        this.lockTimerControl,
-        this.pictogramText,
-        this.greyscale,
-        this.weekDayColors});
+      @required this.completeMark,
+      @required this.cancelMark,
+      @required this.defaultTimer,
+      this.timerSeconds,
+      this.activitiesCount,
+      @required this.theme,
+      this.nrOfDaysToDisplay,
+      this.lockTimerControl,
+      this.pictogramText,
+      this.greyscale,
+      this.weekDayColors});
 
   /// Another constructor used to create from json.
   SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +46,35 @@ class SettingsModel implements Model {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
           .map(
               (Map<String, dynamic> value) => WeekdayColorModel.fromJson(value))
+          .toList();
+    } else {
+      // TODO(TobiasPalludan): Throw appropriate error.
+    }
+  }
+
+  /// Create a Settingsmodel from jason from the database
+  SettingsModel.fromDatabase(Map<String, dynamic> settingsJson,
+      List<Map<String, dynamic>> weekdayColorsJson) {
+    if (settingsJson == null) {
+      throw const FormatException(
+          '[SettingModel]: Cannot initialize from null');
+    }
+
+    orientation = Orientation.values[(settingsJson['Orientation'])];
+    completeMark = CompleteMark.values[(settingsJson['CompleteMark'])];
+    cancelMark = CancelMark.values[(settingsJson['CancelMark'])];
+    defaultTimer = DefaultTimer.values[(settingsJson['DefaultTimer'])];
+    timerSeconds = settingsJson['TimerSeconds'];
+    activitiesCount = settingsJson['ActivitiesCount'];
+    theme = GirafTheme.values[(settingsJson['Theme'])];
+    nrOfDaysToDisplay = settingsJson['NrOfDaysToDisplay'];
+    lockTimerControl = settingsJson['LockTimerControl'] == 1;
+    pictogramText = settingsJson['PictogramText'] == 1;
+    greyscale = settingsJson['GreyScale'] == 1;
+    if (weekdayColorsJson != null) {
+      weekDayColors = weekdayColorsJson
+          .map((Map<String, dynamic> value) =>
+              WeekdayColorModel.fromDatabase(value))
           .toList();
     } else {
       // TODO(TobiasPalludan): Throw appropriate error.
@@ -99,12 +128,11 @@ class SettingsModel implements Model {
       'activitiesCount': activitiesCount,
       'theme': theme.index + 1,
       'nrOfDaysToDisplay': nrOfDaysToDisplay,
-      'lockTimerControl' : lockTimerControl,
+      'lockTimerControl': lockTimerControl,
       'greyScale': greyscale,
-      'pictogramText' : pictogramText,
+      'pictogramText': pictogramText,
       'weekDayColors':
-      weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
+          weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
   }
-
 }

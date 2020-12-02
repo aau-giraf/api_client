@@ -6,8 +6,9 @@ import 'package:api_client/api/pictogram_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
   PictogramApi pictogramApi;
   HttpMock httpMock;
 
@@ -29,7 +30,7 @@ void main() {
         lastEdit: DateTime.now(),
         userId: '2'),
   ];
-
+  sqfliteFfiInit();
   setUp(() {
     httpMock = HttpMock();
     pictogramApi = PictogramApi(httpMock);
@@ -151,7 +152,10 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/${grams[0].id}/image/raw', method: Method.get, statusCode: 200)
+        .expectOne(
+            url: '/${grams[0].id}/image/raw',
+            method: Method.get,
+            statusCode: 200)
         .flush(imagebytes);
   });
 

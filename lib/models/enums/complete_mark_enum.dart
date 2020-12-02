@@ -1,3 +1,2 @@
-enum CompleteMark{
-  Removed, Checkmark, MovedRight
-}
+// ignore_for_file: public_member_api_docs
+enum CompleteMark { Removed, Checkmark, MovedRight }

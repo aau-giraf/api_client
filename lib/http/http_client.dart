@@ -81,7 +81,7 @@ class HttpClient implements Http {
   }
 
   dynamic _bodyHandler(dynamic body) {
-	  return body is Map ? jsonEncode(body) : body;
+    return body is Map ? jsonEncode(body) : body;
   }
 
   Stream<Response> _parseJson(Future<http.Response> res) {
@@ -106,5 +106,10 @@ class HttpClient implements Http {
 
       return Response(res, json);
     });
+  }
+
+  @override
+  String getBaseUrl() {
+    return baseUrl;
   }
 }

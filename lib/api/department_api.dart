@@ -60,6 +60,18 @@ class DepartmentApi {
     });
   }
 
+  /// Add a user that does not have a department to the given department.
+  /// Requires role Department, Guardian or SuperUser
+  ///
+  /// [departmentId] Identifier for the Departmentto add user to
+  ///
+  /// [userId] The ID of a GirafUser to be added to the department
+  Stream<DepartmentModel> addUserToDepartment(int departmentId, String userId) {
+    return _http.post('/$departmentId/user/$userId').map((Response res) {
+      return DepartmentModel.fromJson(res.json['data']);
+    });
+  }
+
   /// Update department name
   ///
   /// [id] ID of the department which should change name
