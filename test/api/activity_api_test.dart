@@ -9,8 +9,10 @@ import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  sqfliteFfiInit();
   HttpMock httpMock;
   ActivityApi activityApi;
   final DisplayNameModel mockUser =
@@ -29,7 +31,8 @@ void main() {
       state: ActivityState.Normal,
       isChoiceBoard: false,
       order: 0,
-      pictograms: <PictogramModel>[mockPictogram]);
+      pictograms: <PictogramModel>[mockPictogram],
+      title: 'Test');
 
   final WeekModel mockWeek = WeekModel(
       thumbnail: mockPictogram,
@@ -39,7 +42,6 @@ void main() {
       days: <WeekdayModel>[
         WeekdayModel(day: Weekday.Sunday, activities: <ActivityModel>[])
       ]);
-
   setUp(() {
     httpMock = HttpMock();
     activityApi = ActivityApi(httpMock);
@@ -53,7 +55,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/${mockUser.id}/update', method: Method.patch)
+        .expectOne(url: '/${mockUser.id}/update', method: Method.put)
         .flush(<String, dynamic>{
       'data': mockActivity.toJson(),
       'success': true,

@@ -6,23 +6,25 @@ import 'package:api_client/api/department_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main() {
+Future<void> main() async {
   HttpMock httpMock;
   DepartmentApi departmentApi;
 
-  final DepartmentModel sampleDepartment =
-      DepartmentModel(id: 1, name: 'Dep. of Science',
-          members: <DisplayNameModel>[
-    DisplayNameModel(displayName: 'Kurt',
-        role: Role.SuperUser.toString(), id: '1'),
-    DisplayNameModel(displayName: 'Hüttel',
-        role: Role.SuperUser.toString(), id: '2'),
-  ], resources: <int>[
-    1,
-    2,
-    3,
-    4
-  ]);
+  final DepartmentModel sampleDepartment = DepartmentModel(
+      id: 1,
+      name: 'Dep. of Science',
+      members: <DisplayNameModel>[
+        DisplayNameModel(
+            displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
+        DisplayNameModel(
+            displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
+      ],
+      resources: <int>[
+        1,
+        2,
+        3,
+        4
+      ]);
 
   setUp(() {
     httpMock = HttpMock();
@@ -109,27 +111,6 @@ void main() {
       'data': sampleDepartment.members
           .map((DisplayNameModel member) => member.toJson())
           .toList(),
-      'success': true,
-      'message': '',
-      'errorKey': 'NoError',
-    });
-  });
-
-  test('Should be able to add user to department', () {
-    departmentApi
-        .addUserToDepartment(
-            sampleDepartment.id, sampleDepartment.members[0].id)
-        .listen(expectAsync1((DepartmentModel response) {
-      expect(response.toJson(), sampleDepartment.toJson());
-    }));
-
-    httpMock
-        .expectOne(
-            url:
-                '/${sampleDepartment.id}/user/${sampleDepartment.members[0].id}',
-            method: Method.post)
-        .flush(<String, dynamic>{
-      'data': sampleDepartment.toJson(),
       'success': true,
       'message': '',
       'errorKey': 'NoError',

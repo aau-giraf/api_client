@@ -1,7 +1,6 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// Pictogram endpoints
 class ActivityApi {
@@ -18,7 +17,7 @@ class ActivityApi {
   /// [weekYear] Year of the week
   /// [weekNumber] Week number of the week
   /// [weekDay] Day of the week that the activity should be added to
-  Observable<ActivityModel> add(ActivityModel activity, String userId,
+  Stream<ActivityModel> add(ActivityModel activity, String userId,
       String weekplanName, int weekYear, int weekNumber, Weekday weekDay) {
     return _http
         .post(
@@ -33,9 +32,9 @@ class ActivityApi {
   ///
   /// [activity] Activity with an id that updates values in the database
   /// [userId] User ID
-  Observable<ActivityModel> update(ActivityModel activity, String userId) {
+  Stream<ActivityModel> update(ActivityModel activity, String userId) {
     return _http
-        .patch('/$userId/update', activity.toJson())
+        .put('/$userId/update', activity.toJson())
         .map((Response res) {
       return ActivityModel.fromJson(res.json['data']);
     });
@@ -45,7 +44,7 @@ class ActivityApi {
   ///
   /// [activityId] ID of the activity to delete
   /// [userID] User ID
-  Observable<bool> delete(int activityId, String userId) {
+  Stream<bool> delete(int activityId, String userId) {
     return _http.delete('/$userId/delete/$activityId').map((Response res) {
       return res.success();
     });

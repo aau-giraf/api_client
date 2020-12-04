@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'package:rxdart/rxdart.dart';
 
 /// Response from HTTP
 class Response {
@@ -21,18 +20,21 @@ class Response {
 
 /// Http interface
 abstract class Http {
-  /// Makes an GET request to the specified [url]
-  Observable<Response> get(String url);
+  /// Makes a GET request to the specified [url]
+  Stream<Response> get(String url);
 
-  /// Makes an DELETE request to the specified [url]
-  Observable<Response> delete(String url);
+  /// Makes a DELETE request to the specified [url]
+  Stream<Response> delete(String url);
 
-  /// Makes an POST request to the specified [url], with the given [body]
-  Observable<Response> post(String url, [dynamic body]);
+  /// Makes a POST request to the specified [url], with the given [body]
+  Stream<Response> post(String url, [dynamic body]);
 
-  /// Makes an PUT request to the specified [url], with the given [body]
-  Observable<Response> put(String url, [dynamic body]);
+  /// Makes a PUT request to the specified [url], with the given [body]
+  Stream<Response> put(String url, [dynamic body]);
 
-  /// Makes an PATCH request to the specified [url], with the given [body]
-  Observable<Response> patch(String url, [dynamic body]);
+  /// Makes a PATCH request to the specified [url], with the given [body]
+  Stream<Response> patch(String url, [dynamic body]);
+
+  /// Get the base url for the Http class
+  String getBaseUrl();
 }

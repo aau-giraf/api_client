@@ -20,6 +20,12 @@ class WeekModel extends WeekBaseModel implements Model {
     weekNumber = json['weekNumber'];
   }
 
+  /// Construct from offline database JSON
+  WeekModel.fromDatabase(Map<String, dynamic> json) : super.fromDatabase(json) {
+    weekYear = json['WeekYear'];
+    weekNumber = json['WeekNumber'];
+  }
+
   /// The year the week lies in
   int weekYear;
 
@@ -51,5 +57,4 @@ class WeekModel extends WeekBaseModel implements Model {
 
     return response;
   }
-
 }

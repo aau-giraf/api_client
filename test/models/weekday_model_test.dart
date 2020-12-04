@@ -27,7 +27,9 @@ void main() {
       'state': 1,
       'id': 1044,
       'isChoiceBoard': false,
-      'timer' : null
+      'choiceBoardName': null,
+      'timer' : null,
+      'title' : ''
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
@@ -60,7 +62,9 @@ void main() {
       'state': 1,
       'id': 1044,
       'isChoiceBoard': false,
-      'timer' : null
+      'choiceBoardName': null,
+      'timer' : null,
+      'title' : ''
     };
 
     final Map<String, dynamic> json = <String, dynamic>{

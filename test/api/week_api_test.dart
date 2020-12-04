@@ -6,8 +6,10 @@ import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/api/week_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  sqfliteFfiInit();
   WeekApi weekApi;
   HttpMock httpMock;
 
@@ -35,7 +37,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/$id/week', method: Method.get)
+        .expectOne(url: '/$id/weekName', method: Method.get)
         .flush(<String, dynamic>{
       'data': names.map((WeekNameModel name) => name.toJson()).toList(),
       'success': true,
@@ -69,8 +71,7 @@ void main() {
 
     httpMock
         .expectOne(
-            url: '/$id/week/${week.weekYear}/${week.weekNumber}',
-            method: Method.get)
+            url: '/$id/${week.weekYear}/${week.weekNumber}', method: Method.get)
         .flush(<String, dynamic>{
       'data': week.toJson(),
       'success': true,
@@ -104,8 +105,7 @@ void main() {
 
     httpMock
         .expectOne(
-            url: '/$id/week/${week.weekYear}/${week.weekNumber}',
-            method: Method.put)
+            url: '/$id/${week.weekYear}/${week.weekNumber}', method: Method.put)
         .flush(<String, dynamic>{
       'data': week.toJson(),
       'success': true,
@@ -124,7 +124,7 @@ void main() {
     }));
 
     httpMock
-        .expectOne(url: '/$id/week/$year/$week', method: Method.delete)
+        .expectOne(url: '/$id/$year/$week', method: Method.delete)
         .flush(<String, dynamic>{
       'success': true,
       'message': '',

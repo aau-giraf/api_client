@@ -46,49 +46,49 @@ class HttpClient implements Http {
   final Duration _timeout;
 
   @override
-  Observable<Response> get(String url) {
-    return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
+  Stream<Response> get(String url) {
+    return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
             _parseJson(http.get(baseUrl + url, headers: headers)));
   }
 
   @override
-  Observable<Response> delete(String url) {
-    return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
+  Stream<Response> delete(String url) {
+    return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
             _parseJson(http.delete(baseUrl + url, headers: headers)));
   }
 
   @override
-  Observable<Response> post(String url, [dynamic body]) {
-    return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
+  Stream<Response> post(String url, [dynamic body]) {
+    return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) => _parseJson(http.post(baseUrl + url,
             body: _bodyHandler(body), headers: headers)));
   }
 
   @override
-  Observable<Response> put(String url, [dynamic body]) {
-    return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
+  Stream<Response> put(String url, [dynamic body]) {
+    return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) => _parseJson(http.put(baseUrl + url,
             body: _bodyHandler(body), headers: headers)));
   }
 
   @override
-  Observable<Response> patch(String url, [dynamic body]) {
-    return Observable<Map<String, String>>.fromFuture(_headers).flatMap(
+  Stream<Response> patch(String url, [dynamic body]) {
+    return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) => _parseJson(http.patch(baseUrl + url,
             body: _bodyHandler(body), headers: headers)));
   }
 
   dynamic _bodyHandler(dynamic body) {
-	  return body is Map ? jsonEncode(body) : body;
+    return body is Map ? jsonEncode(body) : body;
   }
 
-  Observable<Response> _parseJson(Future<http.Response> res) {
+  Stream<Response> _parseJson(Future<http.Response> res) {
     // Add timeout for request
     res = res.timeout(_timeout);
 
-    return Observable<http.Response>.fromFuture(res).map((http.Response res) {
+    return Stream<http.Response>.fromFuture(res).map((http.Response res) {
       Map<String, dynamic> json;
       // ensure all headers are in lowercase
       final Map<String, String> headers = res.headers.map(
@@ -106,5 +106,10 @@ class HttpClient implements Http {
 
       return Response(res, json);
     });
+  }
+
+  @override
+  String getBaseUrl() {
+    return baseUrl;
   }
 }

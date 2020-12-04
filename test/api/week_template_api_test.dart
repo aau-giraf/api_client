@@ -8,8 +8,10 @@ import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future<void> main() async {
+  sqfliteFfiInit();
   WeekTemplateApi weekTemplateApi;
   HttpMock httpMock;
 
@@ -27,7 +29,6 @@ void main() {
           imageUrl: 'http://',
           imageHash: '#',
           accessLevel: AccessLevel.PUBLIC));
-
   setUp(() {
     httpMock = HttpMock();
     weekTemplateApi = WeekTemplateApi(httpMock);

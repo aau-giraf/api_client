@@ -44,7 +44,9 @@ void main(){
             'state': 1,
             'id': 1238,
             'isChoiceBoard': false,
-            'timer' : null
+            'choiceBoardName': null,
+            'timer' : null,
+            'title' : ''
           }
         ]
       },
@@ -66,7 +68,9 @@ void main(){
             'state': 4,
             'id': 1239,
             'isChoiceBoard': false,
-            'timer' : null
+            'choiceBoardName': null,
+            'timer' : null,
+            'title' : ''
           },
           <String, dynamic>{
             'pictograms': <dynamic>[
@@ -83,7 +87,9 @@ void main(){
             'state': 1,
             'id': 1240,
             'isChoiceBoard': false,
-            'timer' : null
+            'choiceBoardName': null,
+            'timer' : null,
+            'title' : ''
           },
           <String, dynamic>{
             'pictograms': <dynamic>[
@@ -100,7 +106,9 @@ void main(){
             'state': 1,
             'id': 1241,
             'isChoiceBoard': false,
-            'timer' : null
+            'choiceBoardName': null,
+            'timer' : null,
+            'title' : ''
           }
         ]
       },
