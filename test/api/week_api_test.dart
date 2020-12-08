@@ -1,4 +1,9 @@
+import 'package:api_client/api/api_exception.dart';
+import 'package:api_client/http/http.dart';
+import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
+import 'package:api_client/models/enums/error_key.dart';
+import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
@@ -130,6 +135,107 @@ Future<void> main() async {
       'message': '',
       'errorKey': 'NoError',
     });
+  });
+
+  test('Should be able to get week day', (){
+    const String id = '1234';
+    const int year = 2020;
+    const int weekNumber = 42;
+    const Weekday weekday = Weekday.Monday;
+    final WeekdayModel weekdayModel = WeekdayModel(
+          day: Weekday.Monday,
+          activities: <ActivityModel>[]
+      );
+
+    weekApi
+      .getDay(id, year, weekNumber, weekday)
+      .listen(expectAsync1((WeekdayModel response){
+        expect(response.toJson(), weekdayModel.toJson());
+    }));
+
+    httpMock
+        .expectOne(
+        url: '/$id/$year/$weekNumber/${weekday.index}', method: Method.get)
+        .flush(<String, dynamic>{
+      'data': weekdayModel.toJson(),
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError',
+    });
+  });
+
+  test('Get nonday gets error', (){
+    const String id = '1234';
+    const int year = 2020;
+    const int weekNumber = 42;
+    const Weekday weekday = Weekday.Monday;
+
+    weekApi
+        .getDay(id, year, weekNumber, weekday)
+        .listen((_){}, onError: expectAsync1((ApiException error){
+      expect(error.errorKey, ErrorKey.NotFound );
+    }));
+
+    httpMock
+        .expectOne(
+        url: '/$id/$year/$weekNumber/${weekday.index}', method: Method.get)
+        .throwError(ApiException(Response(null, <String,dynamic>{
+      'success': false,
+      'message': '',
+      'errorKey': 'NotFound',
+    })) );
+  });
+
+
+  test('Should update a week day', () {
+    const String id = '1234';
+    const int year = 2020;
+    const int weekNumber = 42;
+    final WeekdayModel weekdayModel = WeekdayModel(
+        day: Weekday.Monday,
+        activities: <ActivityModel>[]
+    );
+
+    weekApi
+        .updateDay(id, year, weekNumber, weekdayModel)
+        .listen(expectAsync1((WeekdayModel response){
+      expect(response.toJson(), weekdayModel.toJson());
+    }));
+
+    httpMock
+        .expectOne(
+        url: '/day/$id/$year/$weekNumber', method: Method.put)
+        .flush(<String, dynamic>{
+      'data': weekdayModel.toJson(),
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError',
+    });
+  });
+
+  test('Update nonday gets error', (){
+    const String id = '1234';
+    const int year = 2020;
+    const int weekNumber = 42;
+    final WeekdayModel weekdayModel = WeekdayModel(
+        day: Weekday.Monday,
+        activities: <ActivityModel>[]
+    );
+
+    weekApi
+        .updateDay(id, year, weekNumber, weekdayModel)
+        .listen((_){}, onError: expectAsync1((ApiException error){
+      expect(error.errorKey, ErrorKey.NotFound );
+    }));
+
+    httpMock
+        .expectOne(
+        url: '/day/$id/$year/$weekNumber', method: Method.put)
+        .throwError(ApiException(Response(null, <String,dynamic>{
+      'success': false,
+      'message': '',
+      'errorKey': 'NotFound',
+    })) );
   });
 
   tearDown(() {
