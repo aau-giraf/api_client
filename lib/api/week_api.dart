@@ -1,6 +1,8 @@
 import 'package:api_client/http/http.dart';
+import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
+import 'package:api_client/models/weekday_model.dart';
 
 /// Week endpoints
 class WeekApi {
@@ -36,6 +38,18 @@ class WeekApi {
     });
   }
 
+  /// Get a single weekday from the specified week
+  ///
+  /// [id] User ID
+  /// [year] The year of the week
+  /// [weekNumber] The number of the week
+  /// [day] The day of the week
+  Stream<WeekdayModel> getDay(String id, int year, int weekNumber, Weekday day){
+    return _http.get('/$id/$year/$weekNumber/${day.index}').map((Response res) {
+      return WeekdayModel.fromJson(res.json['data']);
+    });
+  }
+
   /// Updates the entire information of the week with the given year and week
   /// number.
   ///
@@ -50,6 +64,21 @@ class WeekApi {
       return WeekModel.fromJson(res.json['data']);
     });
   }
+
+  /// Updates a single weekday
+  ///
+  /// [id] User Id
+  /// [year] Year the week is in
+  /// [weekNumber] The week-number of the week
+  Stream<WeekdayModel> updateDay(
+      String id, int year, int weekNumber, WeekdayModel weekday) {
+    return _http
+        .put('/day/$id/$year/$weekNumber', weekday.toJson())
+        .map((Response res) {
+      return WeekdayModel.fromJson(res.json['data']);
+    });
+  }
+  
 
   /// Deletes all information for the entire week with the given year and week
   /// number.
