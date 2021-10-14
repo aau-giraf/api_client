@@ -5,6 +5,9 @@ import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/persistence/persistence.dart';
 
+import '../models/giraf_user_model.dart';
+import '../models/giraf_user_model.dart';
+
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
@@ -26,6 +29,12 @@ class AccountApi {
         Stream<bool>.fromFuture(_persist.set('token', res.json['data'])));
   }
 
+  ///Get the role of the user with the username inputted
+  Stream<String> role(String username) {
+
+    return _http.get('/$username/role')
+        .map((Response res) => res.json['data']);
+  }
   /// Register a new user
   ///
   /// [username] The users username
