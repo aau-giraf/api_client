@@ -50,6 +50,18 @@ void main() {
         })));
   });
 
+  test('Should get the role endpoint', () {
+    accountApi.role('username').listen(expectAsync1(
+            (String succes) {expect(succes, 'TestToken');}));
+    httpMock
+        .expectOne(url: '/username/role', method: Method.get)
+        .flush(<String, dynamic>{
+          'data': 'TestToken',
+          'message': '',
+          'errorKey': 'NoError'
+        });
+  });
+
   test('Should request reset password token', () {
     const String id = '1234';
     const String token = 'TestToken';

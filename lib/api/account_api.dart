@@ -32,7 +32,7 @@ class AccountApi {
   Stream<String> role(String username) {
 
     return _http.get('/$username/role')
-        .map((Response res) => res.json['data']);
+        .map<String>((Response res) => res.json['data']);
   }
   /// Register a new user
   ///
