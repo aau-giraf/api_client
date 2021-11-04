@@ -29,7 +29,7 @@ class UserApi {
   }
 
   ///Get the role of the user with the username inputted
-  Stream<Int> role(String username) {
+  Stream<int> role(String username) {
     return _http
         .get('/$username/role')
         .map((Response res) => res.json['data']);
