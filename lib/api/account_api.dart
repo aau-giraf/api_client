@@ -28,12 +28,6 @@ class AccountApi {
         Stream<bool>.fromFuture(_persist.set('token', res.json['data'])));
   }
 
-  ///Get the role of the user with the username inputted
-  Stream<String> role(String username) {
-
-    return _http.get('/$username/role')
-        .map((Response res) => res.json['data']);
-  }
   /// Register a new user
   ///
   /// [username] The users username
