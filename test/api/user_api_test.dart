@@ -79,6 +79,20 @@ Future<void> main() async {
     });
   });
 
+  test('Should get the role endpoint', () {
+    userApi.role(user.username).listen(expectAsync1((int roleIndex) {
+      expect(roleIndex, user.role.index);
+    }));
+
+    httpMock
+        .expectOne(url: '/${user.username}/role', method: Method.get)
+        .flush(<String, dynamic>{
+      'data': user.role.index,
+      'message': '',
+      'errorKey': 'NoError'
+    });
+  });
+
   test('Should update user with ID', () {
     userApi.update(user).listen(expectAsync1((GirafUserModel specUser) {
       expect(specUser.toJson(), user.toJson());
