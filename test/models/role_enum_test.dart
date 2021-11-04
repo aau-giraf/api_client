@@ -7,5 +7,6 @@ void main() {
     expect(Role.Department.index, 1);
     expect(Role.Guardian.index, 2);
     expect(Role.SuperUser.index, 3);
+    expect(Role.Trustee.index, 4);
   });
 }
