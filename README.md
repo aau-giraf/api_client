@@ -1,33 +1,24 @@
-# Giraf API Client
+# Weekplanner
+This repository contains a dart package which the weekplanner-app uses for comunnicating with the backend.   part of the weekplanner-app, which communicates with uses the api-client-repository to communicate with the backend (web-api-repository). 
 
-![Build Status](https://github.com/aau-giraf/weekplanner/workflows/CI/badge.svg?branch=master)
-[![codecov](https://codecov.io/gh/aau-giraf/api_client/branch/develop/graph/badge.svg)](https://codecov.io/gh/aau-giraf/api_client)
+The repository uses the Flutter framework to maintain the dart package, and it is currently running on Flutter version 2.0.5. The language used in this repository is Dart, which is the language the Flutter framework uses.
 
-API client for Flutter to communicate with the Giraf web API
+# Branches
+This repository uses the scaled trunkbased branching strategy, as explained here: [Github setup](https://github.com/aau-giraf/.github/blob/main/wiki/about/github.md). In this repository the "trunk" is named develop, and this is the branch that all developers should branch from when solving an issue. The naming convention for these branches are:
 
-## Getting Started
+| Issue type | Name                   | Example     |
+| :--------: | :--------------------- | :---------: |
+| User Story | feature/\<issue-number\> | feature/697 |
+| Task       | task/\<issue-number\>    | task/918    |
+| Bug fix    | bug-fix/\<issue-number\> | bug-fix/299 |
 
-We welcome all contributions, here's how to get started.
-
-### Prerequisites
-
-This project is based on Flutter, you can install flutter from here: https://flutter.dev/docs/get-started/install
-
-
-### Contributing
-
-We are using the [GitFlow](https://github.com/aau-giraf/wiki/blob/master/process_manual/code_workflow.md#essential-parts-of-gitflow) brancing pattern so all development must be done in either a feature branch or the `develop` branch.
-
-1. Clone the project
-2. Run `git checkout develop`
-3. Go to the [issues tab](https://github.com/aau-giraf/api_client/issues) to see which user stories need to be implemented
-
-### Pull Requests
-
-Pull Requests are used for code review. Before submitting a Pull Request make sure to merge `develop` into your branch, so your Pull Request can be performed automatically.
+Other than the branches being used for development and the trunk, there exists some release branches, where the newest release branch is running on the PROD-environment. The release branches can only be created by members of the release group in the organization, and they should adhere to the following naming convention:
+- Naming is release-\<release-version\> fx release-1.0
+- A hot-fix on a release will increment the number after the dot (.)
+- A new release will increment the number before the dot (.)
 
 ## License
 
 GNU GENERAL PUBLIC LICENSE V3
 
-Copyright [2018] [Aalborg University]
+Copyright [2020] [Aalborg University]
