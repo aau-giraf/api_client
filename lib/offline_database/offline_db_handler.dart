@@ -430,9 +430,6 @@ class OfflineDbHandler {
     });
     int roleID;
     switch (body['role']) {
-      case 'Citizen':
-        roleID = 0;
-        break;
       case 'Department':
         roleID = 1;
         break;
@@ -441,6 +438,9 @@ class OfflineDbHandler {
         break;
       case 'SuperUser':
         roleID = 3;
+        break;
+      case 'Trustee':
+        roleID = 4;
         break;
       default:
         roleID = 0;
