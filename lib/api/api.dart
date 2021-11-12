@@ -11,6 +11,8 @@ import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/persistence/persistence.dart';
 import 'package:api_client/persistence/persistence_client.dart';
 
+import 'coonectivity_api.dart';
+
 /// Weekplanner API
 class Api {
   /// Default constructor
@@ -30,6 +32,7 @@ class Api {
         persist: persist,
         tokenKey: tokenKey,
         timeout: timeout));
+    connectivity = ConnectivityApi(status);
     department = DepartmentApi(HttpClient(
         baseUrl: '$baseUrl/v1/Department',
         persist: persist,
@@ -84,6 +87,9 @@ class Api {
 
   /// To access status endpoints
   StatusApi status;
+
+  /// To access status endpoints
+  ConnectivityApi connectivity;
 
   /// To access weekTemplate endpoints
   WeekTemplateApi weekTemplate;
