@@ -21,7 +21,7 @@ class GirafUserModel implements Model {
     }
 
     id = json['id'];
-    role = Role.values[(json['role']) - 1];
+    role = Role.values[(json['role'])];
     roleName = json['roleName'];
     username = json['username'];
     displayName = json['displayName'];
@@ -72,7 +72,7 @@ class GirafUserModel implements Model {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
-      'role': role.index + 1,
+      'role': role.index,
       'roleName': roleName,
       'username': username,
       'displayName': displayName,
