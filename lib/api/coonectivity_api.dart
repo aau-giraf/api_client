@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:api_client/api/status_api.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/cupertino.dart';
 
 class ConnectivityApi {
   /// Default constructor
@@ -11,8 +12,8 @@ class ConnectivityApi {
   DateTime _timeSinceLastCheck = new DateTime(0);
   bool _lastStatus = null;
   final _checkSuccessConnectivityDuration = new Duration(seconds: 10);
-  
-  Stream<bool> connectivityStream = new Stream<bool>();
+  StreamController<bool> controller = StreamController<bool>();
+
 
   Future<bool> check() async {
     if (_lastStatus != null && _timeSinceLastCheck
@@ -25,7 +26,7 @@ class ConnectivityApi {
 
     if (connectivity == ConnectivityResult.none) {
       _lastStatus = false;
-      connectivityStream.add(_lastStatus);
+      controller.add(_lastStatus);
       return false;
     }
 
@@ -33,7 +34,7 @@ class ConnectivityApi {
     status.status().listen((bool status) {
       _lastStatus = true;
       completer.complete(status);
-      connectivityStream.add(_lastStatus);
+      controller.add(_lastStatus);
     }).onError((Object error){
       _lastStatus = false;
       completer.complete(false);
