@@ -66,7 +66,7 @@ void main() {
 
     final Map<String, dynamic> json = user3.toJson();
 
-    expect(json['role'], Role.Department.index + 1);
+    expect(json['role'], Role.Department.index);
     expect(json['roleName'], 'Department');
     expect(json['id'], 'VALID-ID');
     expect(json['username'], 'Graatand');
