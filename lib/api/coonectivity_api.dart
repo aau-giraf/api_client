@@ -11,6 +11,8 @@ class ConnectivityApi {
   DateTime _timeSinceLastCheck = new DateTime(0);
   bool _lastStatus = null;
   final _checkSuccessConnectivityDuration = new Duration(seconds: 10);
+  
+  Stream<bool> connectivityStream = new Stream<bool>();
 
   Future<bool> check() async {
     if (_lastStatus != null && _timeSinceLastCheck
@@ -23,6 +25,7 @@ class ConnectivityApi {
 
     if (connectivity == ConnectivityResult.none) {
       _lastStatus = false;
+      connectivityStream.add(_lastStatus);
       return false;
     }
 
@@ -30,6 +33,7 @@ class ConnectivityApi {
     status.status().listen((bool status) {
       _lastStatus = true;
       completer.complete(status);
+      connectivityStream.add(_lastStatus);
     }).onError((Object error){
       _lastStatus = false;
       completer.complete(false);
@@ -37,4 +41,5 @@ class ConnectivityApi {
     Future.wait(<Future<bool>>[completer.future]);
     return completer.future;
   }
+
 }
