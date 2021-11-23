@@ -13,7 +13,8 @@ class ConnectivityApi {
   final Connectivity _connectivity;
   final Duration _successConnectivityDuration = const Duration(seconds: 10);
   final Duration _failureConnectivityDuration = const Duration(seconds: 5);
-  final StreamController<bool> _hasConnection = StreamController<bool>();
+  final StreamController<bool> _hasConnection = StreamController<bool>
+      .broadcast();
 
   Stream<bool> get connectivityStream => _hasConnection.stream;
   bool _lastStatus = true;
