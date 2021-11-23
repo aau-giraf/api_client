@@ -11,7 +11,7 @@ import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/persistence/persistence.dart';
 import 'package:api_client/persistence/persistence_client.dart';
 
-import 'coonectivity_api.dart';
+import 'connectivity_api.dart';
 
 /// Weekplanner API
 class Api {
