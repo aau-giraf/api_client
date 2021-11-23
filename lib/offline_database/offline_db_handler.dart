@@ -445,9 +445,6 @@ class OfflineDbHandler {
       case 'Trustee':
         roleID = 5;
         break;
-      case 'Trustee':
-        roleID = 4;
-        break;
       default:
         roleID = 0;
     }
