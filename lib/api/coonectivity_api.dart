@@ -13,7 +13,7 @@ class ConnectivityApi {
   bool _lastStatus = null;
   final _checkSuccessConnectivityDuration = new Duration(seconds: 10);
   static StreamController<bool> controller = StreamController<bool>.broadcast();
-
+  Stream stream = controller.stream;
 
   Future<bool> check() async {
     if (_lastStatus != null && _timeSinceLastCheck
