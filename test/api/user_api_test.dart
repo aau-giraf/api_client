@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:api_client/api/api_exception.dart';
+import 'package:api_client/api/connectivity_api.dart';
+import 'package:api_client/api/status_api.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
@@ -50,7 +52,7 @@ Future<void> main() async {
       ]);
   setUp(() {
     httpMock = HttpMock();
-    userApi = UserApi(httpMock);
+    userApi = UserApi(httpMock, ConnectivityApi(StatusApi(httpMock)));
   });
 
   test('Should fetch authenticated user', () {

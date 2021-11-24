@@ -1,4 +1,6 @@
 import 'package:api_client/api/api_exception.dart';
+import 'package:api_client/api/connectivity_api.dart';
+import 'package:api_client/api/status_api.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/error_key.dart';
 import 'package:api_client/models/giraf_user_model.dart';
@@ -16,7 +18,8 @@ void main() {
   setUp(() {
     httpMock = HttpMock();
     persistenceMock = PersistenceMock();
-    accountApi = AccountApi(httpMock, persistenceMock);
+    accountApi = AccountApi(httpMock, ConnectivityApi(StatusApi(httpMock)),
+        persistenceMock);
   });
 
   test('Should call login endpoint', () {

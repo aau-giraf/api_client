@@ -1,4 +1,6 @@
 import 'package:api_client/api/activity_api.dart';
+import 'package:api_client/api/connectivity_api.dart';
+import 'package:api_client/api/status_api.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
@@ -44,7 +46,7 @@ Future<void> main() async {
       ]);
   setUp(() {
     httpMock = HttpMock();
-    activityApi = ActivityApi(httpMock);
+    activityApi = ActivityApi(httpMock, ConnectivityApi(StatusApi(httpMock)));
   });
 
   test('Should update an activity state', () {

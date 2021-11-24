@@ -1,4 +1,6 @@
 import 'package:api_client/api/alternate_name_api.dart';
+import 'package:api_client/api/connectivity_api.dart';
+import 'package:api_client/api/status_api.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/alternate_name_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +16,8 @@ void main(){
 
   setUp(() {
     httpMock = HttpMock();
-    alternateNameApi = AlternateNameApi(httpMock);
+    alternateNameApi = AlternateNameApi(httpMock,
+        ConnectivityApi(StatusApi(httpMock)));
   });
 
   test('Create Alternate Name', (){
