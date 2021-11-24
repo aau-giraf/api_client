@@ -4,12 +4,15 @@ import 'package:api_client/http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:api_client/models/pictogram_model.dart';
 
+import 'connectivity_api.dart';
+
 /// Pictogram endpoints
 class PictogramApi {
   /// Default constructor
-  PictogramApi(this._http);
+  PictogramApi(this._http, this._connectivity);
 
   final Http _http;
+  final ConnectivityApi _connectivity;
 
   /// Get all public pictograms available to the user (i.e the public pictograms
   /// and those owned by the user (PRIVATE) and his department (PROTECTED)).

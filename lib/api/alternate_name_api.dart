@@ -1,12 +1,15 @@
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/alternate_name_model.dart';
 
+import 'connectivity_api.dart';
+
 /// AlternateName endpoints
 class AlternateNameApi {
   /// constructor
-  AlternateNameApi(this._http);
+  AlternateNameApi(this._http, this._connectivity);
 
-  final Http _http; 
+  final Http _http;
+  final ConnectivityApi _connectivity;
 
   ///Create new AlternateName
   Stream<AlternateNameModel> create(AlternateNameModel an){

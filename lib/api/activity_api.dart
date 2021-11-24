@@ -2,12 +2,15 @@ import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 
+import 'connectivity_api.dart';
+
 /// Pictogram endpoints
 class ActivityApi {
   /// Default constructor
-  ActivityApi(this._http);
+  ActivityApi(this._http, this._connectivity);
 
   final Http _http;
+  final ConnectivityApi _connectivity;
 
   /// Adds the specified activity
   ///

@@ -4,12 +4,15 @@ import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 
+import 'connectivity_api.dart';
+
 /// Week endpoints
 class WeekApi {
   /// Default constructor
-  WeekApi(this._http);
+  WeekApi(this._http, this._connectivity);
 
   final Http _http;
+  final ConnectivityApi _connectivity;
 
   /// Get week names from the user with the given ID
   ///

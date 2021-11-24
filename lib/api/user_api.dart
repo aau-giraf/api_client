@@ -5,12 +5,15 @@ import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 
+import 'connectivity_api.dart';
+
 /// User endpoints
 class UserApi {
   /// Default constructor
-  UserApi(this._http);
+  UserApi(this._http, this._connectivity);
 
   final Http _http;
+  final ConnectivityApi _connectivity;
 
   /// Find information about the currently authenticated user.
   Stream<GirafUserModel> me() {

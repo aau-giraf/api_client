@@ -3,12 +3,15 @@ import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 
+import 'connectivity_api.dart';
+
 /// Department endpoints
 class DepartmentApi {
   /// Default constructor
-  DepartmentApi(this._http);
+  DepartmentApi(this._http, this._connectivity);
 
   final Http _http;
+  final ConnectivityApi _connectivity;
 
   /// Get request for getting all the department names.
   Stream<List<DepartmentNameModel>> departmentNames() {
