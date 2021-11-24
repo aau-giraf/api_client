@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:api_client/http/http.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:api_client/models/giraf_user_model.dart';
@@ -6,13 +9,15 @@ import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/persistence/persistence.dart';
 
 import '../models/giraf_user_model.dart';
+import 'connectivity_api.dart';
 
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
-  AccountApi(this._http, this._persist);
+  AccountApi(this._http, this._connectivity, this._persist);
 
   final Http _http;
+  final ConnectivityApi _connectivity;
   final Persistence _persist;
 
   /// This endpoint allows the user to sign in to his/her account by providing
@@ -21,11 +26,21 @@ class AccountApi {
   /// [username] The users username
   /// [password] The users password
   Stream<bool> login(String username, String password) {
-    return _http.post('/login', <String, String>{
-      'username': username,
-      'password': password,
-    }).flatMap((Response res) =>
-        Stream<bool>.fromFuture(_persist.set('token', res.json['data'])));
+    final Completer<bool> completer = Completer<bool>();
+
+    _connectivity.check().then((bool connected) {
+      if (connected) {
+        completer.complete(_http.post('/login', <String, String> {
+          'username': username,
+          'password': password,
+        }).flatMap((Response res) => Stream<bool>
+            .fromFuture(_persist.set('token', res.json['data']))).first);
+      } else {
+        completer.complete(OfflineDbHandler.instance.login(username, password));
+      }
+    });
+
+    return Stream<bool>.fromFuture(completer.future);
   }
 
   /// Register a new user
