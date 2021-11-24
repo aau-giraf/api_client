@@ -24,11 +24,13 @@ class ConnectivityApi {
     final Duration diff = DateTime.now().difference(_timeOfLastCheck);
     if (_lastStatus && diff < _successConnectivityDuration ||
         !_lastStatus && diff < _failureConnectivityDuration) {
+      _hasConnection.add(_lastStatus);
       return _lastStatus;
     }
 
     if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
       _updateCheckValues(false);
+      _hasConnection.add(false);
       return false;
     }
 
