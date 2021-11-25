@@ -41,7 +41,7 @@ class UserApi {
     final Completer<int> completer = Completer<int>();
 
     _connectivity.check().then((bool connected) {
-      connected = false;
+      //connected = false;
       if (connected) {
         completer.complete(_http
             .get('/$username/role')
