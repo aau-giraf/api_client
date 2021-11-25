@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
@@ -35,9 +38,20 @@ class UserApi {
   ///
   /// [username] Username of the user
   Stream<int> role(String username) {
-    return _http
-        .get('/$username/role')
-        .map((Response res) => res.json['data']);
+    final Completer<int> completer = Completer<int>();
+
+    _connectivity.check().then((bool connected) {
+      if (connected) {
+        completer.complete(_http
+            .get('/$username/role')
+            .map<int>((Response res) => res.json['data']).first);
+      }
+      else {
+        completer.complete(OfflineDbHandler.instance.getUserRole(username));
+      }
+    });
+    
+    return Stream<int>.fromFuture(completer.future);
   }
 
   /// Updates the user with the information in GirafUserModel
