@@ -40,21 +40,7 @@ class UserApi {
   Stream<int> role(String username) {
     final Completer<int> completer = Completer<int>();
 
-    print("Getting role");
     _connectivity.check().then((bool connected) {
-      connected = false;
-      if (connected) {
-        completer.complete(_http
-            .get('/$username/role')
-            .map<int>((Response res) => res.json['data']).first);
-      }
-      else {
-        print("hej");
-        completer.complete(1);
-      }
-    });
-
-    /*_connectivity.check().then((bool connected) {
       if (connected) {
         completer.complete(_http
             .get('/$username/role')
@@ -63,7 +49,7 @@ class UserApi {
       else {
         completer.complete(OfflineDbHandler.instance.getUserRole(username));
       }
-    });*/
+    });
 
     return Stream<int>.fromFuture(completer.future);
   }
