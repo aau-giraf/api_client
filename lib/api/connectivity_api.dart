@@ -20,6 +20,42 @@ class ConnectivityApi {
   bool _lastStatus = true;
   DateTime _timeOfLastCheck = DateTime(0);
 
+  /// This method is used when you need to handle specific cases,
+  /// when you have connectivity and when you don't, asynchronously.
+  ///
+  /// If you are connected, the connected function is called,
+  /// otherwise, the disconnected function is called.
+  ///
+  /// A stream of type T is returned, which only receives one event,
+  /// when the complete function is called on the completer,
+  /// after which the stream is closed.
+  Stream<T> handle<T>(
+      FutureOr<T> Function() connected,
+      FutureOr<T> Function() disconnected
+      ) {
+    final Completer<T> completer = Completer<T>();
+
+    check().then((bool isConnected) {
+      if (isConnected) {
+        completer.complete(connected());
+      }
+      else {
+        completer.complete(disconnected());
+      }
+    });
+
+    return Stream<T>.fromFuture(completer.future);
+  }
+
+  /// This method is used for checking the connection to the internet,
+  /// and the server.
+  ///
+  /// If this method is called within [_successConnectivityDuration] seconds
+  /// from last success, it returns true.
+  /// If this method is called within [_failureConnectivityDuration] seconds
+  /// from last failure, it returns false.
+  ///
+  /// Returns true if a connection is present, otherwise returns false.
   Future<bool> check() async {
     final Duration diff = DateTime.now().difference(_timeOfLastCheck);
     if (_lastStatus && diff < _successConnectivityDuration ||
@@ -28,23 +64,29 @@ class ConnectivityApi {
     }
 
     if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
-      _updateCheckValues(false);
+      _setConnection(false);
       return false;
     }
 
     final Completer<bool> completer = Completer<bool>();
     _status.status().listen((bool status) {
-      _updateCheckValues(status);
+      _setConnection(status);
       completer.complete(status);
     }).onError((Object error) {
-      _updateCheckValues(false);
+      _setConnection(false);
       completer.complete(false);
     });
     Future.wait(<Future<bool>>[completer.future]);
     return completer.future;
   }
 
-  void _updateCheckValues(bool value) {
+  /// This method is used to update the value of [_lastStatus],
+  /// to the value of [value], as well as updating the value
+  /// of [_timeOfLastCheck], to [DateTime.now].
+  ///
+  /// If the value of [value] is different from the value of [_lastStatus],
+  /// then an event is fired on the [_hasConnection] stream.
+  void _setConnection(bool value) {
     if (_lastStatus != (_lastStatus = value)) {
       _hasConnection.add(value);
     }
