@@ -72,29 +72,40 @@ class OfflineDbHandler {
   Future<void> createTables(Database db) async {
     await db.transaction((Transaction txn) async {
       await txn.execute('CREATE TABLE IF NOT EXISTS `Users` ('
-          '`OfflineId` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`Role` integer NOT NULL, '
-          '`RoleName` varchar ( 255 ) DEFAULT NULL, '
-          '`Username` varchar ( 255 ) DEFAULT NULL UNIQUE, '
-          '`DisplayName` longtext NOT NULL, '
-          '`Department` integer DEFAULT NULL, '
-          '`Password` char(128) NOT NULL, '
-          '`SettingsKey` integer DEFAULT NULL, '
-          '`Id` integer, '
-          'UNIQUE(`UserName`, `Id`)'
-          'CONSTRAINT `FK_AspNetUsers_Setting_SettingsKey` '
-          'FOREIGN KEY(`SettingsKey`) '
-          'REFERENCES `Setting`(`Key`) ON DELETE RESTRICT);');
+          '`id` varchar ( 255 ) NOT NULL PRIMARY KEY, '
+          '`role` integer NOT NULL, '
+          '`roleName` varchar ( 255 ) DEFAULT NULL, '
+          '`username` varchar ( 255 ) DEFAULT NULL, '
+          '`displayName` longtext NOT NULL, '
+          '`department` integer DEFAULT NULL, '
+          '`password` char(128) NOT NULL, '
+          '`settingsId` integer DEFAULT NULL, '
+          'UNIQUE(`username`, `id`), '
+          'CONSTRAINT `FK_Users_Settings_SettingsKey` '
+          'FOREIGN KEY(`settingsId`) '
+          'REFERENCES `Settings`(`id`) ON DELETE RESTRICT);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `GuardianRelations` ('
-          '`OfflineId`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`CitizenId`	varchar ( 255 ) NOT NULL, '
-          '`GuardianId`	varchar ( 255 ) NOT NULL, '
+          '`citizenId`	varchar ( 255 ) NOT NULL PRIMARY KEY, '
+          '`guardianId`	varchar ( 255 ) NOT NULL PRIMARY KEY, '
           'CONSTRAINT `FK_GuardianRelations_Users_CitizenId` '
-          'FOREIGN KEY(`CitizenId`) '
-          'REFERENCES `Users`(`OfflineId`) ON DELETE CASCADE, '
+          'FOREIGN KEY(`citizenId`) '
+          'REFERENCES `Users`(`id`) ON DELETE CASCADE, '
           'CONSTRAINT `FK_GuardianRelations_Users_GuardianId` '
-          'FOREIGN KEY(`GuardianId`) '
-          'REFERENCES `Users`(`OfflineId`) ON DELETE CASCADE);');
+          'FOREIGN KEY(`guardianId`) '
+          'REFERENCES `Users`(`id`) ON DELETE CASCADE);');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `Settings` ('
+          '`id` integer NOT NULL PRIMARY KEY, '
+          '`orientation` integer NOT NULL, '
+          '`completeMark`	integer NOT NULL, '
+          '`cancelMark`	integer NOT NULL, '
+          '`defaultTimer`	integer NOT NULL, '
+          '`timerSeconds`	integer DEFAULT NULL, '
+          '`activitiesCount` integer DEFAULT NULL, '
+          '`theme` integer NOT NULL, '
+          '`nrOfDaysToDisplay` integer DEFAULT NULL, '
+          "`greyScale` integer NOT NULL DEFAULT '0', "
+          "`lockTimerControl`	integer NOT NULL DEFAULT '0', "
+          "`pictogramText` integer NOT NULL DEFAULT '0');");
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekTemplates` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`Name`	longtext COLLATE BINARY, '
@@ -182,20 +193,6 @@ class OfflineDbHandler {
           '	CONSTRAINT `FK_WeekDayColors_Setting_SettingId` '
           'FOREIGN KEY(`SettingId`) '
           'REFERENCES `Setting`(`Key`) ON DELETE CASCADE'
-          ');');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Setting` ('
-          '`Key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`ActivitiesCount` integer DEFAULT NULL,'
-          '`CancelMark`	integer NOT NULL,'
-          '`CompleteMark`	integer NOT NULL,'
-          '`DefaultTimer`	integer NOT NULL,'
-          '`GreyScale` integer NOT NULL,'
-          '`NrOfDaysToDisplay` integer DEFAULT NULL,'
-          '`Orientation` integer NOT NULL,'
-          '`Theme` integer NOT NULL,'
-          '`TimerSeconds`	integer DEFAULT NULL,'
-          "`LockTimerControl`	integer NOT NULL DEFAULT '0',"
-          "`PictogramText` integer NOT NULL DEFAULT '0'"
           ');');
     });
   }
@@ -461,7 +458,7 @@ class OfflineDbHandler {
     await db.insert('Users', insertQuery);
     final List<Map<String, dynamic>> res = await db.rawQuery(
         "SELECT * FROM `Users` WHERE `Username` == '${body['username']}'");
-    return GirafUserModel.fromDatabase(res[0]);
+    return GirafUserModel.fromJson(res[0]);
   }
 
   /// Do not call this function without ensuring that the password is
@@ -751,7 +748,7 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
         await db.rawQuery("SELECT * FROM `Users` WHERE id == '$id'");
-    return GirafUserModel.fromDatabase(res[0]);
+    return GirafUserModel.fromJson(res[0]);
   }
 
   /// Return the ID of a user through its username
@@ -759,14 +756,46 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> id = await db
         .rawQuery("SELECT * FROM `Users` WHERE username == '$userName'");
-    return GirafUserModel.fromDatabase(id[0]).id;
+    return GirafUserModel.fromJson(id[0]).id;
   }
 
   Future<int> getUserRole(String username) async {
     final Database db = await database;
     final List<Map<String, dynamic>> users = await db
         .rawQuery("SELECT * FROM 'Users' WHERE username == '$username'");
-    return GirafUserModel.fromDatabase(users[0]).role.index;
+    return GirafUserModel.fromJson(users[0]).role.index;
+  }
+
+  /// Save failed online transactions
+  /// [type] transaction type
+  /// [baseUrl] baseUrl from the http
+  /// [url] Url to send the transaction to
+  /// [body] the json to send to the online database
+  /// [tableAffected] NEEDS to be set when we try to create objects with public
+  /// id's we need to have syncronized between the offline and online database
+  Future<void> insertUser(GirafUserModel user) async {
+    final Database db = await database;
+    /*'`OfflineId` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
+        '`Role` integer NOT NULL, '
+        '`RoleName` varchar ( 255 ) DEFAULT NULL, '
+        '`Username` varchar ( 255 ) DEFAULT NULL UNIQUE, '
+        '`DisplayName` longtext NOT NULL, '
+        '`Department` integer DEFAULT NULL, '
+        '`Password` char(128) NOT NULL, '
+        '`SettingsKey` integer DEFAULT NULL, '
+        '`Id` integer, '
+        'UNIQUE(`UserName`, `Id`)'
+        'CONSTRAINT `FK_AspNetUsers_Setting_SettingsKey` '
+        'FOREIGN KEY(`SettingsKey`) '
+        'REFERENCES `Setting`(`Key`) ON DELETE RESTRICT);');
+    final Map<String, dynamic> insertQuery = <String, dynamic>{
+      'Type': type,
+      'Url': baseUrl + url,
+      'Body': body.toString(),
+      'TableAffected': tableAffected,
+      'TempId': tempId
+    };
+    db.insert('`FailedOnlineTransactions`', insertQuery);*/
   }
 
   /// Update a user based on [user.id] with the values from [user]
@@ -792,6 +821,37 @@ class OfflineDbHandler {
         await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
             "`SettingId` == '${resSettings[0]['Key']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
+  }
+
+  /// Insert settings for a Girafuser with the id: [id]
+  Future<SettingsModel> insertUserSettings(
+      String id, SettingsModel settings) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> res =
+    await db.rawQuery('UPDATE `Users` SET `settingsId` = ${settings.} '
+        "WHERE `Id` == '$id'");
+    final String settingsKey = res[0]['SettingsKey'].toString();
+    db.rawUpdate('UPDATE `Setting` SET '
+        "`ActivitiesCount` = '${settings.activitiesCount}', "
+        "`CancelMark` = '${settings.cancelMark.index}', "
+        "`CompleteMark` = '${settings.completeMark.index}', "
+        "`DefaultTimer` = '${settings.defaultTimer.index}', "
+        "`GreyScale` = '${settings.greyscale}', "
+        "`NrOfDaysToDisplay` = '${settings.nrOfDaysToDisplay}', "
+        "`Orientation` = '${settings.orientation.index}', "
+        "`Theme` = '${settings.theme.index}', "
+        "`TimerSeconds` = '${settings.timerSeconds}', "
+        "`LockTimerControl` = '${settings.lockTimerControl}', "
+        "`PictogramText` = '${settings.pictogramText}' WHERE "
+        "`Key` = '$settingsKey'");
+    for (WeekdayColorModel dayColor in settings.weekDayColors) {
+      final int day = dayColor.day.index;
+      db.rawUpdate('UPDATE `WeekDayColors` SET '
+          "`HexColor` = '${dayColor.hexColor}' WHERE "
+          "`SettingId` == '$settingsKey' AND "
+          "`Day` == '$day'");
+    }
+    return getUserSettings(id);
   }
 
   /// Update the settings for a Girafuser with the id: [id]
