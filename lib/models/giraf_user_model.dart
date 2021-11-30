@@ -10,8 +10,7 @@ class GirafUserModel implements Model {
       this.roleName,
       this.username,
       this.displayName,
-      this.department,
-      this.offlineId});
+      this.department});
 
   /// Constructor for instantiating a user from the backend response.
   GirafUserModel.fromJson(Map<String, dynamic> json) {
@@ -26,22 +25,6 @@ class GirafUserModel implements Model {
     username = json['username'];
     displayName = json['displayName'];
     department = json['department'];
-  }
-
-  /// Create a girafusermodel with json from sqflite
-  GirafUserModel.fromDatabase(Map<String, dynamic> json) {
-    if (json == null) {
-      throw const FormatException(
-          '[GirafUserModel]: Cannot initialize from null');
-    }
-
-    id = json['Id'];
-    role = Role.values[json['Role']];
-    roleName = json['RoleName'];
-    username = json['Username'];
-    displayName = json['DisplayName'];
-    department = json['Department'];
-    offlineId = json['OfflineId'];
   }
 
   /// The id of the user
@@ -63,9 +46,6 @@ class GirafUserModel implements Model {
   // (try with mInt).
   /// The id of the users department
   int department;
-
-  /// offlineId is the id used in the offline database
-  int offlineId;
 
   /// Converts the user object to json, inorder to send it to the backend.
   @override
