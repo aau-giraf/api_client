@@ -19,62 +19,63 @@ class UserApi {
   final ConnectivityApi _connectivity;
 
   /// Find information about the currently authenticated user.
-  Stream<GirafUserModel> me() {
-    return _http
-        .get('/')
-        .map((Response res) => GirafUserModel.fromJson(res.json['data']));
-  }
+  Stream<GirafUserModel> me() => _connectivity.handle(
+      () => _http
+          .get('/')
+          .map((Response res) => GirafUserModel.fromJson(res.json['data']))
+          .first,
+      () => OfflineDbHandler.instance.getMe()
+  );
 
   /// Find information on the user with the given ID
   ///
   /// [id] ID of the user
-  Stream<GirafUserModel> get(String id) {
-    return _http
-        .get('/$id')
-        .map((Response res) => GirafUserModel.fromJson(res.json['data']));
-  }
+  Stream<GirafUserModel> get(String id) => _connectivity.handle(
+      () {
+        // Insert user to offline db.
+        return _http
+          .get('/$id')
+          .map((Response res) => GirafUserModel.fromJson(res.json['data']))
+          .first;
+      },
+      () => OfflineDbHandler.instance.getUser(id)
+  );
 
-  ///Get the role of the user with the username inputted
+  /// Get the role of the user with the username inputted
   ///
   /// [username] Username of the user
-  Stream<int> role(String username) {
-    final Completer<int> completer = Completer<int>();
-
-    _connectivity.check().then((bool connected) {
-      //connected = false;
-      if (connected) {
-        completer.complete(_http
-            .get('/$username/role')
-            .map<int>((Response res) => res.json['data']).first);
-      }
-      else {
-        completer.complete(OfflineDbHandler.instance.getUserRole(username));
-      }
-    });
-
-    return Stream<int>.fromFuture(completer.future);
-  }
+  Stream<int> role(String username) => _connectivity.handle(
+      () => _http
+              .get('/$username/role')
+              .map<int>((Response res) => res.json['data']).first,
+      () => OfflineDbHandler.instance.getUserRole(username)
+  );
 
   /// Updates the user with the information in GirafUserModel
   ///
   /// [user] The updated user
-  Stream<GirafUserModel> update(GirafUserModel user) {
-    return _http
-        .put('/${user.id}', user.toJson())
-        .map((Response res) => GirafUserModel.fromJson(res.json['data']));
-  }
+  Stream<GirafUserModel> update(GirafUserModel user) => _connectivity.handle(
+      () => _http
+              .put('/${user.id}', user.toJson())
+              .map((Response res) => GirafUserModel
+                .fromJson(res.json['data'])).first,
+      () => OfflineDbHandler.instance.updateUser(user)
+  );
 
   /// Get user-settings for the user with the specified Id
   ///
   /// [id] Identifier of the GirafUser to get settings for
-  Stream<SettingsModel> getSettings(String id) {
-    return _http.get('/$id/settings').map((Response res) {
-      if (res.success() == false) {
-        throw ApiException(res);
-      }
-      return SettingsModel.fromJson(res.json['data']);
-    });
-  }
+  Stream<SettingsModel> getSettings(String id) => _connectivity.handle(
+      () {
+        final Future<SettingsModel> settings = _http
+            .get('/$id/settings')
+            .map((Response res) => SettingsModel
+            .fromJson(res.json['data'])).first;
+        OfflineDbHandler.instance.sett
+        return settings;
+      },
+      () => OfflineDbHandler.instance.getUserSettings(id)
+  );
 
   /// Updates the user settings for the user with the provided id
   ///
