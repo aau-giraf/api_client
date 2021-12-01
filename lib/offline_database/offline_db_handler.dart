@@ -103,9 +103,19 @@ class OfflineDbHandler {
           '`activitiesCount` integer DEFAULT NULL, '
           '`theme` integer NOT NULL, '
           '`nrOfDaysToDisplay` integer DEFAULT NULL, '
-          "`greyScale` integer NOT NULL DEFAULT '0', "
-          "`lockTimerControl`	integer NOT NULL DEFAULT '0', "
-          "`pictogramText` integer NOT NULL DEFAULT '0');");
+          '`greyScale` integer NOT NULL DEFAULT \'0\', '
+          '`lockTimerControl`	integer NOT NULL DEFAULT \'0\', '
+          '`pictogramText` integer NOT NULL DEFAULT \'0\');');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
+          '`id`	integer NOT NULL PRIMARY KEY, '
+          '`day` integer NOT NULL, '
+          '`hexColor`	longtext COLLATE BINARY, '
+          '`settingsId` integer NOT NULL, '
+          'CONSTRAINT `FK_WeekDayColors_Settings_SettingId` '
+          'FOREIGN KEY(`settingsId`) '
+          'REFERENCES `Settings`(`id`) ON DELETE CASCADE);');
+
+
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekTemplates` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`Name`	longtext COLLATE BINARY, '
@@ -185,15 +195,7 @@ class OfflineDbHandler {
               // TableAffected is used to know where to change an id if needed
               '`TableAffected` varchar (255), '
               '`TempId` varchar(255));');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
-          '`Id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-          '`Day` integer NOT NULL,'
-          '`HexColor`	longtext COLLATE BINARY,'
-          '`SettingId` integer NOT NULL,'
-          '	CONSTRAINT `FK_WeekDayColors_Setting_SettingId` '
-          'FOREIGN KEY(`SettingId`) '
-          'REFERENCES `Setting`(`Key`) ON DELETE CASCADE'
-          ');');
+
     });
   }
 
@@ -766,36 +768,24 @@ class OfflineDbHandler {
     return GirafUserModel.fromJson(users[0]).role.index;
   }
 
-  /// Save failed online transactions
-  /// [type] transaction type
-  /// [baseUrl] baseUrl from the http
-  /// [url] Url to send the transaction to
-  /// [body] the json to send to the online database
-  /// [tableAffected] NEEDS to be set when we try to create objects with public
-  /// id's we need to have syncronized between the offline and online database
-  Future<void> insertUser(GirafUserModel user) async {
+  /// Inserts the user.
+  ///
+  /// This method should only be called on login,
+  /// when receiving user data from the server.
+  Future<GirafUserModel> insertUser(GirafUserModel user,
+      String password) async {
     final Database db = await database;
-    /*'`OfflineId` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-        '`Role` integer NOT NULL, '
-        '`RoleName` varchar ( 255 ) DEFAULT NULL, '
-        '`Username` varchar ( 255 ) DEFAULT NULL UNIQUE, '
-        '`DisplayName` longtext NOT NULL, '
-        '`Department` integer DEFAULT NULL, '
-        '`Password` char(128) NOT NULL, '
-        '`SettingsKey` integer DEFAULT NULL, '
-        '`Id` integer, '
-        'UNIQUE(`UserName`, `Id`)'
-        'CONSTRAINT `FK_AspNetUsers_Setting_SettingsKey` '
-        'FOREIGN KEY(`SettingsKey`) '
-        'REFERENCES `Setting`(`Key`) ON DELETE RESTRICT);');
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'Type': type,
-      'Url': baseUrl + url,
-      'Body': body.toString(),
-      'TableAffected': tableAffected,
-      'TempId': tempId
-    };
-    db.insert('`FailedOnlineTransactions`', insertQuery);*/
+    await db.insert('`Users`', <String, dynamic>{
+      'id': user.id,
+      'role': user.role.index,
+      'roleName': user.roleName,
+      'username': user.username,
+      'displayName': user.displayName,
+      'department': user.department,
+      'password': password
+    });
+
+    return getUser(user.id);
   }
 
   /// Update a user based on [user.id] with the values from [user]
@@ -823,35 +813,41 @@ class OfflineDbHandler {
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
 
-  /// Insert settings for a Girafuser with the id: [id]
+  /// Insert settings for the specified user
   Future<SettingsModel> insertUserSettings(
-      String id, SettingsModel settings) async {
+      String userId, SettingsModel settings) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> res =
-    await db.rawQuery('UPDATE `Users` SET `settingsId` = ${settings.} '
-        "WHERE `Id` == '$id'");
-    final String settingsKey = res[0]['SettingsKey'].toString();
-    db.rawUpdate('UPDATE `Setting` SET '
-        "`ActivitiesCount` = '${settings.activitiesCount}', "
-        "`CancelMark` = '${settings.cancelMark.index}', "
-        "`CompleteMark` = '${settings.completeMark.index}', "
-        "`DefaultTimer` = '${settings.defaultTimer.index}', "
-        "`GreyScale` = '${settings.greyscale}', "
-        "`NrOfDaysToDisplay` = '${settings.nrOfDaysToDisplay}', "
-        "`Orientation` = '${settings.orientation.index}', "
-        "`Theme` = '${settings.theme.index}', "
-        "`TimerSeconds` = '${settings.timerSeconds}', "
-        "`LockTimerControl` = '${settings.lockTimerControl}', "
-        "`PictogramText` = '${settings.pictogramText}' WHERE "
-        "`Key` = '$settingsKey'");
+    final int settingsId = await db.insert('`Settings`', <String, dynamic>{
+      'activitiesCount': settings.activitiesCount,
+      'cancelMark': settings.cancelMark.index,
+      'completeMark': settings.completeMark.index,
+      'defaultTimer': settings.defaultTimer.index,
+      'greyScale': settings.greyscale,
+      'nrOfDaysToDisplay': settings.nrOfDaysToDisplay,
+      'orientation': settings.orientation.index,
+      'theme': settings.theme.index,
+      'timerSeconds': settings.timerSeconds,
+      'lockTimerControl': settings.lockTimerControl,
+      'pictogramText': settings.pictogramText
+    });
+
+    /* WeekDayColors is a list in SettingsModel,
+     * which means that they have to be saved in its own table */
     for (WeekdayColorModel dayColor in settings.weekDayColors) {
       final int day = dayColor.day.index;
-      db.rawUpdate('UPDATE `WeekDayColors` SET '
-          "`HexColor` = '${dayColor.hexColor}' WHERE "
-          "`SettingId` == '$settingsKey' AND "
-          "`Day` == '$day'");
+      db.insert('`WeekDayColors`', <String, dynamic>{
+        'hexColor': dayColor.hexColor,
+        'day': day,
+        'settingsId': settingsId
+      });
     }
-    return getUserSettings(id);
+
+    // This will update the settingsId in the user tuple
+    db.update('`Users`', <String, dynamic>{
+      'settingsId': settingsId
+    }, where: 'id = $userId');
+
+    return getUserSettings(userId);
   }
 
   /// Update the settings for a Girafuser with the id: [id]
