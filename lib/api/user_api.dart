@@ -32,11 +32,15 @@ class UserApi {
   /// [id] ID of the user
   Stream<GirafUserModel> get(String id) => _connectivity.handle(
       () {
-        // Insert user to offline db.
-        return _http
+        final Future<GirafUserModel> user = _http
           .get('/$id')
           .map((Response res) => GirafUserModel.fromJson(res.json['data']))
           .first;
+
+        user.then((GirafUserModel user) =>
+            OfflineDbHandler.instance.updateUser(user));
+
+        return user;
       },
       () => OfflineDbHandler.instance.getUser(id)
   );
@@ -70,8 +74,13 @@ class UserApi {
         final Future<SettingsModel> settings = _http
             .get('/$id/settings')
             .map((Response res) => SettingsModel
-            .fromJson(res.json['data'])).first;
-        OfflineDbHandler.instance.sett
+              .fromJson(res.json['data'])).first;
+
+        // This will save the settings and update the settingsId for the user
+        settings.then((SettingsModel settings) =>
+            OfflineDbHandler.instance.insertUserSettings(id, settings)
+        );
+
         return settings;
       },
       () => OfflineDbHandler.instance.getUserSettings(id)
@@ -81,14 +90,20 @@ class UserApi {
   ///
   /// [id] Identifier of the GirafUser to update settings for
   /// [settings] reference to a Settings containing the new settings
-  Stream<SettingsModel> updateSettings(String id, SettingsModel settings) {
-    return _http.put('/$id/settings', settings.toJson()).map((Response res) {
-      if (res.success() == false) {
-        throw ApiException(res);
-      }
-      return SettingsModel.fromJson(res.json['data']);
-    });
-  }
+  Stream<SettingsModel> updateSettings(String id, SettingsModel settings) =>
+      _connectivity.handle(
+          () {
+            Future<SettingsModel> result = _http
+                .put('/$id/settings', settings.toJson())
+                .map((Response res) => SettingsModel
+                .fromJson(res.json['data'])).first;
+
+            OfflineDbHandler.instance.updateUserSettings(id, settings);
+
+            return result;
+          },
+          () => OfflineDbHandler.instance.updateUserSettings(id, settings)
+  );
 
   /// Deletes the user icon for a given user
   ///
