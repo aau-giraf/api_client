@@ -898,6 +898,9 @@ class OfflineDbHandler {
   Future<bool> updateUserIcon() {
     throw UnimplementedError();
   }
+  Future<Image> insertUserIcon(String id, Image icon){
+    throw UnimplementedError();
+  }
 
   /// Return list of citizens from database based on guardian id
   Future<List<DisplayNameModel>> getCitizens(String id) async {

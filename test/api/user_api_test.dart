@@ -17,11 +17,28 @@ import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/displayname_model.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+class ConnectivityMock implements Connectivity {
+  bool isConnected = true;
+
+  @override
+  Future<ConnectivityResult> checkConnectivity() async {
+    if (!isConnected) {
+      return ConnectivityResult.none;
+    }
+    return ConnectivityResult.wifi;
+  }
+
+  @override
+  Stream<ConnectivityResult> get onConnectivityChanged =>
+      throw UnimplementedError();
+}
 
 Future<void> main() async {
+  ConnectivityMock connectivityMock;
   sqfliteFfiInit();
   UserApi userApi;
   HttpMock httpMock;
@@ -52,14 +69,16 @@ Future<void> main() async {
       ]);
   setUp(() {
     httpMock = HttpMock();
-    userApi = UserApi(httpMock, ConnectivityApi(StatusApi(httpMock)));
+    connectivityMock = ConnectivityMock();
+    userApi = UserApi(httpMock, ConnectivityApi
+                .withConnectivity(StatusApi(httpMock), connectivityMock));
   });
 
-  test('Should fetch authenticated user', () {
+  test('Should fetch authenticated user', () async {
     userApi.me().listen(expectAsync1((GirafUserModel authUser) {
       expect(authUser.toJson(), user.toJson());
     }));
-
+    await Future<dynamic>.delayed(const Duration(seconds: 1));
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
       'data': user.toJson(),
       'message': '',

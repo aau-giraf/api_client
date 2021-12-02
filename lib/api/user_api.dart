@@ -78,6 +78,7 @@ class UserApi {
 
         // This will save the settings and update the settingsId for the user
         settings.then((SettingsModel settings) =>
+        // TODO(MathiasNielsen): Only insert if the settings does not exist DB
             OfflineDbHandler.instance.insertUserSettings(id, settings)
         );
 
@@ -107,21 +108,40 @@ class UserApi {
 
   /// Deletes the user icon for a given user
   ///
-  /// [id] Identifier fo the user to which the icon should be deleted
-  Stream<bool> deleteIcon(String id) {
-    return _http
-        .delete('/$id/icon')
-        .map((Response res) => res.statusCode() == 200);
-  }
+  /// [id] Identifier for the user to which the icon should be deleted
+  Stream<bool> deleteIcon(String id) =>
+      _connectivity.handle(
+          () {
+            final Future<bool> result = _http
+                .delete('/$id/icon')
+                .map((Response res) => res.statusCode() == 200).first;
+
+            OfflineDbHandler.instance.deleteUserIcon(id);
+            return result;
+          },
+          () => OfflineDbHandler.instance.deleteUserIcon(id)
+  );
+
+
 
   /// Gets the raw user icon for a given user
   ///
   /// [id] Identifier of the GirafUser to get icon for
-  Stream<Image> getIcon(String id) {
-    return _http.get('/$id/icon/raw').map((Response res) {
-      return Image.memory(res.response.bodyBytes);
-    });
-  }
+  Stream<Image> getIcon(String id) =>
+      _connectivity.handle(
+          () {
+            final Future<Image> result = _http
+                .get('/$id/icon/raw')
+                .map((Response res) =>
+                  Image.memory(res.response.bodyBytes)).first;
+            result.then((Image icon) =>
+                OfflineDbHandler.instance.insertUserIcon(id,icon));
+
+            return result;
+          },
+          () => OfflineDbHandler.instance.getUserIcon(id)
+  );
+
 
   /// NYI
   Stream<bool> updateIcon() {
@@ -133,42 +153,61 @@ class UserApi {
   /// be a guardian
   ///
   /// [id] Identifier of the GirafUser to get citizens for
-  Stream<List<DisplayNameModel>> getCitizens(String id) {
-    return _http.get('/$id/citizens').map((Response res) {
-      if (res.json['data'] is List) {
-        return List<Map<String, dynamic>>.from(res.json['data'])
-            .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
-            .toList();
-      } else {
-        return null;
-      }
-    });
-  }
+  Stream<List<DisplayNameModel>> getCitizens(String id)
+      => _connectivity.handle(
+          () {
+            final Future<List<DisplayNameModel>> result = _http
+                .get('/$id/citizens')
+                .map((Response res) =>
+                List<Map<String, dynamic>>.from(res.json['data'])
+                    .map((Map<String, dynamic> val) =>
+                    DisplayNameModel.fromJson(val))
+                    .toList()).first;
+            result.then((List<DisplayNameModel> citizens) {
+              for(DisplayNameModel citizen in citizens) {
+                  OfflineDbHandler.instance
+                    .addCitizenToGuardian(id, citizen.id);
+              }
+            });
+            return result;
+          },
+          () => OfflineDbHandler.instance.getCitizens(id)
+  );
+
 
   /// Gets the guardians for the specific citizen corresponding to the
   /// provided id.
   ///
   /// [id] Identifier for the citizen to get guardians for
-  Stream<List<DisplayNameModel>> getGuardians(String id) {
-    return _http.get('/$id/guardians').map((Response res) {
-      if (res.json['data'] is List) {
-        return List<Map<String, dynamic>>.from(res.json['data'])
-            .map((Map<String, dynamic> val) => DisplayNameModel.fromJson(val))
-            .toList();
-      } else {
-        return null;
-      }
-    });
-  }
+  Stream<List<DisplayNameModel>> getGuardians(String id) =>
+      _connectivity.handle(
+          () => _http
+            .get('/$id/guardians')
+            .map((Response res) =>
+              List<Map<String, dynamic>>.from(res.json['data'])
+                .map((Map<String, dynamic> val) =>
+                  DisplayNameModel.fromJson(val))
+                .toList()).first,
+          () => OfflineDbHandler.instance.getGuardians(id)
+  );
+
 
   /// Adds relation between the authenticated user (guardian) and an
   /// existing citizen.
   ///
   /// [guardianId] The guardian
   /// [citizenId] The citizen to be added to the guardian
-  Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) {
-    return _http
-        .post('/$guardianId/citizens/$citizenId')
-        .map((Response res) => res.statusCode() == 200);
-  }
+  Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) =>
+      _connectivity.handle(
+          () {
+            final Future<bool> result = _http
+              .post('/$guardianId/citizens/$citizenId')
+              .map((Response res) => res.statusCode() == 200).first;
+            OfflineDbHandler.instance
+              .addCitizenToGuardian(guardianId, citizenId);
+            return result;
+          },
+          () => OfflineDbHandler.instance
+                  .addCitizenToGuardian(guardianId, citizenId)
+  );
 }
