@@ -76,7 +76,7 @@ class ConnectivityApi {
       _setConnection(false);
       completer.complete(false);
     });
-    Future.wait(<Future<bool>>[completer.future]);
+
     return completer.future;
   }
 

@@ -17,6 +17,7 @@ import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/displayname_model.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -74,16 +75,39 @@ Future<void> main() async {
                 .withConnectivity(StatusApi(httpMock), connectivityMock));
   });
 
-  test('Should fetch authenticated user', () async {
+  test('Should fetch authenticated user from online', () async {
     userApi.me().listen(expectAsync1((GirafUserModel authUser) {
       expect(authUser.toJson(), user.toJson());
     }));
+
     await Future<dynamic>.delayed(const Duration(seconds: 1));
+
+    // This is expecting a call to the status api (on status())
+    httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
+      'data': true,
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError'
+    });
+
+    await Future<dynamic>.delayed(const Duration(seconds: 1));
+
+    // This is expecting a call to the user api (on me())
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
       'data': user.toJson(),
       'message': '',
       'errorKey': 'NoError',
     });
+  });
+
+  test('Should fetch authenticated user from offline', () {
+    connectivityMock.isConnected = false;
+
+    OfflineDbHandler.instance.setMe(user);
+
+    userApi.me().listen(expectAsync1((GirafUserModel authUser) {
+      expect(authUser.toJson(), user.toJson());
+    }));
   });
 
   test('Should fetch user with ID', () {
