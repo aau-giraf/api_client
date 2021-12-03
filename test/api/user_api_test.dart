@@ -110,10 +110,20 @@ Future<void> main() async {
     }));
   });
 
-  test('Should fetch user with ID', () {
+  test('Should fetch user with ID', () async {
     userApi.get(user.id).listen(expectAsync1((GirafUserModel specUser) {
       expect(specUser.toJson(), user.toJson());
     }));
+
+    await Future<dynamic>.delayed(const Duration(seconds: 1));
+
+    // This is expecting a call to the status api (on status())
+    httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
+    'data': true,
+    'success': true,
+    'message': '',
+    'errorKey': 'NoError'
+    });
 
     httpMock
         .expectOne(url: '/${user.id}', method: Method.get)

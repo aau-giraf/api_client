@@ -13,10 +13,15 @@ import 'connectivity_api.dart';
 /// User endpoints
 class UserApi {
   /// Default constructor
-  UserApi(this._http, this._connectivity);
+  UserApi(this._http, this._connectivity)
+      : _dbHandler = OfflineDbHandler.instance;
+
+  /// Constructor with custom DbHandler
+  UserApi.withMockDbHandler(this._http, this._connectivity, this._dbHandler);
 
   final Http _http;
   final ConnectivityApi _connectivity;
+  final OfflineDbHandler _dbHandler;
 
   /// Find information about the currently authenticated user.
   Stream<GirafUserModel> me() => _connectivity.handle(
@@ -24,7 +29,7 @@ class UserApi {
           .get('/')
           .map((Response res) => GirafUserModel.fromJson(res.json['data']))
           .first,
-      () => OfflineDbHandler.instance.getMe()
+      () => _dbHandler.getMe()
   );
 
   /// Find information on the user with the given ID
@@ -38,11 +43,11 @@ class UserApi {
           .first;
 
         user.then((GirafUserModel user) =>
-            OfflineDbHandler.instance.updateUser(user));
+            _dbHandler.updateUser(user));
 
         return user;
       },
-      () => OfflineDbHandler.instance.getUser(id)
+      () => _dbHandler.getUser(id)
   );
 
   /// Get the role of the user with the username inputted
@@ -52,7 +57,7 @@ class UserApi {
       () => _http
               .get('/$username/role')
               .map<int>((Response res) => res.json['data']).first,
-      () => OfflineDbHandler.instance.getUserRole(username)
+      () => _dbHandler.getUserRole(username)
   );
 
   /// Updates the user with the information in GirafUserModel
@@ -63,7 +68,7 @@ class UserApi {
               .put('/${user.id}', user.toJson())
               .map((Response res) => GirafUserModel
                 .fromJson(res.json['data'])).first,
-      () => OfflineDbHandler.instance.updateUser(user)
+      () => _dbHandler.updateUser(user)
   );
 
   /// Get user-settings for the user with the specified Id
@@ -79,12 +84,12 @@ class UserApi {
         // This will save the settings and update the settingsId for the user
         settings.then((SettingsModel settings) =>
         // TODO(MathiasNielsen): Only insert if the settings does not exist DB
-            OfflineDbHandler.instance.insertUserSettings(id, settings)
+        _dbHandler.insertUserSettings(id, settings)
         );
 
         return settings;
       },
-      () => OfflineDbHandler.instance.getUserSettings(id)
+      () => _dbHandler.getUserSettings(id)
   );
 
   /// Updates the user settings for the user with the provided id
@@ -94,16 +99,16 @@ class UserApi {
   Stream<SettingsModel> updateSettings(String id, SettingsModel settings) =>
       _connectivity.handle(
           () {
-            Future<SettingsModel> result = _http
+            final Future<SettingsModel> result = _http
                 .put('/$id/settings', settings.toJson())
                 .map((Response res) => SettingsModel
                 .fromJson(res.json['data'])).first;
 
-            OfflineDbHandler.instance.updateUserSettings(id, settings);
+            _dbHandler.updateUserSettings(id, settings);
 
             return result;
           },
-          () => OfflineDbHandler.instance.updateUserSettings(id, settings)
+          () => _dbHandler.updateUserSettings(id, settings)
   );
 
   /// Deletes the user icon for a given user
@@ -116,10 +121,11 @@ class UserApi {
                 .delete('/$id/icon')
                 .map((Response res) => res.statusCode() == 200).first;
 
-            OfflineDbHandler.instance.deleteUserIcon(id);
+            _dbHandler.deleteUserIcon(id);
+
             return result;
           },
-          () => OfflineDbHandler.instance.deleteUserIcon(id)
+          () => _dbHandler.deleteUserIcon(id)
   );
 
 
@@ -134,12 +140,13 @@ class UserApi {
                 .get('/$id/icon/raw')
                 .map((Response res) =>
                   Image.memory(res.response.bodyBytes)).first;
+
             result.then((Image icon) =>
-                OfflineDbHandler.instance.insertUserIcon(id,icon));
+                _dbHandler.insertUserIcon(id,icon));
 
             return result;
           },
-          () => OfflineDbHandler.instance.getUserIcon(id)
+          () => _dbHandler.getUserIcon(id)
   );
 
 
@@ -163,15 +170,16 @@ class UserApi {
                     .map((Map<String, dynamic> val) =>
                     DisplayNameModel.fromJson(val))
                     .toList()).first;
+
             result.then((List<DisplayNameModel> citizens) {
               for(DisplayNameModel citizen in citizens) {
-                  OfflineDbHandler.instance
-                    .addCitizenToGuardian(id, citizen.id);
+                  _dbHandler.addCitizenToGuardian(id, citizen.id);
               }
             });
+
             return result;
           },
-          () => OfflineDbHandler.instance.getCitizens(id)
+          () => _dbHandler.getCitizens(id)
   );
 
 
@@ -188,7 +196,7 @@ class UserApi {
                 .map((Map<String, dynamic> val) =>
                   DisplayNameModel.fromJson(val))
                 .toList()).first,
-          () => OfflineDbHandler.instance.getGuardians(id)
+          () => _dbHandler.getGuardians(id)
   );
 
 
@@ -203,11 +211,11 @@ class UserApi {
             final Future<bool> result = _http
               .post('/$guardianId/citizens/$citizenId')
               .map((Response res) => res.statusCode() == 200).first;
-            OfflineDbHandler.instance
-              .addCitizenToGuardian(guardianId, citizenId);
+
+            _dbHandler.addCitizenToGuardian(guardianId, citizenId);
+
             return result;
           },
-          () => OfflineDbHandler.instance
-                  .addCitizenToGuardian(guardianId, citizenId)
+          () => _dbHandler.addCitizenToGuardian(guardianId, citizenId)
   );
 }
