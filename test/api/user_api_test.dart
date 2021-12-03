@@ -22,6 +22,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+import '../database/Offline_models.dart';
 class ConnectivityMock implements Connectivity {
   bool isConnected = true;
 
@@ -110,10 +112,20 @@ Future<void> main() async {
     }));
   });
 
-  test('Should fetch user with ID', () {
+  test('Should fetch user with ID', () async {
     userApi.get(user.id).listen(expectAsync1((GirafUserModel specUser) {
       expect(specUser.toJson(), user.toJson());
     }));
+
+    await Future<dynamic>.delayed(const Duration(seconds: 1));
+
+    // This is expecting a call to the status api (on status())
+    httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
+    'data': true,
+    'success': true,
+    'message': '',
+    'errorKey': 'NoError'
+    });
 
     httpMock
         .expectOne(url: '/${user.id}', method: Method.get)
@@ -123,7 +135,6 @@ Future<void> main() async {
       'errorKey': 'NoError',
     });
   });
-
   test('Should get the role endpoint', () {
     userApi.role(user.username).listen(expectAsync1((int roleIndex) {
       expect(roleIndex, user.role.index);
