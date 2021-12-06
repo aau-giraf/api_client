@@ -26,21 +26,11 @@ class AccountApi {
   /// [username] The users username
   /// [password] The users password
   Stream<bool> login(String username, String password) {
-    final Completer<bool> completer = Completer<bool>();
-
-    _connectivity.check().then((bool connected) {
-      if (connected) {
-        completer.complete(_http.post('/login', <String, String> {
+    return _http.post('/login', <String, String> {
           'username': username,
           'password': password,
         }).flatMap((Response res) => Stream<bool>
-            .fromFuture(_persist.set('token', res.json['data']))).first);
-      } else {
-        completer.complete(OfflineDbHandler.instance.login(username, password));
-      }
-    });
-
-    return Stream<bool>.fromFuture(completer.future);
+            .fromFuture(_persist.set('token', res.json['data'])));
   }
 
   /// Register a new user
