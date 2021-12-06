@@ -200,8 +200,13 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<GirafUserModel> getUser(String id) {
-    // TODO: implement getUser
-    throw UnimplementedError();
+    return Future<GirafUserModel>.value(GirafUserModel(
+        id: '1236',
+        department: 3,
+        role: Role.Guardian,
+        roleName: 'Guardian',
+        displayName: 'Kurt',
+        username: 'SpaceLord67'));
   }
 
   @override
@@ -475,6 +480,13 @@ Future<void> main() async {
       'errorKey': 'NoError',
     });
   });
+  
+  test('Should fetch user with ID from offline', () {
+    connectivityMock.isConnected = false;
+    userApi.get(user.id).listen(expectAsync1((GirafUserModel specUser) {
+      expect(specUser.toJson(), user.toJson());
+    }));
+  });
 
   test('Should get the role endpoint', () async {
     userApi.role(user.username).listen(expectAsync1((int roleIndex) {
@@ -502,6 +514,13 @@ Future<void> main() async {
     });
   });
 
+  test('Should get the role endpoint from offline', () {
+    connectivityMock.isConnected = false;
+    userApi.role(user.username).listen(expectAsync1((int roleIndex) {
+      expect(roleIndex, user.role.index);
+    }));
+  });
+
   test('Should update user with ID', () async {
     userApi.update(user).listen(expectAsync1((GirafUserModel specUser) {
       expect(specUser.toJson(), user.toJson());
@@ -527,6 +546,15 @@ Future<void> main() async {
       'errorKey': 'NoError',
     });
   });
+
+  test('Should update user with ID from offline', () {
+    connectivityMock.isConnected = false;
+    userApi.update(user).listen(expectAsync1((GirafUserModel specUser) {
+      expect(specUser.toJson(), user.toJson());
+    }));
+  });
+
+
 
   test('Should get settings from user with ID', () async {
     userApi
