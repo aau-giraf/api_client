@@ -143,8 +143,11 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<List<DisplayNameModel>> getCitizens(String id) {
-    // TODO: implement getCitizens
-    throw UnimplementedError();
+    return Future<List<DisplayNameModel>>.value(<DisplayNameModel>[
+      DisplayNameModel(
+          displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
+      DisplayNameModel(
+          displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2')]);
   }
 
   @override
@@ -155,8 +158,11 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<List<DisplayNameModel>> getGuardians(String id) {
-    // TODO: implement getGuardians
-    throw UnimplementedError();
+    return Future<List<DisplayNameModel>>.value(<DisplayNameModel>[
+      DisplayNameModel(
+          displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
+      DisplayNameModel(
+          displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2')]);
   }
 
   @override
@@ -556,6 +562,16 @@ Future<void> main() async {
     });
   });
 
+  test('Should get settings from user with ID from offline', () {
+    connectivityMock.isConnected = false;
+
+    userApi
+        .getSettings(user.id)
+        .listen(expectAsync1((SettingsModel specSettings) {
+      expect(specSettings.toJson(), settings.toJson());
+    }));
+  });
+
   test('Should update settings from user with ID', () async {
     userApi
         .updateSettings(user.id, settings)
@@ -582,6 +598,16 @@ Future<void> main() async {
       'message': '',
       'errorKey': 'NoError',
     });
+  });
+
+  test('Should update settings from user with ID from offline', () {
+    connectivityMock.isConnected = false;
+
+    userApi
+        .updateSettings(user.id, settings)
+        .listen(expectAsync1((bool success) {
+      expect(success, true);
+    }));
   });
 
   test('Should get citizens from user with ID', () async {
@@ -613,6 +639,17 @@ Future<void> main() async {
     });
   });
 
+  test('Should get citizens from user with ID from offline', () {
+    connectivityMock.isConnected = false;
+
+    userApi
+        .getCitizens(user.id)
+        .listen(expectAsync1((List<DisplayNameModel> names) {
+      expect(names.map((DisplayNameModel name) => name.toJson()),
+          usernames.map((DisplayNameModel name) => name.toJson()));
+    }));
+  });
+
   test('Should get guardians from user with ID', () async {
     userApi
         .getGuardians(user.id)
@@ -642,6 +679,17 @@ Future<void> main() async {
     });
   });
 
+  test('Should get guardians from user with ID from offline', () {
+    connectivityMock.isConnected = false;
+
+    userApi
+        .getGuardians(user.id)
+        .listen(expectAsync1((List<DisplayNameModel> names) {
+      expect(names.map((DisplayNameModel name) => name.toJson()),
+          usernames.map((DisplayNameModel name) => name.toJson()));
+    }));
+  });
+
   test('Should add citizen to guardian with ID', () async {
     const String citizenId = '1234';
 
@@ -668,6 +716,17 @@ Future<void> main() async {
       'message': '',
       'errorKey': 'NoError',
     });
+  });
+
+  test('Should add citizen to guardian with ID from offline', () {
+    connectivityMock.isConnected = false;
+
+    const String citizenId = '1234';
+
+    userApi.addCitizenToGuardian(user.id, citizenId)
+        .listen(expectAsync1((bool success) {
+      expect(success, isTrue);
+    }));
   });
 
   tearDown(() {
