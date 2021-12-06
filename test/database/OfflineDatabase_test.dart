@@ -135,9 +135,9 @@ Future<void> main() async {
     final Database db = await dbHandler.database;
     final List<Map<String, dynamic>> dbRes =
         await db.rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-            "WHERE TempId == '$testId'");
-    expect(dbRes[0]['TempId'], testId);
-    expect(dbRes[0]['Body'], jamesBody.toString());
+            "WHERE tempId == '$testId'");
+    expect(dbRes[0]['tempId'], testId);
+    expect(dbRes[0]['body'], jamesBody.toString());
   });
 
   test('Retry failed put transaction', () async {
@@ -170,7 +170,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, true);
   });
@@ -198,7 +198,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, false);
   });
@@ -233,7 +233,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, true);
   });
@@ -261,7 +261,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, false);
   });
@@ -296,7 +296,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, true);
   });
@@ -324,7 +324,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, false);
   });
@@ -359,7 +359,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, true);
   });
@@ -387,7 +387,7 @@ Future<void> main() async {
         .then((_) async {
       res = await (await dbHandler.database)
           .rawQuery('SELECT * FROM `FailedOnlineTransactions` '
-              "WHERE TempId == '$testId'");
+              "WHERE tempId == '$testId'");
     });
     expect(res.isEmpty, false);
   });
@@ -1062,9 +1062,9 @@ Future<void> main() async {
     final Database db = await dbHandler.database;
     final List<Map<String, dynamic>> dbRes =
         await db.rawQuery('SELECT * FROM `Pictograms` '
-            "WHERE OnlineId == '${testPictogram.id}'");
+            "WHERE onlineId == '${testPictogram.id}'");
     expect(dbRes.isEmpty, false);
-    expect(dbRes[0]['OnlineId'], testPictogram.id);
+    expect(dbRes[0]['onlineId'], testPictogram.id);
   });
 
   test('Test changing id for a user in the offline DB', () async {
