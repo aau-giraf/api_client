@@ -35,15 +35,22 @@ class UserApi {
   /// Find information on the user with the given ID
   ///
   /// [id] ID of the user
-  Stream<GirafUserModel> get(String id) => _connectivity.handle(
-      () {
+  Stream<GirafUserModel> get(String id) => _connectivity.handle(() {
         final Future<GirafUserModel> user = _http
           .get('/$id')
           .map((Response res) => GirafUserModel.fromJson(res.json['data']))
           .first;
 
-        user.then((GirafUserModel user) =>
-            _dbHandler.updateUser(user));
+        user.then((GirafUserModel user) {
+          _dbHandler.getUserId(user.username).then((String id) {
+            if (id != null) {
+              _dbHandler.updateUser(user);
+            }
+            else {
+              _dbHandler.insertUser(user);
+            }
+          });
+        });
 
         return user;
       },
@@ -96,13 +103,12 @@ class UserApi {
   ///
   /// [id] Identifier of the GirafUser to update settings for
   /// [settings] reference to a Settings containing the new settings
-  Stream<SettingsModel> updateSettings(String id, SettingsModel settings) =>
+  Stream<bool> updateSettings(String id, SettingsModel settings) =>
       _connectivity.handle(
           () {
-            final Future<SettingsModel> result = _http
+            final Future<bool> result = _http
                 .put('/$id/settings', settings.toJson())
-                .map((Response res) => SettingsModel
-                .fromJson(res.json['data'])).first;
+                .map((Response res) => res.success()).first;
 
             _dbHandler.updateUserSettings(id, settings);
 
