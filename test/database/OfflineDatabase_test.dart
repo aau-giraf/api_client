@@ -897,10 +897,9 @@ Future<void> main() async {
         weekDayColors: uSettings.weekDayColors);
     newSettings.weekDayColors[0].hexColor = 'ffffff';
 
-    final SettingsModel testUpdate =
+    final bool testUpdate =
         await dbHandler.updateUserSettings(body.id, newSettings);
-    expect(testUpdate.cancelMark, newSettings.cancelMark);
-    expect(testUpdate.completeMark, isNot(uSettings.completeMark));
+    expect(testUpdate, true);
   });
 
   test('Update a user\'s settings', () async {
