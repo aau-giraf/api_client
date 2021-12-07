@@ -86,8 +86,9 @@ class OfflineDbHandler {
           'FOREIGN KEY(`settingsId`) '
           'REFERENCES `Settings`(`id`) ON DELETE RESTRICT);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `GuardianRelations` ('
-          '`citizenId`	varchar ( 255 ) NOT NULL PRIMARY KEY, '
-          '`guardianId`	varchar ( 255 ) NOT NULL PRIMARY KEY, '
+          '`citizenId`	varchar ( 255 ) NOT NULL, '
+          '`guardianId`	varchar ( 255 ) NOT NULL, '
+          'PRIMARY KEY(`citizenId`, `guardianId`), '
           'CONSTRAINT `FK_GuardianRelations_Users_CitizenId` '
           'FOREIGN KEY(`citizenId`) '
           'REFERENCES `Users`(`id`) ON DELETE CASCADE, '
@@ -112,7 +113,7 @@ class OfflineDbHandler {
           '`day` integer NOT NULL, '
           '`hexColor`	longtext COLLATE BINARY, '
           '`settingsId` integer NOT NULL, '
-          'CONSTRAINT `FK_WeekDayColors_Settings_SettingId` '
+          'CONSTRAINT `FK_WeekDayColors_Settings_SettingsId` '
           'FOREIGN KEY(`settingsId`) '
           'REFERENCES `Settings`(`id`) ON DELETE CASCADE);');
 
@@ -370,10 +371,12 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> count = await db.rawQuery(
         "SELECT * FROM `Users` WHERE username == '${body['username']}'");
+
     if (count.isNotEmpty) {
       // TODO(Tilasair): better exceptions
       throw Exception('Username already exists');
     }
+
     final Map<String, dynamic> settings = <String, dynamic>{
       'activitiesCount': 0,
       'cancelMark': CancelMark.Cross.index,
@@ -390,43 +393,43 @@ class OfflineDbHandler {
     // TODO(Tilasair): Make the settings a transaction
     await db.insert('Settings', settings);
     final List<Map<String, dynamic>> settingsIdRes =
-        await db.rawQuery('SELECT `key` FROM `Settings` WHERE `key` NOT IN '
-            '(SELECT `settingsKey` FROM `Users`)');
-    final int settingsId = settingsIdRes[0]['Key'];
+        await db.rawQuery('SELECT `id` FROM `Settings` WHERE `id` NOT IN '
+            '(SELECT `settingsId` FROM `Users`)');
+    final int settingsId = settingsIdRes[0]['id'];
     await db.insert('WeekDayColors', <String, dynamic>{
       'day': Weekday.Monday.index,
       'hexColor': '#08a045',
-      'settingId': settingsId
+      'settingsId': settingsId
     });
     await db.insert('WeekDayColors', <String, dynamic>{
       'day': Weekday.Tuesday.index,
       'hexColor': '#540d6e',
-      'settingId': settingsId
+      'settingsId': settingsId
     });
     await db.insert('WeekDayColors', <String, dynamic>{
       'day': Weekday.Wednesday.index,
       'hexColor': '#f77f00',
-      'settingId': settingsId
+      'settingsId': settingsId
     });
     await db.insert('WeekDayColors', <String, dynamic>{
       'day': Weekday.Thursday.index,
       'hexColor': '#004777',
-      'settingId': settingsId
+      'settingsId': settingsId
     });
     await db.insert('WeekDayColors', <String, dynamic>{
       'day': Weekday.Friday.index,
       'hexColor': '#f9c80e',
-      'settingId': settingsId
+      'settingsId': settingsId
     });
     await db.insert('WeekDayColors', <String, dynamic>{
       'day': Weekday.Saturday.index,
       'hexColor': '#db2b39',
-      'settingId': settingsId
+      'settingsId': settingsId
     });
     await db.insert('WeekDayColors', <String, dynamic>{
       'day': Weekday.Sunday.index,
       'hexColor': '#ffffff',
-      'settingId': settingsId
+      'settingsId': settingsId
     });
     int roleID;
     switch (body['role']) {
@@ -766,6 +769,7 @@ class OfflineDbHandler {
     }
   }
 
+  /// Return the role of a user through its username
   Future<int> getUserRole(String username) async {
     try {
       final Database db = await database;
@@ -814,10 +818,10 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> resSettings =
         await db.rawQuery('SELECT * FROM `Settings` WHERE '
-            "`Key` == (SELECT `settingsKey` FROM `Users` WHERE `id` == '$id')");
+            "`id` == (SELECT `settingsId` FROM `Users` WHERE `id` == '$id')");
     final List<Map<String, dynamic>> resWeekdayColors =
         await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
-            "`settingId` == '${resSettings[0]['Key']}'");
+            "`settingsId` == '${resSettings[0]['id']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
 
@@ -863,9 +867,9 @@ class OfflineDbHandler {
       String id, SettingsModel settings) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT `SettingsKey` FROM `Users` '
-            "WHERE `Id` == '$id'");
-    final String settingsKey = res[0]['SettingsKey'].toString();
+        await db.rawQuery('SELECT `settingsId` FROM `Users` '
+            "WHERE `id` == '$id'");
+    final String settingsId = res[0]['settingsId'].toString();
     db.rawUpdate('UPDATE `Settings` SET '
         "`activitiesCount` = '${settings.activitiesCount}', "
         "`cancelMark` = '${settings.cancelMark.index}', "
@@ -878,12 +882,12 @@ class OfflineDbHandler {
         "`timerSeconds` = '${settings.timerSeconds}', "
         "`lockTimerControl` = '${settings.lockTimerControl}', "
         "`pictogramText` = '${settings.pictogramText}' WHERE "
-        "`key` = '$settingsKey'");
+        "`id` = '$settingsId'");
     for (WeekdayColorModel dayColor in settings.weekDayColors) {
       final int day = dayColor.day.index;
       db.rawUpdate('UPDATE `WeekDayColors` SET '
           "`hexColor` = '${dayColor.hexColor}' WHERE "
-          "`settingId` == '$settingsKey' AND "
+          "`settingsId` == '$settingsId' AND "
           "`day` == '$day'");
     }
     return true;
@@ -972,7 +976,7 @@ class OfflineDbHandler {
             "`weekYear` == '$year' AND "
             "`weekNumber` == '$weekNumber'");
     final Map<String, dynamic> weekModel = Map<String, dynamic>.from(res[0]);
-    weekModel['Thumbnail'] =
+    weekModel['thumbnail'] =
         (await getPictogramID(res[0]['thumbnailKey'])).toJson();
     final int weekId = res.single['id'];
     final List<Map<String, dynamic>> weekDaysFromDb = await db
@@ -989,7 +993,7 @@ class OfflineDbHandler {
       };
       weekDays.add(dayRes);
     }
-    weekModel['Days'] = List<Map<String, dynamic>>.from(weekDays);
+    weekModel['days'] = List<Map<String, dynamic>>.from(weekDays);
     return WeekModel.fromDatabase(weekModel);
   }
 
@@ -1027,14 +1031,9 @@ class OfflineDbHandler {
       'girafUserId': id,
       'weekYear': week.weekYear
     };
-    await db.insert('`Weeks`', insertQuery);
-    final List<Map<String, dynamic>> dbWeek =
-        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
-            "girafUserId == '$id' AND "
-            "weekYear == '${week.weekYear}' AND "
-            "weekNumber == '${week.weekNumber}'");
+    final int weekId = await db.insert('`Weeks`', insertQuery);
     for (WeekdayModel day in week.days) {
-      await _insertWeekday(dbWeek[0]['id'], day, db, id, week);
+      await _insertWeekday(weekId, day, db, id, week);
     }
   }
 
@@ -1134,8 +1133,8 @@ class OfflineDbHandler {
     final Map<String, dynamic> tempRes = res[0];
     // get the first record
     final Map<String, dynamic> template = Map<String, dynamic>.from(tempRes);
-    template['Thumbnail'] =
-        (await getPictogramID(template['ThumbnailKey'])).toJson();
+    template['thumbnail'] =
+        (await getPictogramID(template['thumbnailKey'])).toJson();
     return WeekTemplateModel.fromDatabase(template);
   }
 

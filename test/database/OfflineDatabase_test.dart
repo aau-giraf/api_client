@@ -86,9 +86,9 @@ Future<void> main() async {
 
   test('Try to create the test db', () async {
     expect(await dbHandler.getCurrentDBVersion(), 1);
-    // We might need this if somthing is wrong
+    // We might need this if something is wrong
     // in the tests and it doesn't close itself
-    //dbHandler.closeDb();
+    // dbHandler.closeDb();
   });
   test('Test if getweeknames gets all weeks connected to user', () async {
     final PictogramModel testPicto = await dbHandler.createPictogram(scrum);
@@ -105,7 +105,6 @@ Future<void> main() async {
 
   test('Register an account in the offline db', () async {
     //create fake account
-
     final GirafUserModel fakeUserRes =
         await dbHandler.registerAccount(jamesBody);
     expect(fakeUserRes.username, jamesbondTestUser.username);
@@ -406,6 +405,7 @@ Future<void> main() async {
     final String idReturn = await dbHandler.getUserId(jamesUser.username);
     expect(idReturn, jamesUser.id);
   });
+
   test('Add activity test', () async {
     final WeekdayModel testDay =
         WeekdayModel(day: Weekday.Friday, activities: null);
@@ -441,6 +441,7 @@ Future<void> main() async {
     expect(updatedWeek.days[0].activities.isNotEmpty, true);
     await pictoImage.delete();
   });
+
   test('Add activity test with timer', () async {
     final WeekdayModel testDay =
         WeekdayModel(day: Weekday.Friday, activities: null);
@@ -475,6 +476,7 @@ Future<void> main() async {
     expect(updatedActivity.timer.key, timer.key);
     await pictoImage.delete();
   });
+
   test('Perform a correct login attempt', () async {
     // The correct Password for the jamesBody user is 'TestPassword123'
     const String passAttempt = 'TestPassword123';
@@ -1154,7 +1156,7 @@ Future<void> cleanUsers(OfflineDbHandler dbHandler) async {
 
 Future<void> cleanSettings(OfflineDbHandler dbHandler) async {
   final Database db = await dbHandler.database;
-  await db.delete('`Setting`');
+  await db.delete('`Settings`');
 }
 
 Future<void> cleanGuardianRelations(OfflineDbHandler dbHandler) async {
