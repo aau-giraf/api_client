@@ -32,7 +32,7 @@ class WeekTemplateModel extends WeekBaseModel implements Model {
       throw const FormatException(
           '[WeekTemplateModel]: Cannot initialize from null');
     }
-    departmentKey = json['Department'];
+    departmentKey = json['department'];
     id = json['id'];
   }
 

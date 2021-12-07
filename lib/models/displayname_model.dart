@@ -28,9 +28,9 @@ class DisplayNameModel implements Model {
           '[UsernameModel]: Cannot instantiate from null');
     }
 
-    id = json['Id'];
-    displayName = json['DisplayName'];
-    role = json['RoleName'];
+    id = json['id'];
+    displayName = json['displayName'];
+    role = json['roleName'];
   }
 
   /// Create object from GirafUserModel

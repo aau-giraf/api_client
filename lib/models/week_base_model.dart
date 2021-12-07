@@ -37,16 +37,16 @@ abstract class WeekBaseModel {
           '[WeekBaseModel]: Cannot initialize from null');
     }
 
-    name = json['Name'];
+    name = json['name'];
 
     // WeekModel sometimes don't have a thumbnail
-    if (json['Thumbnail'] != null) {
-      thumbnail = PictogramModel.fromJson(json['Thumbnail']);
+    if (json['thumbnail'] != null) {
+      thumbnail = PictogramModel.fromJson(json['thumbnail']);
     }
 
     // WeekModel sometimes dont have days
-    if (json['Days'] != null && json['Days'] is List) {
-      days = List<Map<String, dynamic>>.from(json['Days'])
+    if (json['days'] != null && json['days'] is List) {
+      days = List<Map<String, dynamic>>.from(json['days'])
           .map((Map<String, dynamic> element) =>
               WeekdayModel.fromDatabase(element))
           .toList();

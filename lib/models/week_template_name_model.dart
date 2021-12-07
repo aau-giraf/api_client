@@ -23,8 +23,8 @@ class WeekTemplateNameModel implements Model {
           '[WeekTemplateNameModel]: Cannot initialize from null');
     }
 
-    name = json['Name'];
-    id = json['OnlineId'];
+    name = json['name'];
+    id = json['onlineId'];
   }
 
   /// Name of the template

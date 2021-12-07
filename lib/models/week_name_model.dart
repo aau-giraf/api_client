@@ -28,9 +28,9 @@ class WeekNameModel implements Model {
           '[WeekNameModel]: Cannot initialize from null');
     }
 
-    name = json['Name'];
-    weekYear = json['WeekYear'];
-    weekNumber = json['WeekNumber'];
+    name = json['name'];
+    weekYear = json['weekYear'];
+    weekNumber = json['weekNumber'];
   }
 
   /// A Name describing the week.
