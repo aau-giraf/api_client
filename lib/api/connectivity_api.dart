@@ -90,7 +90,6 @@ class ConnectivityApi {
     if (_lastStatus != (_lastStatus = value)) {
       _hasConnection.add(value);
     }
-    print('successfully checked connectivity with value: $value');
     _timeOfLastCheck = DateTime.now();
   }
 }
