@@ -65,7 +65,9 @@ class OfflineDbHandler {
         onCreate: (Database db, int version) => createTables(db),
         onUpgrade: (Database db, int oldVersion, int newVersion)
           => createTables(db),
-        version: 1,
+        onDowngrade: (Database db, int oldVersion, int newVersion)
+          => createTables(db),
+        version: 2,
     );
   }
 
