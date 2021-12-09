@@ -59,7 +59,6 @@ class OfflineDbHandler {
 
   /// Initiate the database
   Future<Database> initializeDatabase() async {
-    print("Initializing database!!!!!");
     return openDatabase(
         join(await getDatabasesPath(), 'offlineGiraf'),
         onCreate: (Database db, int version) => createTables(db),
@@ -67,16 +66,12 @@ class OfflineDbHandler {
           => createTables(db),
         onDowngrade: (Database db, int oldVersion, int newVersion)
           => createTables(db),
-        version: 2,
+        version: 1,
     );
   }
 
   ///Creates all of the tables in the DB
   Future<void> createTables(Database db) async {
-    print("CREATING TABLESSSSS");
-    print("CREATING TABLESSSSS");
-    print("CREATING TABLESSSSS");
-
     await db.transaction((Transaction txn) async {
       await txn.execute('CREATE TABLE IF NOT EXISTS `Settings` ('
           '`id` integer NOT NULL PRIMARY KEY, '
@@ -822,10 +817,10 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> resSettings =
         await db.rawQuery('SELECT * FROM `Settings` WHERE '
-            "`id` == (SELECT `settingsId` FROM `Users` WHERE `id` == '$id')");
+            "`id` = (SELECT `settingsId` FROM `Users` WHERE `id` = '$id')");
     final List<Map<String, dynamic>> resWeekdayColors =
         await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
-            "`settingsId` == '${resSettings[0]['id']}'");
+            "`settingsId` = '${resSettings[0]['id']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
 
