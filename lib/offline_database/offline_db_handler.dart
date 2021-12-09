@@ -72,6 +72,19 @@ class OfflineDbHandler {
   ///Creates all of the tables in the DB
   Future<void> createTables(Database db) async {
     await db.transaction((Transaction txn) async {
+      await txn.execute('CREATE TABLE IF NOT EXISTS `Settings` ('
+          '`id` integer NOT NULL PRIMARY KEY, '
+          '`orientation` integer NOT NULL, '
+          '`completeMark`	integer NOT NULL, '
+          '`cancelMark`	integer NOT NULL, '
+          '`defaultTimer`	integer NOT NULL, '
+          '`timerSeconds`	integer DEFAULT NULL, '
+          '`activitiesCount` integer DEFAULT NULL, '
+          '`theme` integer NOT NULL, '
+          '`nrOfDaysToDisplay` integer DEFAULT NULL, '
+          '`greyScale` integer DEFAULT 0, '
+          '`lockTimerControl`	integer DEFAULT 0, '
+          '`pictogramText` integer DEFAULT 0);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Users` ('
           '`id` text NOT NULL PRIMARY KEY, '
           '`role` integer NOT NULL, '
@@ -95,19 +108,6 @@ class OfflineDbHandler {
           'CONSTRAINT `FK_GuardianRelations_Users_GuardianId` '
           'FOREIGN KEY(`guardianId`) '
           'REFERENCES `Users`(`id`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Settings` ('
-          '`id` integer NOT NULL PRIMARY KEY, '
-          '`orientation` integer NOT NULL, '
-          '`completeMark`	integer NOT NULL, '
-          '`cancelMark`	integer NOT NULL, '
-          '`defaultTimer`	integer NOT NULL, '
-          '`timerSeconds`	integer DEFAULT NULL, '
-          '`activitiesCount` integer DEFAULT NULL, '
-          '`theme` integer NOT NULL, '
-          '`nrOfDaysToDisplay` integer DEFAULT NULL, '
-          '`greyScale` integer DEFAULT 0, '
-          '`lockTimerControl`	integer DEFAULT 0, '
-          '`pictogramText` integer DEFAULT 0);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
           '`id`	integer NOT NULL PRIMARY KEY, '
           '`day` integer NOT NULL, '
@@ -118,6 +118,14 @@ class OfflineDbHandler {
           'REFERENCES `Settings`(`id`) ON DELETE CASCADE);');
 
 
+      await txn.execute('CREATE TABLE IF NOT EXISTS `Pictograms` ('
+          '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
+          '`accessLevel` integer NOT NULL, '
+          '`lastEdit`	datetime NOT NULL, '
+          '`title` text NOT NULL, '
+          '`imageHash`	text COLLATE BINARY, '
+          '`onlineId` integer NOT NULL, '
+          'UNIQUE(`title`, `onlineId`));');
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekTemplates` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`name`	text COLLATE BINARY, '
@@ -151,14 +159,12 @@ class OfflineDbHandler {
           'CONSTRAINT `FK_Weekdays_Weeks_WeekId` '
           'FOREIGN KEY(`weekId`) '
           'REFERENCES `Weeks`(`id`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Pictograms` ('
-          '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`accessLevel` integer NOT NULL, '
-          '`lastEdit`	datetime NOT NULL, '
-          '`title` text NOT NULL, '
-          '`imageHash`	text COLLATE BINARY, '
-          '`onlineId` integer NOT NULL, '
-          'UNIQUE(`title`, `onlineId`));');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `Timers` ('
+          '`key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
+          '`startTime` integer NOT NULL, '
+          '`progress`	integer NOT NULL, '
+          '`fullLength`	integer NOT NULL, '
+          '`paused`	integer NOT NULL);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Activities` ('
           '`key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`order` integer NOT NULL, '
@@ -182,12 +188,6 @@ class OfflineDbHandler {
           'CONSTRAINT `FK_PictogramRelations_Pictograms_PictogramId` '
           'FOREIGN KEY(`pictogramId`) '
           'REFERENCES `Pictograms`(`onlineId`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Timers` ('
-          '`key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`startTime` integer NOT NULL, '
-          '`progress`	integer NOT NULL, '
-          '`fullLength`	integer NOT NULL, '
-          '`paused`	integer NOT NULL);');
       await txn
           .execute('CREATE TABLE IF NOT EXISTS `FailedOnlineTransactions` ('
               '`type` text NOT NULL, '
@@ -196,7 +196,6 @@ class OfflineDbHandler {
               // TableAffected is used to know where to change an id if needed
               '`tableAffected` text, '
               '`tempId` text);');
-
     });
   }
 
