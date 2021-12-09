@@ -72,7 +72,7 @@ class OfflineDbHandler {
   ///Creates all of the tables in the DB
   Future<void> createTables(Database db) async {
     await db.transaction((Transaction txn) async {
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Users` ('
+      await txn.execute('CREATE TABLE IF NOT EXISTS `users` ('
           '`id` text NOT NULL PRIMARY KEY, '
           '`role` integer NOT NULL, '
           '`roleName` text DEFAULT NULL, '
@@ -84,18 +84,18 @@ class OfflineDbHandler {
           'UNIQUE(`username`), '
           'CONSTRAINT `FK_Users_Settings_SettingsKey` '
           'FOREIGN KEY(`settingsId`) '
-          'REFERENCES `Settings`(`id`) ON DELETE RESTRICT);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `GuardianRelations` ('
+          'REFERENCES `settings`(`id`) ON DELETE RESTRICT);');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `guardianrelations` ('
           '`citizenId` text NOT NULL, '
           '`guardianId` text NOT NULL, '
           'PRIMARY KEY(`citizenId`, `guardianId`), '
           'CONSTRAINT `FK_GuardianRelations_Users_CitizenId` '
           'FOREIGN KEY(`citizenId`) '
-          'REFERENCES `Users`(`id`) ON DELETE CASCADE, '
+          'REFERENCES `users`(`id`) ON DELETE CASCADE, '
           'CONSTRAINT `FK_GuardianRelations_Users_GuardianId` '
           'FOREIGN KEY(`guardianId`) '
-          'REFERENCES `Users`(`id`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Settings` ('
+          'REFERENCES `users`(`id`) ON DELETE CASCADE);');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `settings` ('
           '`id` integer NOT NULL PRIMARY KEY, '
           '`orientation` integer NOT NULL, '
           '`completeMark`	integer NOT NULL, '
@@ -108,17 +108,17 @@ class OfflineDbHandler {
           '`greyScale` integer DEFAULT 0, '
           '`lockTimerControl`	integer DEFAULT 0, '
           '`pictogramText` integer DEFAULT 0);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
+      await txn.execute('CREATE TABLE IF NOT EXISTS `weekdaycolors` ('
           '`id`	integer NOT NULL PRIMARY KEY, '
           '`day` integer NOT NULL, '
           '`hexColor`	text COLLATE BINARY, '
           '`settingsId` integer NOT NULL, '
           'CONSTRAINT `FK_WeekDayColors_Settings_SettingsId` '
           'FOREIGN KEY(`settingsId`) '
-          'REFERENCES `Settings`(`id`) ON DELETE CASCADE);');
+          'REFERENCES `settings`(`id`) ON DELETE CASCADE);');
 
 
-      await txn.execute('CREATE TABLE IF NOT EXISTS `WeekTemplates` ('
+      await txn.execute('CREATE TABLE IF NOT EXISTS `weektemplates` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`name`	text COLLATE BINARY, '
           '`thumbnailKey`	integer NOT NULL, '
@@ -127,7 +127,7 @@ class OfflineDbHandler {
           'CONSTRAINT `FK_WeekTemplates_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`thumbnailKey`) '
           'REFERENCES `Pictograms`(`onlineId`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Weeks` ('
+      await txn.execute('CREATE TABLE IF NOT EXISTS `weeks` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`girafUserId` text NOT NULL, '
           '`name`	text COLLATE BINARY, '
@@ -136,22 +136,22 @@ class OfflineDbHandler {
           '`weekYear`	integer NOT NULL,'
           'CONSTRAINT `FK_Weeks_AspNetUsers_GirafUserId` '
           'FOREIGN KEY(`girafUserId`) '
-          'REFERENCES `Users`(`id`) ON DELETE CASCADE,'
+          'REFERENCES `users`(`id`) ON DELETE CASCADE,'
           'CONSTRAINT `FK_Weeks_Pictograms_ThumbnailKey` '
           'FOREIGN KEY(`thumbnailKey`) '
           'REFERENCES `Pictograms`(`onlineId`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Weekdays` ('
+      await txn.execute('CREATE TABLE IF NOT EXISTS `weekdays` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`day` integer NOT NULL, '
           '`weekId`	integer DEFAULT NULL, '
           '`weekTemplateId`	integer DEFAULT NULL,'
           'CONSTRAINT `FK_Weekdays_WeekTemplates_WeekTemplateId` '
           'FOREIGN KEY(`weekTemplateId`) '
-          'REFERENCES `WeekTemplates`(`onlineId`) ON DELETE CASCADE,'
+          'REFERENCES `weektemplates`(`onlineId`) ON DELETE CASCADE,'
           'CONSTRAINT `FK_Weekdays_Weeks_WeekId` '
           'FOREIGN KEY(`weekId`) '
-          'REFERENCES `Weeks`(`id`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Pictograms` ('
+          'REFERENCES `weeks`(`id`) ON DELETE CASCADE);');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `pictograms` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`accessLevel` integer NOT NULL, '
           '`lastEdit`	datetime NOT NULL, '
@@ -159,7 +159,7 @@ class OfflineDbHandler {
           '`imageHash`	text COLLATE BINARY, '
           '`onlineId` integer NOT NULL, '
           'UNIQUE(`title`, `onlineId`));');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Activities` ('
+      await txn.execute('CREATE TABLE IF NOT EXISTS `activities` ('
           '`key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`order` integer NOT NULL, '
           '`otherKey`	integer NOT NULL, '
@@ -168,28 +168,28 @@ class OfflineDbHandler {
           '`isChoiceBoard` integer NOT NULL DEFAULT 0, '
           'CONSTRAINT `FK_Activities_Timers_TimerKey` '
           'FOREIGN KEY(`timerKey`) '
-          'REFERENCES `Timers`(`key`) ON DELETE SET NULL,'
+          'REFERENCES `timers`(`key`) ON DELETE SET NULL,'
           'CONSTRAINT `FK_Activities_Weekdays_OtherKey` '
           'FOREIGN KEY(`otherKey`) '
-          'REFERENCES `Weekdays`(`id`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `PictogramRelations` ('
+          'REFERENCES `weekdays`(`id`) ON DELETE CASCADE);');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `pictogramrelations` ('
           '`activityId`	integer NOT NULL, '
           '`pictogramId` integer NOT NULL, '
           'PRIMARY KEY(`activityId`,`pictogramId`), '
           'CONSTRAINT `FK_PictogramRelations_Activities_ActivityId` '
           'FOREIGN KEY(`activityId`) '
-          'REFERENCES `Activities`(`key`) ON DELETE CASCADE, '
+          'REFERENCES `activities`(`key`) ON DELETE CASCADE, '
           'CONSTRAINT `FK_PictogramRelations_Pictograms_PictogramId` '
           'FOREIGN KEY(`pictogramId`) '
-          'REFERENCES `Pictograms`(`onlineId`) ON DELETE CASCADE);');
-      await txn.execute('CREATE TABLE IF NOT EXISTS `Timers` ('
+          'REFERENCES `pictograms`(`onlineId`) ON DELETE CASCADE);');
+      await txn.execute('CREATE TABLE IF NOT EXISTS `timers` ('
           '`key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`startTime` integer NOT NULL, '
           '`progress`	integer NOT NULL, '
           '`fullLength`	integer NOT NULL, '
           '`paused`	integer NOT NULL);');
       await txn
-          .execute('CREATE TABLE IF NOT EXISTS `FailedOnlineTransactions` ('
+          .execute('CREATE TABLE IF NOT EXISTS `failedonlinetransactions` ('
               '`type` text NOT NULL, '
               '`url` text NOT NULL, '
               '`body` text, '
@@ -218,7 +218,7 @@ class OfflineDbHandler {
       'tableAffected': tableAffected,
       'tempId': tempId
     };
-    db.insert('`FailedOnlineTransactions`', insertQuery);
+    db.insert('`failedonlinetransactions`', insertQuery);
   }
 
   /// Retry sending the failed changes to the online database
@@ -226,7 +226,7 @@ class OfflineDbHandler {
     final Database db = await database;
 
     final List<Map<String, dynamic>> dbRes =
-        await db.rawQuery('SELECT * FROM `FailedOnlineTransactions`');
+        await db.rawQuery('SELECT * FROM `failedonlinetransactions`');
     if (dbRes.isNotEmpty) {
       final Http _http = getHttpObject();
       for (Map<String, dynamic> transaction in dbRes) {
@@ -288,13 +288,13 @@ class OfflineDbHandler {
   Future<void> updateIdInOfflineDb(
       Map<String, dynamic> json, String table, int tempId) async {
     switch (table) {
-      case 'Users':
+      case 'users':
         replaceTempIdUsers(tempId, int.tryParse(json['id']));
         break;
-      case 'Pictograms':
+      case 'pictograms':
         replaceTempIdPictogram(tempId, json['id']);
         break;
-      case 'WeekTemplates':
+      case 'weektemplates':
         replaceTempIdWeekTemplate(tempId, json['id']);
         break;
       default:
@@ -307,13 +307,13 @@ class OfflineDbHandler {
   /// online database, such that they are synchonized
   Future<void> replaceTempIdUsers(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate("UPDATE `Users` SET id = '$newId' "
+    db.rawUpdate("UPDATE `users` SET id = '$newId' "
         "WHERE id == '$oldId'");
-    db.rawUpdate("UPDATE `GuardianRelations` SET citizenId = '$newId' "
+    db.rawUpdate("UPDATE `guardianrelations` SET citizenId = '$newId' "
         "WHERE citizenId == '$oldId'");
-    db.rawUpdate("UPDATE `GuardianRelations` SET guardianId = '$newId' "
+    db.rawUpdate("UPDATE `guardianrelations` SET guardianId = '$newId' "
         "WHERE guardianId == '$oldId'");
-    db.rawUpdate("UPDATE `Weeks` SET girafUserId = '$newId' "
+    db.rawUpdate("UPDATE `weeks` SET girafUserId = '$newId' "
         "WHERE girafUserId == '$oldId'");
   }
 
@@ -322,13 +322,13 @@ class OfflineDbHandler {
   /// online database, such that they are synchonized
   Future<void> replaceTempIdPictogram(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate("UPDATE `Pictograms` SET id = '$newId' "
+    db.rawUpdate("UPDATE `pictograms` SET id = '$newId' "
         "WHERE id == '$oldId'");
-    db.rawUpdate("UPDATE `WeekTemplates` SET thumbnailKey = '$newId'"
+    db.rawUpdate("UPDATE `weektemplates` SET thumbnailKey = '$newId'"
         " WHERE thumbnailKey == '$oldId'");
-    db.rawUpdate("UPDATE `Weeks` SET thumbnailKey = '$newId'"
+    db.rawUpdate("UPDATE `weeks` SET thumbnailKey = '$newId'"
         " WHERE thumbnailKey == '$oldId'");
-    db.rawUpdate("UPDATE `PictogramRelations` SET pictogramId = '$newId'"
+    db.rawUpdate("UPDATE `pictogramrelations` SET pictogramId = '$newId'"
         " WHERE pictogramId == '$oldId'");
   }
 
@@ -337,9 +337,9 @@ class OfflineDbHandler {
   /// online database, such that they are synchonized
   Future<void> replaceTempIdWeekTemplate(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate("UPDATE `WeekTemplates` SET onlineId = '$newId' "
+    db.rawUpdate("UPDATE `weektemplates` SET onlineId = '$newId' "
         "Where onlineId == '$oldId'");
-    db.rawUpdate("UPDATE `Weekdays` SET weekTemplateId = '$newId' "
+    db.rawUpdate("UPDATE `weekdays` SET weekTemplateId = '$newId' "
         "Where weekTemplateId == '$oldId'");
   }
 
@@ -347,7 +347,7 @@ class OfflineDbHandler {
   /// offline database when it succeeds
   Future<void> removeFailedTransaction(Map<String, dynamic> transaction) async {
     final Database db = await database;
-    await db.rawDelete('DELETE FROM `FailedOnlineTransactions` WHERE '
+    await db.rawDelete('DELETE FROM `failedonlinetransactions` WHERE '
         "type == '${transaction['type']}' AND "
         "url == '${transaction['url']}' AND "
         "body == '${transaction['body']}' AND "
@@ -360,7 +360,7 @@ class OfflineDbHandler {
   Future<bool> login(String username, String password) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res = await db
-        .rawQuery("SELECT password FROM `Users` WHERE username == '$username'");
+        .rawQuery("SELECT password FROM `users` WHERE username == '$username'");
     return sha512.convert(utf8.encode(password)).toString() ==
         res[0]['password'];
   }
@@ -369,7 +369,7 @@ class OfflineDbHandler {
   Future<GirafUserModel> registerAccount(Map<String, dynamic> body) async {
     final Database db = await database;
     final List<Map<String, dynamic>> count = await db.rawQuery(
-        "SELECT * FROM `Users` WHERE username == '${body['username']}'");
+        "SELECT * FROM `users` WHERE username == '${body['username']}'");
 
     if (count.isNotEmpty) {
       // TODO(Tilasair): better exceptions
@@ -390,42 +390,42 @@ class OfflineDbHandler {
       'pictogramText': 0 //false
     };
     // TODO(Tilasair): Make the settings a transaction
-    await db.insert('Settings', settings);
+    await db.insert('settings', settings);
     final List<Map<String, dynamic>> settingsIdRes =
-        await db.rawQuery('SELECT `id` FROM `Settings` WHERE `id` NOT IN '
-            '(SELECT `settingsId` FROM `Users`)');
+        await db.rawQuery('SELECT `id` FROM `settings` WHERE `id` NOT IN '
+            '(SELECT `settingsId` FROM `users`)');
     final int settingsId = settingsIdRes[0]['id'];
-    await db.insert('WeekDayColors', <String, dynamic>{
+    await db.insert('weekdaycolors', <String, dynamic>{
       'day': Weekday.Monday.index,
       'hexColor': '#08a045',
       'settingsId': settingsId
     });
-    await db.insert('WeekDayColors', <String, dynamic>{
+    await db.insert('weekdaycolors', <String, dynamic>{
       'day': Weekday.Tuesday.index,
       'hexColor': '#540d6e',
       'settingsId': settingsId
     });
-    await db.insert('WeekDayColors', <String, dynamic>{
+    await db.insert('weekdaycolors', <String, dynamic>{
       'day': Weekday.Wednesday.index,
       'hexColor': '#f77f00',
       'settingsId': settingsId
     });
-    await db.insert('WeekDayColors', <String, dynamic>{
+    await db.insert('weekdaycolors', <String, dynamic>{
       'day': Weekday.Thursday.index,
       'hexColor': '#004777',
       'settingsId': settingsId
     });
-    await db.insert('WeekDayColors', <String, dynamic>{
+    await db.insert('weekdaycolors', <String, dynamic>{
       'day': Weekday.Friday.index,
       'hexColor': '#f9c80e',
       'settingsId': settingsId
     });
-    await db.insert('WeekDayColors', <String, dynamic>{
+    await db.insert('weekdaycolors', <String, dynamic>{
       'day': Weekday.Saturday.index,
       'hexColor': '#db2b39',
       'settingsId': settingsId
     });
-    await db.insert('WeekDayColors', <String, dynamic>{
+    await db.insert('weekdaycolors', <String, dynamic>{
       'day': Weekday.Sunday.index,
       'hexColor': '#ffffff',
       'settingsId': settingsId
@@ -460,9 +460,9 @@ class OfflineDbHandler {
       'password': sha512.convert(utf8.encode(body['password'])).toString(),
       'settingsId': settingsId
     };
-    await db.insert('Users', insertQuery);
+    await db.insert('users', insertQuery);
     final List<Map<String, dynamic>> res = await db.rawQuery(
-        "SELECT * FROM `Users` WHERE `username` == '${body['username']}'");
+        "SELECT * FROM `users` WHERE `username` == '${body['username']}'");
     return GirafUserModel.fromJson(res[0]);
   }
 
@@ -474,7 +474,7 @@ class OfflineDbHandler {
     final String encryptedPassword =
         sha512.convert(utf8.encode(newPassword)).toString();
     final int rowsChanged = await db.rawUpdate(
-        "UPDATE `Users` SET password = '$encryptedPassword' WHERE id == '$id'");
+        "UPDATE `users` SET password = '$encryptedPassword' WHERE id == '$id'");
     return rowsChanged == 1;
   }
 
@@ -482,7 +482,7 @@ class OfflineDbHandler {
   Future<bool> deleteAccount(String id) async {
     final Database db = await database;
     final int res =
-        await db.rawDelete("DELETE FROM `Users` WHERE `id` == '$id'");
+        await db.rawDelete("DELETE FROM `users` WHERE `id` == '$id'");
     return res == 1;
   }
 
@@ -493,12 +493,12 @@ class OfflineDbHandler {
       {TimerModel timer}) async {
     final Database db = await database;
     final List<Map<String, dynamic>> dbWeek =
-        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
+        await db.rawQuery('SELECT * FROM `weeks` WHERE '
             "girafUserId == '$userId' AND "
             "weekYear == '$weekYear' AND "
             "weekNumber == '$weekNumber'");
     final List<Map<String, dynamic>> dbDay =
-        await db.rawQuery('SELECT * FROM `Weekdays` WHERE '
+        await db.rawQuery('SELECT * FROM `weekdays` WHERE '
             "day == '${weekDay.index}' AND "
             "weekId == '${dbWeek[0]['id']}'");
 
@@ -523,22 +523,22 @@ class OfflineDbHandler {
 
     db.transaction((Transaction txn) async {
       for (PictogramModel pictogram in activity.pictograms) {
-        await txn.insert('PictogramRelations', <String, dynamic>{
+        await txn.insert('pictogramrelations', <String, dynamic>{
           'activityId': activity.id,
           'pictogramId': pictogram.id
         });
       }
     });
-    await db.insert('`Activities`', insertActivityQuery);
+    await db.insert('`activities`', insertActivityQuery);
     if (insertTimerQuery != null) {
-      await db.insert('Timers', insertTimerQuery);
+      await db.insert('timers', insertTimerQuery);
     }
     return _getActivity(activity.id, db);
   }
 
   Future<ActivityModel> _getActivity(int key, Database db) async {
     final List<Map<String, dynamic>> listResult =
-        await db.rawQuery("SELECT * FROM `Activities` WHERE `key` == '$key'");
+        await db.rawQuery("SELECT * FROM `activities` WHERE `key` == '$key'");
     if (listResult.isEmpty) {
       return null;
     }
@@ -556,8 +556,8 @@ class OfflineDbHandler {
   Future<List<PictogramModel>> _getActivityPictograms(int activityKey) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res = await db.rawQuery(
-        'SELECT * FROM `Pictograms` '
-        'WHERE `onlineId` == (SELECT `pictogramId` FROM `PictogramRelations` '
+        'SELECT * FROM `pictograms` '
+        'WHERE `onlineId` == (SELECT `pictogramId` FROM `pictogramrelations` '
         "WHERE `activityId` == '$activityKey')");
     final List<PictogramModel> result = <PictogramModel>[];
     for (Map<String, dynamic> pictogram in res) {
@@ -569,7 +569,7 @@ class OfflineDbHandler {
   Future<TimerModel> _getTimer(int key) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery("SELECT * FROM `Timers` WHERE `key` == '$key'");
+        await db.rawQuery("SELECT * FROM `timers` WHERE `key` == '$key'");
     return TimerModel.fromDatabase(res[0]);
   }
 
@@ -578,20 +578,20 @@ class OfflineDbHandler {
       ActivityModel activity, String userId) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res = await db
-        .rawQuery("SELECT * FROM `Activities` WHERE `key` == '${activity.id}'");
+        .rawQuery("SELECT * FROM `activities` WHERE `key` == '${activity.id}'");
     if (activity.timer == null) {
       if (res.isNotEmpty) {
         await db.rawDelete(
-            "DELETE FROM `Timers` WHERE `key` == '${res[0]['timerKey']}'");
+            "DELETE FROM `timers` WHERE `key` == '${res[0]['timerKey']}'");
       }
-      await db.rawUpdate('UPDATE `Activities` SET '
+      await db.rawUpdate('UPDATE `activities` SET '
           "`order` = '${activity.order}', "
           "`state` = '${activity.state.index}', "
           "`isChoiceBoard` = '${activity.isChoiceBoard}' "
           "WHERE `key` == '${activity.id}'");
     } else {
       final int timerKey = activity.timer.key ?? Uuid().v1().hashCode;
-      await db.rawUpdate('UPDATE `Activities` SET '
+      await db.rawUpdate('UPDATE `activities` SET '
           "`order` = '${activity.order}', "
           "`state` = '${activity.state.index}', "
           "`timerKey` = '$timerKey', "
@@ -605,9 +605,9 @@ class OfflineDbHandler {
           'fullLength': activity.timer.fullLength,
           'paused': activity.timer.paused ? 1 : 0,
         };
-        db.insert('`Timers`', insertTimerQuery);
+        db.insert('`timers`', insertTimerQuery);
       } else {
-        await db.rawUpdate('UPDATE `Timers` SET '
+        await db.rawUpdate('UPDATE `timers` SET '
           "`startTime` = '${activity.timer.startTime.millisecondsSinceEpoch}', "
           "`progress` = '${activity.timer.progress}', "
           "`fullLength` = '${activity.timer.fullLength}', "
@@ -616,10 +616,10 @@ class OfflineDbHandler {
       }
     }
     db.transaction((Transaction txn) async {
-      await txn.rawDelete('DELETE FROM `PictogramRelations` '
+      await txn.rawDelete('DELETE FROM `pictogramrelations` '
           "WHERE activityId = '${activity.id}'");
       for (PictogramModel pictogram in activity.pictograms) {
-        await txn.insert('PictogramRelations', <String, dynamic>{
+        await txn.insert('pictogramrelations', <String, dynamic>{
           'activityId': activity.id,
           'pictogramId': pictogram.id
         });
@@ -632,19 +632,19 @@ class OfflineDbHandler {
   Future<bool> deleteActivity(int activityId, String userId) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res = await db.rawQuery(
-        "SELECT timerKey FROM `Activities` WHERE key == '$activityId'");
+        "SELECT timerKey FROM `activities` WHERE key == '$activityId'");
     final int timerKey = res[0]['TimerKey'];
     final int activityChanged = await db
-        .rawDelete("DELETE FROM `Activities` WHERE key == '$activityId'");
+        .rawDelete("DELETE FROM `activities` WHERE key == '$activityId'");
     int timersChanged;
     if (timerKey != null) {
       timersChanged =
-          await db.rawDelete("DELETE FROM `Timers` WHERE key == '$timerKey'");
+          await db.rawDelete("DELETE FROM `timers` WHERE key == '$timerKey'");
     } else {
       timersChanged = 1;
     }
     final int relationsChanged = await db.rawDelete(
-        "DELETE FROM `PictogramRelations` WHERE activityId == '$activityId'");
+        "DELETE FROM `pictogramrelations` WHERE activityId == '$activityId'");
     return activityChanged == 1 && timersChanged == 1 && relationsChanged >= 1;
   }
 
@@ -656,7 +656,7 @@ class OfflineDbHandler {
       {String query, @required int page, @required int pageSize}) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Pictograms` '
+        await db.rawQuery('SELECT * FROM `pictograms` '
             "WHERE title LIKE '%$query%'");
     final List<PictogramModel> allPictograms = <PictogramModel>[];
     for (Map<String, dynamic> pictogram in res) {
@@ -677,7 +677,7 @@ class OfflineDbHandler {
   Future<PictogramModel> getPictogramID(int id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery("SELECT * FROM `Pictograms` WHERE onlineId == '$id'");
+        await db.rawQuery("SELECT * FROM `pictograms` WHERE onlineId == '$id'");
     return PictogramModel.fromDatabase(res[0]);
   }
 
@@ -691,14 +691,14 @@ class OfflineDbHandler {
       'title': pictogram.title,
       'imageHash': pictogram.imageHash,
     };
-    await db.insert('Pictograms', insertQuery);
+    await db.insert('pictograms', insertQuery);
     return getPictogramID(insertQuery['onlineId']);
   }
 
   ///Update a given pictogram
   Future<PictogramModel> updatePictogram(PictogramModel pictogram) async {
     final Database db = await database;
-    await db.rawUpdate('UPDATE `Pictograms` SET '
+    await db.rawUpdate('UPDATE `pictograms` SET '
         "accessLevel = '${pictogram.accessLevel.index}', "
         "lastEdit = '${pictogram.lastEdit}', "
         "title = '${pictogram.title}', "
@@ -711,7 +711,7 @@ class OfflineDbHandler {
   Future<bool> deletePictogram(int id) async {
     final Database db = await database;
     final int pictogramsDeleted =
-        await db.rawDelete("DELETE FROM `Pictograms` WHERE onlineId == '$id'");
+        await db.rawDelete("DELETE FROM `pictograms` WHERE onlineId == '$id'");
     final String pictogramDirectoryPath = await getPictogramDirectory;
     try {
       await File(join(pictogramDirectoryPath, '$id.png')).delete();
@@ -726,7 +726,7 @@ class OfflineDbHandler {
     final File newImage = File(join(pictogramDirectoryPath, '$id.png'));
     newImage.writeAsBytes(image);
     final List<Map<String, dynamic>> res =
-        await db.rawQuery("SELECT * FROM `Pictograms` WHERE onlineId == '$id'");
+        await db.rawQuery("SELECT * FROM `pictograms` WHERE onlineId == '$id'");
     return PictogramModel.fromDatabase(res[0]);
   }
 
@@ -752,7 +752,7 @@ class OfflineDbHandler {
   Future<GirafUserModel> getUser(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery("SELECT * FROM `Users` WHERE id == '$id'");
+        await db.rawQuery("SELECT * FROM `users` WHERE id == '$id'");
     return GirafUserModel.fromJson(res[0]);
   }
 
@@ -761,7 +761,7 @@ class OfflineDbHandler {
     try {
       final Database db = await database;
       final List<Map<String, dynamic>> id = await db
-          .rawQuery("SELECT * FROM `Users` WHERE username == '$userName'");
+          .rawQuery("SELECT * FROM `users` WHERE username == '$userName'");
       return id[0]['id'];
     } catch (error) {
       return null;
@@ -773,7 +773,7 @@ class OfflineDbHandler {
     try {
       final Database db = await database;
       final List<Map<String, dynamic>> users = await db
-          .rawQuery("SELECT * FROM 'Users' WHERE username == '$username'");
+          .rawQuery("SELECT * FROM 'users' WHERE username == '$username'");
       return users[0]['role'];
     } catch (error) {
       return Role.Unknown.index;
@@ -786,7 +786,7 @@ class OfflineDbHandler {
   /// when receiving user data from the server.
   Future<GirafUserModel> insertUser(GirafUserModel user) async {
     final Database db = await database;
-    await db.insert('`Users`', <String, dynamic>{
+    await db.insert('`users`', <String, dynamic>{
       'id': user.id,
       'role': user.role.index,
       'roleName': user.roleName,
@@ -802,7 +802,7 @@ class OfflineDbHandler {
   /// Update a user based on [user.id] with the values from [user]
   Future<GirafUserModel> updateUser(GirafUserModel user) async {
     final Database db = await database;
-    await db.rawUpdate('UPDATE `Users` SET '
+    await db.rawUpdate('UPDATE `users` SET '
         "role = '${user.role.index}', "
         "roleName = '${user.roleName}', "
         "username = '${user.username}', "
@@ -816,10 +816,10 @@ class OfflineDbHandler {
   Future<SettingsModel> getUserSettings(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> resSettings =
-        await db.rawQuery('SELECT * FROM `Settings` WHERE '
-            "`id` == (SELECT `settingsId` FROM `Users` WHERE `id` == '$id')");
+        await db.rawQuery('SELECT * FROM `settings` WHERE '
+            "`id` == (SELECT `settingsId` FROM `users` WHERE `id` == '$id')");
     final List<Map<String, dynamic>> resWeekdayColors =
-        await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
+        await db.rawQuery('SELECT * FROM `weekdaycolors` WHERE '
             "`settingsId` == '${resSettings[0]['id']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
@@ -828,7 +828,7 @@ class OfflineDbHandler {
   Future<SettingsModel> insertUserSettings(
       String userId, SettingsModel settings) async {
     final Database db = await database;
-    final int settingsId = await db.insert('Settings', <String, dynamic>{
+    final int settingsId = await db.insert('settings', <String, dynamic>{
       'activitiesCount': settings.activitiesCount,
       'cancelMark': settings.cancelMark.index,
       'completeMark': settings.completeMark.index,
@@ -846,7 +846,7 @@ class OfflineDbHandler {
      * which means that they have to be saved in its own table */
     for (WeekdayColorModel dayColor in settings.weekDayColors) {
       final int day = dayColor.day.index;
-      db.insert('`WeekDayColors`', <String, dynamic>{
+      db.insert('`weekdaycolors`', <String, dynamic>{
         'hexColor': dayColor.hexColor,
         'day': day,
         'settingsId': settingsId
@@ -854,7 +854,7 @@ class OfflineDbHandler {
     }
 
     // This will update the settingsId in the user tuple
-    db.update('`Users`', <String, dynamic>{
+    db.update('`users`', <String, dynamic>{
       'settingsId': settingsId
     }, where: 'id = $userId');
 
@@ -866,10 +866,10 @@ class OfflineDbHandler {
       String id, SettingsModel settings) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT `settingsId` FROM `Users` '
+        await db.rawQuery('SELECT `settingsId` FROM `users` '
             "WHERE `id` == '$id'");
     final String settingsId = res[0]['settingsId'].toString();
-    db.rawUpdate('UPDATE `Settings` SET '
+    db.rawUpdate('UPDATE `settings` SET '
         "`activitiesCount` = '${settings.activitiesCount}', "
         "`cancelMark` = '${settings.cancelMark.index}', "
         "`completeMark` = '${settings.completeMark.index}', "
@@ -884,7 +884,7 @@ class OfflineDbHandler {
         "`id` = '$settingsId'");
     for (WeekdayColorModel dayColor in settings.weekDayColors) {
       final int day = dayColor.day.index;
-      db.rawUpdate('UPDATE `WeekDayColors` SET '
+      db.rawUpdate('UPDATE `weekdaycolors` SET '
           "`hexColor` = '${dayColor.hexColor}' WHERE "
           "`settingsId` == '$settingsId' AND "
           "`day` == '$day'");
@@ -917,8 +917,8 @@ class OfflineDbHandler {
   Future<List<DisplayNameModel>> getCitizens(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Users` AS `U` JOIN'
-            ' `GuardianRelations` AS `GR` ON `U`.id==`GR`.citizenId '
+        await db.rawQuery('SELECT * FROM `users` AS `U` JOIN'
+            ' `guardianrelations` AS `GR` ON `U`.id==`GR`.citizenId '
             "WHERE `GR`.guardianId =='$id'");
     return res
         .map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
@@ -930,8 +930,8 @@ class OfflineDbHandler {
   Future<List<DisplayNameModel>> getGuardians(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Users` AS `U` JOIN'
-            ' `GuardianRelations` AS `GR` ON `U`.id==`GR`.guardianId '
+        await db.rawQuery('SELECT * FROM `users` AS `U` JOIN'
+            ' `guardianrelations` AS `GR` ON `U`.id==`GR`.guardianId '
             "WHERE `GR`.citizenId =='$id'");
     return res
         .map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
@@ -946,7 +946,7 @@ class OfflineDbHandler {
       'guardianId': guardianId,
       'citizenId': citizenId
     };
-    final int addedCount = await db.insert('`GuardianRelations`', insertQuery);
+    final int addedCount = await db.insert('`guardianrelations`', insertQuery);
     return addedCount == 1;
   }
 
@@ -956,7 +956,7 @@ class OfflineDbHandler {
   Future<List<WeekNameModel>> getWeekNames(String id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Weeks` AS `w` JOIN `Users` AS `u` '
+        await db.rawQuery('SELECT * FROM `weeks` AS `w` JOIN `users` AS `u` '
             "ON `w`.`girafUserId`==`u`.`id` WHERE `u`.id == '$id'");
     return res
         .map((Map<String, dynamic> json) => WeekNameModel.fromDatabase(json))
@@ -970,7 +970,7 @@ class OfflineDbHandler {
   Future<WeekModel> getWeek(String id, int year, int weekNumber) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `Weeks` WHERE'
+        await db.rawQuery('SELECT * FROM `weeks` WHERE'
             "`girafUserId` == '$id' AND "
             "`weekYear` == '$year' AND "
             "`weekNumber` == '$weekNumber'");
@@ -979,11 +979,11 @@ class OfflineDbHandler {
         (await getPictogramID(res[0]['thumbnailKey'])).toJson();
     final int weekId = res.single['id'];
     final List<Map<String, dynamic>> weekDaysFromDb = await db
-        .rawQuery("SELECT * FROM `Weekdays` WHERE `weekId` == '$weekId'");
+        .rawQuery("SELECT * FROM `weekdays` WHERE `weekId` == '$weekId'");
     final List<Map<String, dynamic>> weekDays = <Map<String, dynamic>>[];
     for (Map<String, dynamic> day in weekDaysFromDb) {
       final List<Map<String, dynamic>> activityFromDb =
-          await db.rawQuery('SELECT * FROM `Activities` WHERE '
+          await db.rawQuery('SELECT * FROM `activities` WHERE '
               "otherKey == '${day['id']}'");
       final Map<String, dynamic> dayRes = <String, dynamic>{
         'day': day['day'],
@@ -1004,14 +1004,14 @@ class OfflineDbHandler {
       String id, int year, int weekNumber, WeekModel week) async {
     final Database db = await database;
     final List<Map<String, dynamic>> dbWeek =
-        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
+        await db.rawQuery('SELECT * FROM `weeks` WHERE '
             "girafUserId == '$id' AND "
             "weekYear == '$year' AND "
             "weekNumber == '$weekNumber'");
     if (dbWeek.isEmpty) {
       _createWeek(db, week, id);
     }
-    await db.rawUpdate('UPDATE `Weeks` SET '
+    await db.rawUpdate('UPDATE `weeks` SET '
         "weekYear = '${week.weekYear}', "
         "name = '${week.name}', "
         "thumbnailKey = '${week.thumbnail.id}', "
@@ -1030,7 +1030,7 @@ class OfflineDbHandler {
       'girafUserId': id,
       'weekYear': week.weekYear
     };
-    final int weekId = await db.insert('`Weeks`', insertQuery);
+    final int weekId = await db.insert('`weeks`', insertQuery);
     for (WeekdayModel day in week.days) {
       await _insertWeekday(weekId, day, db, id, week);
     }
@@ -1042,7 +1042,7 @@ class OfflineDbHandler {
       'day': day.day.index,
       'weekId': weekId
     };
-    db.insert('`Weekdays`', insertQuery);
+    db.insert('`weekdays`', insertQuery);
     if (day.activities != null) {
       for (ActivityModel activity in day.activities) {
         if (_getActivity(activity.id, db) == null) {
@@ -1061,12 +1061,12 @@ class OfflineDbHandler {
   Future<bool> deleteWeek(String id, int year, int weekNumber) async {
     final Database db = await database;
     final List<Map<String, dynamic>> weekRes =
-        await db.rawQuery('SELECT * FROM `Weeks` WHERE '
+        await db.rawQuery('SELECT * FROM `weeks` WHERE '
             "girafUserId == '$id' AND "
             "weekYear == '$year' AND "
             "weekNumber == '$weekNumber'");
     final List<Map<String, dynamic>> deleteDays =
-        await db.rawQuery('SELECT * FROM `Weekdays` WHERE'
+        await db.rawQuery('SELECT * FROM `weekdays` WHERE'
             "`weekId` == '${weekRes[0]['id']}'");
     bool allDaysDeleted = true;
     for (Map<String, dynamic> day in deleteDays) {
@@ -1074,7 +1074,7 @@ class OfflineDbHandler {
         allDaysDeleted = false;
       }
     }
-    final int deleteCount = await db.rawDelete('DELETE FROM `Weeks` WHERE '
+    final int deleteCount = await db.rawDelete('DELETE FROM `weeks` WHERE '
         "girafUserId == '$id' AND "
         "weekYear == '$year' AND "
         "weekNumber == '$weekNumber'");
@@ -1084,14 +1084,14 @@ class OfflineDbHandler {
 
   Future<bool> _deleteWeekDay(String userId, int weekDayId, Database db) async {
     final List<Map<String, dynamic>> deleteActivities = await db.rawQuery(
-        "SELECT * FROM `Activities` WHERE `otherKey` == '$weekDayId'");
+        "SELECT * FROM `activities` WHERE `otherKey` == '$weekDayId'");
     bool activitiesDeleted = true;
     for (Map<String, dynamic> activity in deleteActivities) {
       if (!(await deleteActivity(activity['key'], userId))) {
         activitiesDeleted = false;
       }
     }
-    final int daysDeleted = await db.rawDelete('DELETE FROM `Weekdays` WHERE '
+    final int daysDeleted = await db.rawDelete('DELETE FROM `weekdays` WHERE '
         "id == '$weekDayId'");
     return daysDeleted == deleteActivities.length && activitiesDeleted;
   }
@@ -1102,7 +1102,7 @@ class OfflineDbHandler {
   Future<List<WeekTemplateNameModel>> getTemplateNames() async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `WeekTemplates`');
+        await db.rawQuery('SELECT * FROM `weektemplates`');
     final List<WeekTemplateNameModel> weekTemplates = <WeekTemplateNameModel>[];
     for (Map<String, dynamic> result in res) {
       weekTemplates.add(WeekTemplateNameModel.fromDatabase(result));
@@ -1119,7 +1119,7 @@ class OfflineDbHandler {
       'onlineId': template.id ?? Uuid().v1().hashCode,
       'department': template.departmentKey
     };
-    await db.insert('WeekTemplates', insertQuery);
+    await db.insert('weektemplates', insertQuery);
     return getTemplate(template.id);
   }
 
@@ -1127,7 +1127,7 @@ class OfflineDbHandler {
   Future<WeekTemplateModel> getTemplate(int id) async {
     final Database db = await database;
     final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM `WeekTemplates` WHERE '
+        await db.rawQuery('SELECT * FROM `weektemplates` WHERE '
             "onlineId == '$id'");
     final Map<String, dynamic> tempRes = res[0];
     // get the first record
@@ -1140,13 +1140,13 @@ class OfflineDbHandler {
   /// Update a template with all the values from [template]
   Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) async {
     final Database db = await database;
-    db.rawUpdate('UPDATE `WeekTemplates` SET '
+    db.rawUpdate('UPDATE `weektemplates` SET '
         "name = '${template.name}', "
         "thumbnailKey = '${template.thumbnail.id}', "
         "department = '${template.departmentKey}' WHERE "
         "id == '${template.id}'");
     final List<Map<String, dynamic>> templateRes =
-        await db.rawQuery('SELECT `OnlineId` FROM `WeekTemplates` WHERE '
+        await db.rawQuery('SELECT `OnlineId` FROM `weektemplates` WHERE '
             "id == ${template.id} AND name == '${template.name}'");
     return getTemplate(templateRes[0]['onlineId']);
   }
@@ -1155,7 +1155,7 @@ class OfflineDbHandler {
   Future<bool> deleteTemplate(int id) async {
     final Database db = await database;
     final int deleteCount =
-        await db.rawDelete('DELETE FROM `WeekTemplates` WHERE '
+        await db.rawDelete('DELETE FROM `weektemplates` WHERE '
             "onlineID =='$id'");
     return deleteCount > 0;
   }
