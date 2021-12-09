@@ -45,6 +45,11 @@ class OfflineDbHandler {
   /// Get the database, if it doesnt exist create it
   Future<Database> get database async {
     _database ??= await initializeDatabase();
+    print(_database.isOpen);
+    print(_database.path);
+    print(_database.getVersion());
+    print(_database.toString());
+    print(await _database.rawQuery("SELECT * FROM 'Users'"));
     return _database;
   }
 
