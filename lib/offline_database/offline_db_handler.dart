@@ -105,9 +105,9 @@ class OfflineDbHandler {
           '`activitiesCount` integer DEFAULT NULL, '
           '`theme` integer NOT NULL, '
           '`nrOfDaysToDisplay` integer DEFAULT NULL, '
-          '`greyScale` integer DEFAULT \'0\', '
-          '`lockTimerControl`	integer DEFAULT \'0\', '
-          '`pictogramText` integer DEFAULT \'0\');');
+          '`greyScale` integer DEFAULT 0, '
+          '`lockTimerControl`	integer DEFAULT 0, '
+          '`pictogramText` integer DEFAULT 0);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
           '`id`	integer NOT NULL PRIMARY KEY, '
           '`day` integer NOT NULL, '
@@ -166,7 +166,7 @@ class OfflineDbHandler {
           '`otherKey`	integer NOT NULL, '
           '`state` integer NOT NULL, '
           '`timerKey`	integer DEFAULT NULL, '
-          '`isChoiceBoard` integer NOT NULL DEFAULT \'0\', '
+          '`isChoiceBoard` integer NOT NULL DEFAULT 0, '
           'CONSTRAINT `FK_Activities_Timers_TimerKey` '
           'FOREIGN KEY(`timerKey`) '
           'REFERENCES `Timers`(`key`) ON DELETE SET NULL,'
