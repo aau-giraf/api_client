@@ -829,7 +829,7 @@ class OfflineDbHandler {
   Future<SettingsModel> insertUserSettings(
       String userId, SettingsModel settings) async {
     final Database db = await database;
-    final int settingsId = await db.insert('`Settings`', <String, dynamic>{
+    final int settingsId = await db.insert('Settings', <String, dynamic>{
       'activitiesCount': settings.activitiesCount,
       'cancelMark': settings.cancelMark.index,
       'completeMark': settings.completeMark.index,
