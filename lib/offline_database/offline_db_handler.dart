@@ -41,14 +41,10 @@ class OfflineDbHandler {
   static Database _database;
 
   GirafUserModel _me;
-  bool _isInitialized = false;
 
   /// Get the database, if it doesnt exist create it
   Future<Database> get database async {
-    if (!_isInitialized) {
-      _isInitialized = true;
-      _database = await initializeDatabase();
-    }
+    _database ??= await initializeDatabase();
     return _database;
   }
 
@@ -63,10 +59,8 @@ class OfflineDbHandler {
 
   /// Initiate the database
   Future<Database> initializeDatabase() async {
-    final String dbpath = await getDatabasesPath();
-    print(dbpath);
     return openDatabase(
-        join(dbpath, 'offlineGiraf'),
+        join(await getDatabasesPath(), 'offlineGiraf'),
         version: 1, onCreate: (Database db, int version) => createTables(db));
   }
 
