@@ -59,6 +59,7 @@ class OfflineDbHandler {
 
   /// Initiate the database
   Future<Database> initializeDatabase() async {
+    await deleteDatabase(join(await getDatabasesPath(), 'offlineGiraf'));
     return openDatabase(
         join(await getDatabasesPath(), 'offlineGiraf'),
         onCreate: (Database db, int version) => createTables(db),
@@ -66,137 +67,159 @@ class OfflineDbHandler {
           => createTables(db),
         onDowngrade: (Database db, int oldVersion, int newVersion)
           => createTables(db),
-        version: 2,
+        version: 1,
     );
   }
 
   ///Creates all of the tables in the DB
   Future<void> createTables(Database db) async {
     await db.transaction((Transaction txn) async {
-      await txn.execute('CREATE TABLE IF NOT EXISTS Settings('
-          'id integer NOT NULL PRIMARY KEY, '
-          'orientation integer NOT NULL, '
-          'completeMark	integer NOT NULL, '
-          'cancelMark	integer NOT NULL, '
-          'defaultTimer	integer NOT NULL, '
-          'timerSeconds	integer DEFAULT NULL, '
-          'activitiesCount integer DEFAULT NULL, '
-          'theme integer NOT NULL, '
-          'nrOfDaysToDisplay integer DEFAULT NULL, '
-          'greyScale integer DEFAULT 0, '
-          'lockTimerControl	integer DEFAULT 0, '
-          'pictogramText integer DEFAULT 0)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS Users('
-          'id text NOT NULL PRIMARY KEY, '
-          'role integer NOT NULL, '
-          'roleName text DEFAULT NULL, '
-          'username text DEFAULT NULL, '
-          'displayName text NOT NULL, '
-          'department integer DEFAULT NULL, '
-          'password text NOT NULL, '
-          'settingsId integer DEFAULT NULL, '
-          'UNIQUE(username), '
-          'CONSTRAINT FK_Users_Settings_SettingsKey '
-          'FOREIGN KEY(settingsId) '
-          'REFERENCES Settings(id) ON DELETE RESTRICT)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS GuardianRelations('
-          'citizenId text NOT NULL, '
-          'guardianId text NOT NULL, '
-          'PRIMARY KEY(citizenId, guardianId), '
-          'CONSTRAINT FK_GuardianRelations_Users_CitizenId '
-          'FOREIGN KEY(citizenId) '
-          'REFERENCES Users(id) ON DELETE CASCADE, '
-          'CONSTRAINT FK_GuardianRelations_Users_GuardianId '
-          'FOREIGN KEY(guardianId) '
-          'REFERENCES Users(id) ON DELETE CASCADE)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS WeekDayColors('
-          'id	integer NOT NULL PRIMARY KEY, '
-          'day integer NOT NULL, '
-          'hexColor	text COLLATE BINARY, '
-          'settingsId integer NOT NULL, '
-          'CONSTRAINT FK_WeekDayColors_Settings_SettingsId '
-          'FOREIGN KEY(settingsId) '
-          'REFERENCES Settings(id) ON DELETE CASCADE)');
-
-
-      await txn.execute('CREATE TABLE IF NOT EXISTS Pictograms('
-          'id	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          'accessLevel integer NOT NULL, '
-          'lastEdit	datetime NOT NULL, '
-          'title text NOT NULL, '
-          'imageHash	text COLLATE BINARY, '
-          'onlineId integer NOT NULL, '
-          'UNIQUE(title, onlineId))');
-      await txn.execute('CREATE TABLE IF NOT EXISTS WeekTemplates('
-          'id	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          'name	text COLLATE BINARY, '
-          'thumbnailKey	integer NOT NULL, '
-          'onlineId integer NOT NULL, '
-          'department integer, '
-          'CONSTRAINT FK_WeekTemplates_Pictograms_ThumbnailKey '
-          'FOREIGN KEY(thumbnailKey) '
-          'REFERENCES Pictograms(onlineId) ON DELETE CASCADE)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS Weeks('
-          'id	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          'girafUserId text NOT NULL, '
-          'name	text COLLATE BINARY, '
-          'thumbnailKey integer NOT NULL, '
-          'weekNumber	integer NOT NULL, '
-          'weekYear	integer NOT NULL, '
-          'CONSTRAINT FK_Weeks_AspNetUsers_GirafUserId '
-          'FOREIGN KEY(girafUserId) '
-          'REFERENCES Users(id) ON DELETE CASCADE, '
-          'CONSTRAINT FK_Weeks_Pictograms_ThumbnailKey '
-          'FOREIGN KEY(thumbnailKey) '
-          'REFERENCES Pictograms(onlineId) ON DELETE CASCADE)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS Weekdays('
-          'id	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          'day integer NOT NULL, '
-          'weekId	integer DEFAULT NULL, '
-          'weekTemplateId	integer DEFAULT NULL, '
-          'CONSTRAINT FK_Weekdays_WeekTemplates_WeekTemplateId '
-          'FOREIGN KEY(weekTemplateId) '
-          'REFERENCES WeekTemplates(onlineId) ON DELETE CASCADE, '
-          'CONSTRAINT FK_Weekdays_Weeks_WeekId '
-          'FOREIGN KEY(weekId) '
-          'REFERENCES Weeks(id) ON DELETE CASCADE)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS Timers('
-          'key integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          'startTime integer NOT NULL, '
-          'progress	integer NOT NULL, '
-          'fullLength	integer NOT NULL, '
-          'paused	integer NOT NULL)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS Activities('
-          'key integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          'order integer NOT NULL, '
-          'otherKey	integer NOT NULL, '
-          'state integer NOT NULL, '
-          'timerKey	integer DEFAULT NULL, '
-          'isChoiceBoard integer NOT NULL DEFAULT 0, '
-          'CONSTRAINT FK_Activities_Timers_TimerKey '
-          'FOREIGN KEY(timerKey) '
-          'REFERENCES Timers(key) ON DELETE SET NULL, '
-          'CONSTRAINT FK_Activities_Weekdays_OtherKey '
-          'FOREIGN KEY(otherKey) '
-          'REFERENCES Weekdays(id) ON DELETE CASCADE)');
-      await txn.execute('CREATE TABLE IF NOT EXISTS PictogramRelations('
-          'activityId	integer NOT NULL, '
-          'pictogramId integer NOT NULL, '
-          'PRIMARY KEY(activityId,pictogramId), '
-          'CONSTRAINT FK_PictogramRelations_Activities_ActivityId '
-          'FOREIGN KEY(activityId) '
-          'REFERENCES Activities(key) ON DELETE CASCADE, '
-          'CONSTRAINT FK_PictogramRelations_Pictograms_PictogramId '
-          'FOREIGN KEY(pictogramId) '
-          'REFERENCES Pictograms(onlineId) ON DELETE CASCADE)');
-      await txn
-          .execute('CREATE TABLE IF NOT EXISTS FailedOnlineTransactions('
-              'type text NOT NULL, '
-              'url text NOT NULL, '
-              'body text, '
-              // TableAffected is used to know where to change an id if needed
-              'tableAffected text, '
-              'tempId text)');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS Settings (
+          id integer NOT NULL PRIMARY KEY,
+          orientation integer NOT NULL,
+          completeMark integer NOT NULL,
+          cancelMark integer NOT NULL,
+          defaultTimer integer NOT NULL,
+          timerSeconds integer DEFAULT NULL,
+          activitiesCount integer DEFAULT NULL,
+          theme integer NOT NULL,
+          nrOfDaysToDisplay integer DEFAULT NULL,
+          greyScale integer DEFAULT 0,
+          lockTimerControl integer DEFAULT 0,
+          pictogramText integer DEFAULT 0)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS Users (
+          id text NOT NULL PRIMARY KEY,
+          role integer NOT NULL,
+          roleName text DEFAULT NULL,
+          username text DEFAULT NULL,
+          displayName text NOT NULL,
+          department integer DEFAULT NULL,
+          password text NOT NULL,
+          settingsId integer DEFAULT NULL,
+          UNIQUE(username),
+          CONSTRAINT FK_Users_Settings_SettingsKey
+          FOREIGN KEY(settingsId)
+          REFERENCES Settings(id) ON DELETE RESTRICT)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS GuardianRelations (
+          citizenId text NOT NULL,
+          guardianId text NOT NULL,
+          PRIMARY KEY(citizenId, guardianId),
+          CONSTRAINT FK_GuardianRelations_Users_CitizenId
+          FOREIGN KEY(citizenId)
+          REFERENCES Users(id) ON DELETE CASCADE,
+          CONSTRAINT FK_GuardianRelations_Users_GuardianId
+          FOREIGN KEY(guardianId)
+          REFERENCES Users(id) ON DELETE CASCADE)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS WeekDayColors (
+          id	integer NOT NULL PRIMARY KEY,
+          day integer NOT NULL,
+          hexColor	text COLLATE BINARY,
+          settingsId integer NOT NULL,
+          CONSTRAINT FK_WeekDayColors_Settings_SettingsId
+          FOREIGN KEY(settingsId)
+          REFERENCES Settings(id) ON DELETE CASCADE)
+      ''');
+      
+      
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS Pictograms (
+          id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          accessLevel integer NOT NULL,
+          lastEdit datetime NOT NULL,
+          title text NOT NULL,
+          imageHash	text COLLATE BINARY,
+          onlineId integer NOT NULL,
+          UNIQUE(title, onlineId))
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS WeekTemplates (
+          id	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          name	text COLLATE BINARY,
+          thumbnailKey	integer NOT NULL,
+          onlineId integer NOT NULL,
+          department integer,
+          CONSTRAINT FK_WeekTemplates_Pictograms_ThumbnailKey
+          FOREIGN KEY(thumbnailKey)
+          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS Weeks (
+          id	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          girafUserId text NOT NULL,
+          name	text COLLATE BINARY,
+          thumbnailKey integer NOT NULL,
+          weekNumber	integer NOT NULL,
+          weekYear	integer NOT NULL,
+          CONSTRAINT FK_Weeks_AspNetUsers_GirafUserId
+          FOREIGN KEY(girafUserId)
+          REFERENCES Users(id) ON DELETE CASCADE,
+          CONSTRAINT FK_Weeks_Pictograms_ThumbnailKey
+          FOREIGN KEY(thumbnailKey)
+          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS Weekdays (
+          id	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          day integer NOT NULL,
+          weekId	integer DEFAULT NULL,
+          weekTemplateId	integer DEFAULT NULL,
+          CONSTRAINT FK_Weekdays_WeekTemplates_WeekTemplateId
+          FOREIGN KEY(weekTemplateId)
+          REFERENCES WeekTemplates(onlineId) ON DELETE CASCADE,
+          CONSTRAINT FK_Weekdays_Weeks_WeekId
+          FOREIGN KEY(weekId)
+          REFERENCES Weeks(id) ON DELETE CASCADE)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS Timers (
+          key integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          startTime integer NOT NULL,
+          progress	integer NOT NULL,
+          fullLength	integer NOT NULL,
+          paused	integer NOT NULL)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS Activities (
+          key integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          orderValue integer NOT NULL,
+          otherKey	integer NOT NULL,
+          state integer NOT NULL,
+          timerKey	integer DEFAULT NULL,
+          isChoiceBoard integer NOT NULL DEFAULT 0,
+          CONSTRAINT FK_Activities_Timers_TimerKey
+          FOREIGN KEY(timerKey)
+          REFERENCES Timers(key) ON DELETE SET NULL,
+          CONSTRAINT FK_Activities_Weekdays_OtherKey
+          FOREIGN KEY(otherKey)
+          REFERENCES Weekdays(id) ON DELETE CASCADE)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS PictogramRelations (
+          activityId	integer NOT NULL,
+          pictogramId integer NOT NULL,
+          PRIMARY KEY(activityId,pictogramId),
+          CONSTRAINT FK_PictogramRelations_Activities_ActivityId
+          FOREIGN KEY(activityId)
+          REFERENCES Activities(key) ON DELETE CASCADE,
+          CONSTRAINT FK_PictogramRelations_Pictograms_PictogramId
+          FOREIGN KEY(pictogramId)
+          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)
+      ''');
+      await txn.execute('''
+          CREATE TABLE IF NOT EXISTS FailedOnlineTransactions (
+          type text NOT NULL,
+          url text NOT NULL,
+          body text,
+          tableAffected text,
+          tempId text)
+      ''');
     });
   }
 
