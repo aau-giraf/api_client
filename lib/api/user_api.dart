@@ -89,12 +89,10 @@ class UserApi {
               .fromJson(res.json['data'])).first;
 
         // This will save the settings and update the settingsId for the user
-        /// Does not work properly, needs to be fixed
-        /// (Says no Settings table exists)
-        /*settings.then((SettingsModel settings) =>
+        settings.then((SettingsModel settings) =>
         // TODO(MathiasNielsen): Only insert if the settings does not exist DB
         _dbHandler.insertUserSettings(id, settings)
-        );*/
+        );
 
         return settings;
       },
