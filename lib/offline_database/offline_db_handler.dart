@@ -66,7 +66,7 @@ class OfflineDbHandler {
           => createTables(db),
         onDowngrade: (Database db, int oldVersion, int newVersion)
           => createTables(db),
-        version: 1,
+        version: 2,
     );
   }
 
@@ -817,10 +817,10 @@ class OfflineDbHandler {
     final Database db = await database;
     final List<Map<String, dynamic>> resSettings =
         await db.rawQuery('SELECT * FROM `Settings` WHERE '
-            "`id` = (SELECT `settingsId` FROM `Users` WHERE `id` = '$id')");
+            "`id` == (SELECT `settingsId` FROM `Users` WHERE `id` == '$id')");
     final List<Map<String, dynamic>> resWeekdayColors =
         await db.rawQuery('SELECT * FROM `WeekDayColors` WHERE '
-            "`settingsId` = '${resSettings[0]['id']}'");
+            "`settingsId` == '${resSettings[0]['id']}'");
     return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
   }
 
