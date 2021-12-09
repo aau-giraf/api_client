@@ -73,21 +73,21 @@ class OfflineDbHandler {
   Future<void> createTables(Database db) async {
     await db.transaction((Transaction txn) async {
       await txn.execute('CREATE TABLE IF NOT EXISTS `Users` ('
-          '`id` varchar ( 255 ) NOT NULL PRIMARY KEY, '
+          '`id` text NOT NULL PRIMARY KEY, '
           '`role` integer NOT NULL, '
-          '`roleName` varchar ( 255 ) DEFAULT NULL, '
-          '`username` varchar ( 255 ) DEFAULT NULL, '
-          '`displayName` longtext NOT NULL, '
+          '`roleName` text DEFAULT NULL, '
+          '`username` text DEFAULT NULL, '
+          '`displayName` text NOT NULL, '
           '`department` integer DEFAULT NULL, '
-          '`password` char(128) NOT NULL, '
+          '`password` text NOT NULL, '
           '`settingsId` integer DEFAULT NULL, '
-          'UNIQUE(`username`, `id`), '
+          'UNIQUE(`username`), '
           'CONSTRAINT `FK_Users_Settings_SettingsKey` '
           'FOREIGN KEY(`settingsId`) '
           'REFERENCES `Settings`(`id`) ON DELETE RESTRICT);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `GuardianRelations` ('
-          '`citizenId`	varchar ( 255 ) NOT NULL, '
-          '`guardianId`	varchar ( 255 ) NOT NULL, '
+          '`citizenId` text NOT NULL, '
+          '`guardianId` text NOT NULL, '
           'PRIMARY KEY(`citizenId`, `guardianId`), '
           'CONSTRAINT `FK_GuardianRelations_Users_CitizenId` '
           'FOREIGN KEY(`citizenId`) '
@@ -111,7 +111,7 @@ class OfflineDbHandler {
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekDayColors` ('
           '`id`	integer NOT NULL PRIMARY KEY, '
           '`day` integer NOT NULL, '
-          '`hexColor`	longtext COLLATE BINARY, '
+          '`hexColor`	text COLLATE BINARY, '
           '`settingsId` integer NOT NULL, '
           'CONSTRAINT `FK_WeekDayColors_Settings_SettingsId` '
           'FOREIGN KEY(`settingsId`) '
@@ -120,7 +120,7 @@ class OfflineDbHandler {
 
       await txn.execute('CREATE TABLE IF NOT EXISTS `WeekTemplates` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`name`	longtext COLLATE BINARY, '
+          '`name`	text COLLATE BINARY, '
           '`thumbnailKey`	integer NOT NULL, '
           '`onlineId` integer NOT NULL, '
           '`department` integer, '
@@ -128,10 +128,10 @@ class OfflineDbHandler {
           'FOREIGN KEY(`thumbnailKey`) '
           'REFERENCES `Pictograms`(`onlineId`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Weeks` ('
-          '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '
-          '`girafUserId`	varchar ( 255 ) NOT NULL, '
-          '`name`	longtext COLLATE BINARY, '
-          '`thumbnailKey`	integer NOT NULL, '
+          '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
+          '`girafUserId` text NOT NULL, '
+          '`name`	text COLLATE BINARY, '
+          '`thumbnailKey` integer NOT NULL, '
           '`weekNumber`	integer NOT NULL, '
           '`weekYear`	integer NOT NULL,'
           'CONSTRAINT `FK_Weeks_AspNetUsers_GirafUserId` '
@@ -141,8 +141,8 @@ class OfflineDbHandler {
           'FOREIGN KEY(`thumbnailKey`) '
           'REFERENCES `Pictograms`(`onlineId`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Weekdays` ('
-          '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '
-          '`day`	integer NOT NULL, '
+          '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
+          '`day` integer NOT NULL, '
           '`weekId`	integer DEFAULT NULL, '
           '`weekTemplateId`	integer DEFAULT NULL,'
           'CONSTRAINT `FK_Weekdays_WeekTemplates_WeekTemplateId` '
@@ -153,13 +153,12 @@ class OfflineDbHandler {
           'REFERENCES `Weeks`(`id`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Pictograms` ('
           '`id`	integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`accessLevel`	integer NOT NULL, '
-          '`lastEdit`	datetime ( 6 ) NOT NULL, '
-          '`sound`	longblob, '
-          '`title`	varchar ( 255 ) NOT NULL, '
-          '`imageHash`	longtext COLLATE BINARY, '
-          '`onlineId` integer NOT NULL UNIQUE, '
-          'UNIQUE(`id`,`title`));');
+          '`accessLevel` integer NOT NULL, '
+          '`lastEdit`	datetime NOT NULL, '
+          '`title` text NOT NULL, '
+          '`imageHash`	text COLLATE BINARY, '
+          '`onlineId` integer NOT NULL, '
+          'UNIQUE(`title`, `onlineId`));');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Activities` ('
           '`key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           '`order` integer NOT NULL, '
@@ -185,18 +184,18 @@ class OfflineDbHandler {
           'REFERENCES `Pictograms`(`onlineId`) ON DELETE CASCADE);');
       await txn.execute('CREATE TABLE IF NOT EXISTS `Timers` ('
           '`key` integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
-          '`startTime`	integer NOT NULL, '
+          '`startTime` integer NOT NULL, '
           '`progress`	integer NOT NULL, '
           '`fullLength`	integer NOT NULL, '
           '`paused`	integer NOT NULL);');
       await txn
           .execute('CREATE TABLE IF NOT EXISTS `FailedOnlineTransactions` ('
-              '`type` varchar (7) NOT NULL, '
-              '`url` varchar (255) NOT NULL, '
-              '`body` varchar (255), '
+              '`type` text NOT NULL, '
+              '`url` text NOT NULL, '
+              '`body` text, '
               // TableAffected is used to know where to change an id if needed
-              '`tableAffected` varchar (255), '
-              '`tempId` varchar(255));');
+              '`tableAffected` text, '
+              '`tempId` text);');
 
     });
   }
