@@ -166,7 +166,7 @@ class OfflineDbHandler {
           'progress	integer NOT NULL, '
           'fullLength	integer NOT NULL, '
           'paused	integer NOT NULL)');
-      /*await txn.execute('CREATE TABLE IF NOT EXISTS Activities('
+      await txn.execute('CREATE TABLE IF NOT EXISTS Activities('
           'key integer NOT NULL PRIMARY KEY AUTOINCREMENT, '
           'order integer NOT NULL, '
           'otherKey	integer NOT NULL, '
@@ -178,7 +178,7 @@ class OfflineDbHandler {
           'REFERENCES Timers(key) ON DELETE SET NULL, '
           'CONSTRAINT FK_Activities_Weekdays_OtherKey '
           'FOREIGN KEY(otherKey) '
-          'REFERENCES Weekdays(id) ON DELETE CASCADE)');*/
+          'REFERENCES Weekdays(id) ON DELETE CASCADE)');
       await txn.execute('CREATE TABLE IF NOT EXISTS PictogramRelations('
           'activityId	integer NOT NULL, '
           'pictogramId integer NOT NULL, '
