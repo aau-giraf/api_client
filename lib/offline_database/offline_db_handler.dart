@@ -41,10 +41,14 @@ class OfflineDbHandler {
   static Database _database;
 
   GirafUserModel _me;
+  bool _isInitialized = false;
 
   /// Get the database, if it doesnt exist create it
   Future<Database> get database async {
-    _database ??= await initializeDatabase();
+    if (!_isInitialized) {
+      _isInitialized = true;
+      _database = await initializeDatabase();
+    }
     return _database;
   }
 
