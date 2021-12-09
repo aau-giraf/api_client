@@ -59,7 +59,9 @@ class OfflineDbHandler {
 
   /// Initiate the database
   Future<Database> initializeDatabase() async {
+    /// Not sure if this is the best practice, may want to delete this
     await deleteDatabase(join(await getDatabasesPath(), 'offlineGiraf'));
+    
     return openDatabase(
         join(await getDatabasesPath(), 'offlineGiraf'),
         onCreate: (Database db, int version) => createTables(db),
@@ -67,15 +69,18 @@ class OfflineDbHandler {
           => createTables(db),
         onDowngrade: (Database db, int oldVersion, int newVersion)
           => createTables(db),
-        version: 1,
+        /// Remove this comment to enable foreign_keys
+        /// By doing this, one must make sure that every fk constraint is met
+        //onConfigure: (Database db) => db.execute('PRAGMA foreign_keys = ON'),
+        version: 2,
     );
   }
 
   ///Creates all of the tables in the DB
   Future<void> createTables(Database db) async {
     await db.transaction((Transaction txn) async {
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS Settings (
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS Settings (
           id integer NOT NULL PRIMARY KEY,
           orientation integer NOT NULL,
           completeMark integer NOT NULL,
@@ -87,10 +92,9 @@ class OfflineDbHandler {
           nrOfDaysToDisplay integer DEFAULT NULL,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
-          pictogramText integer DEFAULT 0)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS Users (
+          pictogramText integer DEFAULT 0)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
           role integer NOT NULL,
           roleName text DEFAULT NULL,
@@ -102,10 +106,9 @@ class OfflineDbHandler {
           UNIQUE(username),
           CONSTRAINT FK_Users_Settings_SettingsKey
           FOREIGN KEY(settingsId)
-          REFERENCES Settings(id) ON DELETE RESTRICT)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS GuardianRelations (
+          REFERENCES Settings(id) ON DELETE RESTRICT)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS GuardianRelations (
           citizenId text NOT NULL,
           guardianId text NOT NULL,
           PRIMARY KEY(citizenId, guardianId),
@@ -114,95 +117,87 @@ class OfflineDbHandler {
           REFERENCES Users(id) ON DELETE CASCADE,
           CONSTRAINT FK_GuardianRelations_Users_GuardianId
           FOREIGN KEY(guardianId)
-          REFERENCES Users(id) ON DELETE CASCADE)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS WeekDayColors (
-          id	integer NOT NULL PRIMARY KEY,
+          REFERENCES Users(id) ON DELETE CASCADE)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS WeekDayColors (
+          id integer NOT NULL PRIMARY KEY,
           day integer NOT NULL,
-          hexColor	text COLLATE BINARY,
+          hexColor text COLLATE BINARY,
           settingsId integer NOT NULL,
           CONSTRAINT FK_WeekDayColors_Settings_SettingsId
           FOREIGN KEY(settingsId)
-          REFERENCES Settings(id) ON DELETE CASCADE)
-      ''');
+          REFERENCES Settings(id) ON DELETE CASCADE)''');
       
       
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS Pictograms (
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS Pictograms (
           id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           accessLevel integer NOT NULL,
           lastEdit datetime NOT NULL,
           title text NOT NULL,
           imageHash	text COLLATE BINARY,
           onlineId integer NOT NULL,
-          UNIQUE(title, onlineId))
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS WeekTemplates (
-          id	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-          name	text COLLATE BINARY,
-          thumbnailKey	integer NOT NULL,
+          UNIQUE(title, onlineId))''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS WeekTemplates (
+          id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          name text COLLATE BINARY,
+          thumbnailKey integer NOT NULL,
           onlineId integer NOT NULL,
           department integer,
           CONSTRAINT FK_WeekTemplates_Pictograms_ThumbnailKey
           FOREIGN KEY(thumbnailKey)
-          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS Weeks (
-          id	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS Weeks (
+          id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           girafUserId text NOT NULL,
-          name	text COLLATE BINARY,
+          name text COLLATE BINARY,
           thumbnailKey integer NOT NULL,
-          weekNumber	integer NOT NULL,
-          weekYear	integer NOT NULL,
+          weekNumber integer NOT NULL,
+          weekYear integer NOT NULL,
           CONSTRAINT FK_Weeks_AspNetUsers_GirafUserId
           FOREIGN KEY(girafUserId)
           REFERENCES Users(id) ON DELETE CASCADE,
           CONSTRAINT FK_Weeks_Pictograms_ThumbnailKey
           FOREIGN KEY(thumbnailKey)
-          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS Weekdays (
-          id	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS Weekdays (
+          id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           day integer NOT NULL,
-          weekId	integer DEFAULT NULL,
-          weekTemplateId	integer DEFAULT NULL,
+          weekId integer DEFAULT NULL,
+          weekTemplateId integer DEFAULT NULL,
           CONSTRAINT FK_Weekdays_WeekTemplates_WeekTemplateId
           FOREIGN KEY(weekTemplateId)
           REFERENCES WeekTemplates(onlineId) ON DELETE CASCADE,
           CONSTRAINT FK_Weekdays_Weeks_WeekId
           FOREIGN KEY(weekId)
-          REFERENCES Weeks(id) ON DELETE CASCADE)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS Timers (
+          REFERENCES Weeks(id) ON DELETE CASCADE)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS Timers (
           key integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           startTime integer NOT NULL,
-          progress	integer NOT NULL,
-          fullLength	integer NOT NULL,
-          paused	integer NOT NULL)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS Activities (
+          progress integer NOT NULL,
+          fullLength integer NOT NULL,
+          paused integer NOT NULL)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS Activities (
           key integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           orderValue integer NOT NULL,
-          otherKey	integer NOT NULL,
+          otherKey integer NOT NULL,
           state integer NOT NULL,
-          timerKey	integer DEFAULT NULL,
+          timerKey integer DEFAULT NULL,
           isChoiceBoard integer NOT NULL DEFAULT 0,
           CONSTRAINT FK_Activities_Timers_TimerKey
           FOREIGN KEY(timerKey)
           REFERENCES Timers(key) ON DELETE SET NULL,
           CONSTRAINT FK_Activities_Weekdays_OtherKey
           FOREIGN KEY(otherKey)
-          REFERENCES Weekdays(id) ON DELETE CASCADE)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS PictogramRelations (
-          activityId	integer NOT NULL,
+          REFERENCES Weekdays(id) ON DELETE CASCADE)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS PictogramRelations (
+          activityId integer NOT NULL,
           pictogramId integer NOT NULL,
           PRIMARY KEY(activityId,pictogramId),
           CONSTRAINT FK_PictogramRelations_Activities_ActivityId
@@ -210,20 +205,18 @@ class OfflineDbHandler {
           REFERENCES Activities(key) ON DELETE CASCADE,
           CONSTRAINT FK_PictogramRelations_Pictograms_PictogramId
           FOREIGN KEY(pictogramId)
-          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)
-      ''');
-      await txn.execute('''
-          CREATE TABLE IF NOT EXISTS FailedOnlineTransactions (
+          REFERENCES Pictograms(onlineId) ON DELETE CASCADE)''');
+      await txn.execute(
+          '''CREATE TABLE IF NOT EXISTS FailedOnlineTransactions (
+          id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           type text NOT NULL,
           url text NOT NULL,
           body text,
           tableAffected text,
-          tempId text)
-      ''');
+          tempId text)''');
     });
   }
 
-  // offline to online functions
   /// Save failed online transactions
   /// [type] transaction type
   /// [baseUrl] baseUrl from the http
@@ -234,14 +227,11 @@ class OfflineDbHandler {
   Future<void> saveFailedTransactions(String type, String baseUrl, String url,
       {Map<String, dynamic> body, String tableAffected, String tempId}) async {
     final Database db = await database;
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'type': type,
-      'url': baseUrl + url,
-      'body': body.toString(),
-      'tableAffected': tableAffected,
-      'tempId': tempId
-    };
-    db.insert('FailedOnlineTransactions', insertQuery);
+    await db.rawInsert(
+        '''INSERT INTO FailedOnlineTransactions
+        (type, url, body, tableAffected, tempId)
+        VALUES(?, ?, ?, ?, ?)''',
+        <dynamic>[type, baseUrl + url, body.toString(), tableAffected, tempId]);
   }
 
   /// Retry sending the failed changes to the online database
@@ -257,7 +247,7 @@ class OfflineDbHandler {
           case 'DELETE':
             _http.delete(transaction['url']).listen((Response res) async {
               if (res.success()) {
-                await removeFailedTransaction(transaction);
+                await removeFailedTransaction(transaction['id']);
               }
             }).onError((Object error) {});
             break;
@@ -266,7 +256,7 @@ class OfflineDbHandler {
                 .post(transaction['url'], transaction['body'])
                 .listen((Response res) async {
               if (res.success()) {
-                await removeFailedTransaction(transaction);
+                await removeFailedTransaction(transaction['id']);
                 await updateIdInOfflineDb(
                     res.json['data'],
                     transaction['tableAffected'],
@@ -279,7 +269,7 @@ class OfflineDbHandler {
                 .patch(transaction['url'], transaction['body'])
                 .listen((Response res) async {
               if (res.success()) {
-                await removeFailedTransaction(transaction);
+                await removeFailedTransaction(transaction['id']);
               }
             }).onError((Object error) {});
             break;
@@ -288,7 +278,7 @@ class OfflineDbHandler {
                 .put(transaction['url'], transaction['body'])
                 .listen((Response res) async {
               if (res.success()) {
-                await removeFailedTransaction(transaction);
+                await removeFailedTransaction(transaction['id']);
               }
             }).onError((Object error) {});
             break;
@@ -330,13 +320,18 @@ class OfflineDbHandler {
   /// online database, such that they are synchonized
   Future<void> replaceTempIdUsers(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate('UPDATE Users SET id = $newId WHERE id == $oldId');
-    db.rawUpdate('UPDATE GuardianRelations SET citizenId = $newId '
-        'WHERE citizenId == $oldId');
-    db.rawUpdate('UPDATE GuardianRelations SET guardianId = $newId '
-        'WHERE guardianId == $oldId');
-    db.rawUpdate('UPDATE Weeks SET girafUserId = $newId '
-        'WHERE girafUserId == $oldId');
+    db.rawUpdate(
+        'UPDATE Users SET id = ? WHERE id = ?',
+        <dynamic>[newId, oldId]);
+    db.rawUpdate(
+        'UPDATE GuardianRelations SET citizenId = ? WHERE citizenId = ?',
+        <dynamic>[newId, oldId]);
+    db.rawUpdate(
+        'UPDATE GuardianRelations SET guardianId = ? WHERE guardianId = ?',
+        <dynamic>[newId, oldId]);
+    db.rawUpdate(
+        'UPDATE Weeks SET girafUserId = ? WHERE girafUserId = ?',
+        <dynamic>[newId, oldId]);
   }
 
   /// Replace the id of a Pictogram
@@ -344,14 +339,18 @@ class OfflineDbHandler {
   /// online database, such that they are synchonized
   Future<void> replaceTempIdPictogram(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate('UPDATE Pictograms SET id = $newId '
-        'WHERE id == $oldId');
-    db.rawUpdate('UPDATE WeekTemplates SET thumbnailKey = $newId '
-        'WHERE thumbnailKey == $oldId');
-    db.rawUpdate('UPDATE Weeks SET thumbnailKey = $newId '
-        'WHERE thumbnailKey == $oldId');
-    db.rawUpdate('UPDATE PictogramRelations SET pictogramId = $newId '
-        'WHERE pictogramId == $oldId');
+    db.rawUpdate(
+        'UPDATE Pictograms SET id = ? WHERE id = ?',
+        <dynamic>[newId, oldId]);
+    db.rawUpdate(
+        'UPDATE WeekTemplates SET thumbnailKey = ? WHERE thumbnailKey = ?',
+        <dynamic>[newId, oldId]);
+    db.rawUpdate(
+        'UPDATE Weeks SET thumbnailKey = ? WHERE thumbnailKey = ?',
+        <dynamic>[newId, oldId]);
+    db.rawUpdate(
+        'UPDATE PictogramRelations SET pictogramId = ? WHERE pictogramId = ?',
+        <dynamic>[newId, oldId]);
   }
 
   /// Replace the id of a Pictogram
@@ -359,22 +358,21 @@ class OfflineDbHandler {
   /// online database, such that they are synchonized
   Future<void> replaceTempIdWeekTemplate(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate('UPDATE WeekTemplates SET onlineId = $newId '
-        'Where onlineId == $oldId');
-    db.rawUpdate('UPDATE Weekdays SET weekTemplateId = $newId '
-        'Where weekTemplateId == $oldId');
+    db.rawUpdate(
+        'UPDATE WeekTemplates SET onlineId = ? WHERE onlineId = ?',
+        <dynamic>[newId, oldId]);
+    db.rawUpdate(
+        'UPDATE Weekdays SET weekTemplateId = ? WHERE weekTemplateId = ?',
+        <dynamic>[newId, oldId]);
   }
 
   /// Remove a previously failed transaction from the
   /// offline database when it succeeds
-  Future<void> removeFailedTransaction(Map<String, dynamic> transaction) async {
+  Future<void> removeFailedTransaction(int id) async {
     final Database db = await database;
-    await db.rawDelete('DELETE FROM FailedOnlineTransactions WHERE '
-        'type == ${transaction['type']} AND '
-        'url == ${transaction['url']} AND '
-        'body == ${transaction['body']} AND '
-        'tableAffected == ${transaction['tableAffected']} AND '
-        'tempId == ${transaction['tempId']}');
+    await db.rawDelete(
+        'DELETE FROM FailedOnlineTransactions WHERE id = ?',
+        <dynamic>[id]);
   }
 
   // Account API functions
