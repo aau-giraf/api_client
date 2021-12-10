@@ -32,9 +32,7 @@ class UserApi {
   ///
   /// [username] Username of the user
   Stream<int> role(String username) {
-    return _http
-        .get('/$username/role')
-        .map((Response res) => res.json['data']);
+    return _http.get('/$username/role').map((Response res) => res.json['data']);
   }
 
   /// Updates the user with the information in GirafUserModel
@@ -135,6 +133,18 @@ class UserApi {
   Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) {
     return _http
         .post('/$guardianId/citizens/$citizenId')
+        .map((Response res) => res.statusCode() == 200);
+  }
+
+  /// Adds relation between the authenticated user (guardian) and an
+  /// existing citizen.
+  ///
+  /// [trusteeId] The trustee
+  /// [citizenId] The citizen to be added to the guardian
+
+  Stream<bool> addCitizenToTrustee(String trusteeId, String citizenId) {
+    return _http
+        .post('/$trusteeId/citizens/$citizenId')
         .map((Response res) => res.statusCode() == 200);
   }
 }
