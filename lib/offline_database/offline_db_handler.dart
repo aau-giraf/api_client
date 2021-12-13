@@ -59,9 +59,6 @@ class OfflineDbHandler {
 
   /// Initiate the database
   Future<Database> initializeDatabase() async {
-    /// Not sure if this is the best practice, may want to delete this
-    await deleteDatabase(join(await getDatabasesPath(), 'offlineGiraf'));
-
     return openDatabase(
         join(await getDatabasesPath(), 'offlineGiraf'),
         onCreate: (Database db, int version) => createTables(db),
