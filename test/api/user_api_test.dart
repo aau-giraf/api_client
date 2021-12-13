@@ -246,13 +246,6 @@ Future<void> main() async {
       displayName: 'Kurt',
       username: 'SpaceLord67');
 
-  final List<DisplayNameModel> usernames = <DisplayNameModel>[
-    DisplayNameModel(
-        displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
-    DisplayNameModel(
-        displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2'),
-  ];
-
   final SettingsModel settings = SettingsModel(
       orientation: Orientation.Landscape,
       completeMark: CompleteMark.Checkmark,
