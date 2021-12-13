@@ -32,43 +32,37 @@ class Api {
             persist: persist,
             tokenKey: tokenKey,
             timeout: timeout),
-        connectivity,
         persist);
     department = DepartmentApi(
         HttpClient(
             baseUrl: '$baseUrl/v1/Department',
             persist: persist,
             tokenKey: tokenKey,
-            timeout: timeout),
-        connectivity);
+            timeout: timeout));
     week = WeekApi(
         HttpClient(
             baseUrl: '$baseUrl/v1/Week',
             persist: persist,
             tokenKey: tokenKey,
-            timeout: timeout),
-        connectivity);
+            timeout: timeout));
     pictogram = PictogramApi(
         HttpClient(
             baseUrl: '$baseUrl/v1/Pictogram',
             persist: persist,
             tokenKey: tokenKey,
-            timeout: timeout),
-        connectivity);
+            timeout: timeout));
     activity = ActivityApi(
         HttpClient(
             baseUrl: '$baseUrl/v2/Activity',
             persist: persist,
             tokenKey: tokenKey,
-            timeout: timeout),
-        connectivity);
+            timeout: timeout));
     weekTemplate = WeekTemplateApi(
         HttpClient(
             baseUrl: '$baseUrl/v1/WeekTemplate',
             persist: persist,
             tokenKey: tokenKey,
-            timeout: timeout),
-        connectivity);
+            timeout: timeout));
     user = UserApi(
         HttpClient(
             baseUrl: '$baseUrl/v1/User',
@@ -81,8 +75,7 @@ class Api {
             baseUrl: '$baseUrl/v2/AlternateName',
             persist: persist,
             tokenKey: tokenKey,
-            timeout: timeout),
-        connectivity);
+            timeout: timeout));
   }
 
   /// To access account endpoints

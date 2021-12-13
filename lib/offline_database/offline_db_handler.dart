@@ -1,34 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:api_client/api_client.dart';
 import 'package:api_client/http/http.dart';
-import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/displayname_model.dart';
-import 'package:api_client/models/enums/cancel_mark_enum.dart';
-import 'package:api_client/models/enums/complete_mark_enum.dart';
-import 'package:api_client/models/enums/default_timer_enum.dart';
-import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/role_enum.dart';
-import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
-import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/timer_model.dart';
-import 'package:api_client/models/week_model.dart';
-import 'package:api_client/models/week_name_model.dart';
-import 'package:api_client/models/week_template_model.dart';
-import 'package:api_client/models/week_template_name_model.dart';
 import 'package:api_client/models/weekday_color_model.dart';
-import 'package:api_client/models/weekday_model.dart';
 import 'package:api_client/persistence/persistence_client.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:crypto/crypto.dart';
-import 'package:uuid/uuid.dart';
 
 /// OfflineDbHandler is used for communication with the offline database
 class OfflineDbHandler {

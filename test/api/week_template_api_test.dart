@@ -1,5 +1,3 @@
-import 'package:api_client/api/connectivity_api.dart';
-import 'package:api_client/api/status_api.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/pictogram_model.dart';
@@ -33,8 +31,7 @@ Future<void> main() async {
           accessLevel: AccessLevel.PUBLIC));
   setUp(() {
     httpMock = HttpMock();
-    weekTemplateApi = WeekTemplateApi(httpMock,
-        ConnectivityApi(StatusApi(httpMock)));
+    weekTemplateApi = WeekTemplateApi(httpMock);
   });
 
   test('Should get names', () {

@@ -2,15 +2,12 @@ import 'package:api_client/http/http.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/week_template_name_model.dart';
 
-import 'connectivity_api.dart';
-
 /// Week template endpoints
 class WeekTemplateApi {
   /// Default constructor
-  WeekTemplateApi(this._http, this._connectivity);
+  WeekTemplateApi(this._http);
 
   final Http _http;
-  final ConnectivityApi _connectivity;
 
   /// Gets all schedule templates for the currently authenticated user.
   /// Available to all users.

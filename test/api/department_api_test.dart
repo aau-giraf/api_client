@@ -1,5 +1,3 @@
-import 'package:api_client/api/connectivity_api.dart';
-import 'package:api_client/api/status_api.dart';
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/department_name_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
@@ -30,8 +28,7 @@ Future<void> main() async {
 
   setUp(() {
     httpMock = HttpMock();
-    departmentApi = DepartmentApi(httpMock,
-        ConnectivityApi(StatusApi(httpMock)));
+    departmentApi = DepartmentApi(httpMock);
   });
 
   test('Should fetch department names', () {

@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:api_client/api/connectivity_api.dart';
-import 'package:api_client/api/status_api.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/api/pictogram_api.dart';
@@ -35,7 +33,7 @@ Future<void> main() async {
   sqfliteFfiInit();
   setUp(() {
     httpMock = HttpMock();
-    pictogramApi = PictogramApi(httpMock, ConnectivityApi(StatusApi(httpMock)));
+    pictogramApi = PictogramApi(httpMock);
   });
 
   test('Should be able to search pictograms', () {

@@ -1,6 +1,4 @@
 import 'package:api_client/api/api_exception.dart';
-import 'package:api_client/api/connectivity_api.dart';
-import 'package:api_client/api/status_api.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
@@ -22,7 +20,7 @@ Future<void> main() async {
 
   setUp(() {
     httpMock = HttpMock();
-    weekApi = WeekApi(httpMock, ConnectivityApi(StatusApi(httpMock)));
+    weekApi = WeekApi(httpMock);
   });
 
   test('Should fetch names', () {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:api_client/api/status_api.dart';
 import 'package:connectivity/connectivity.dart';
 
+/// Connectivity methods
 class ConnectivityApi {
   /// Default constructor
   ConnectivityApi(this._status) : _connectivity = Connectivity();
@@ -16,6 +17,7 @@ class ConnectivityApi {
   final StreamController<bool> _hasConnection = StreamController<bool>
       .broadcast();
 
+  /// This stream can be listened to, to get all connectivity updates
   Stream<bool> get connectivityStream => _hasConnection.stream;
   bool _lastStatus = true;
   DateTime _timeOfLastCheck = DateTime(0);
