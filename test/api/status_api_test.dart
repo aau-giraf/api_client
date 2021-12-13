@@ -28,8 +28,7 @@ void main() {
       expect(test, true);
     }));
 
-    httpMock
-        .expectOne(url: '/database', method: Method.get)
+    httpMock.expectOne(url: '/database', method: Method.get)
         .flush(<String, dynamic>{
       'success': true,
       'message': '',
@@ -44,8 +43,7 @@ void main() {
       expect(test, version);
     }));
 
-    httpMock
-        .expectOne(url: '/version-info', method: Method.get)
+    httpMock.expectOne(url: '/version-info', method: Method.get)
         .flush(<String, dynamic>{
       'data': version,
       'success': true,

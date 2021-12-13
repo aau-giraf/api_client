@@ -46,17 +46,17 @@ class ActivityModel implements Model {
       throw const FormatException(
           '[ActivityModel]: Cannot initialize from null');
     }
-    id = json['Key'];
-    order = json['Order'];
+    id = json['key'];
+    order = json['order'];
     int stateIndex;
-    if (json['State'] is int) {
-      stateIndex = json['State'];
+    if (json['state'] is int) {
+      stateIndex = json['state'];
     } else {
-      final String stateString = json['State'];
+      final String stateString = json['state'];
       stateIndex = int.tryParse(stateString);
     }
     state = ActivityState.values[stateIndex];
-    isChoiceBoard = json['IsChoiceBoard'] == 1;
+    isChoiceBoard = json['isChoiceBoard'] == 1;
   }
 
   /// The ID of the activity.

@@ -6,7 +6,7 @@ class AlternateNameApi {
   /// constructor
   AlternateNameApi(this._http);
 
-  final Http _http; 
+  final Http _http;
 
   ///Create new AlternateName
   Stream<AlternateNameModel> create(AlternateNameModel an){

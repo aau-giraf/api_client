@@ -11,6 +11,8 @@ import 'package:api_client/api/week_template_api.dart';
 import 'package:api_client/persistence/persistence.dart';
 import 'package:api_client/persistence/persistence_client.dart';
 
+import 'connectivity_api.dart';
+
 /// Weekplanner API
 class Api {
   /// Default constructor
@@ -18,6 +20,12 @@ class Api {
       [String tokenKey = 'token',
       Duration timeout = const Duration(seconds: 5)]) {
     final Persistence persist = PersistenceClient();
+    status = StatusApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Status',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    connectivity = ConnectivityApi(status);
     account = AccountApi(
         HttpClient(
             baseUrl: '$baseUrl/v2/Account',
@@ -25,46 +33,49 @@ class Api {
             tokenKey: tokenKey,
             timeout: timeout),
         persist);
-    status = StatusApi(HttpClient(
-        baseUrl: '$baseUrl/v1/Status',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    department = DepartmentApi(HttpClient(
-        baseUrl: '$baseUrl/v1/Department',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    week = WeekApi(HttpClient(
-        baseUrl: '$baseUrl/v1/Week',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    pictogram = PictogramApi(HttpClient(
-        baseUrl: '$baseUrl/v1/Pictogram',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    activity = ActivityApi(HttpClient(
-        baseUrl: '$baseUrl/v2/Activity',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    weekTemplate = WeekTemplateApi(HttpClient(
-        baseUrl: '$baseUrl/v1/WeekTemplate',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    user = UserApi(HttpClient(
-        baseUrl: '$baseUrl/v1/User',
-        persist: persist,
-        tokenKey: tokenKey,
-        timeout: timeout));
-    alternateName = AlternateNameApi(HttpClient(
-      baseUrl: '$baseUrl/v2/AlternateName',
-      persist: persist,
-      tokenKey: tokenKey,
-      timeout: timeout));
+    department = DepartmentApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/Department',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout));
+    week = WeekApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/Week',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout));
+    pictogram = PictogramApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/Pictogram',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout));
+    activity = ActivityApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v2/Activity',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout));
+    weekTemplate = WeekTemplateApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/WeekTemplate',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout));
+    user = UserApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v1/User',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout),
+        connectivity);
+    alternateName = AlternateNameApi(
+        HttpClient(
+            baseUrl: '$baseUrl/v2/AlternateName',
+            persist: persist,
+            tokenKey: tokenKey,
+            timeout: timeout));
   }
 
   /// To access account endpoints
@@ -84,6 +95,9 @@ class Api {
 
   /// To access status endpoints
   StatusApi status;
+
+  /// To access status endpoints
+  ConnectivityApi connectivity;
 
   /// To access weekTemplate endpoints
   WeekTemplateApi weekTemplate;
