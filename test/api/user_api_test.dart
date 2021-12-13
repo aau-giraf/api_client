@@ -17,7 +17,6 @@ import 'package:api_client/models/settings_model.dart';
 import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/src/widgets/image.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -48,24 +47,24 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<bool> changePassword(String id, String newPassword) {
-    // TODO: implement changePassword
+    // TODO(bogin): Is not implemented correctly
     throw UnimplementedError();
   }
 
   @override
   Future<void> closeDb() {
-    // TODO: implement closeDb
+    // TODO(bogin): Implement closeDb
     throw UnimplementedError();
   }
 
   @override
   Future<void> createTables(Database db) {
-    // TODO: implement createTables
+    // TODO(bogin): Implement createTables
     throw UnimplementedError();
   }
 
   @override
-  // TODO: implement database
+  // TODO(bogin): Implement database
   Future<Database> get database => throw UnimplementedError();
 
   @override
@@ -79,7 +78,7 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<int> getCurrentDBVersion() {
-    // TODO: implement getCurrentDBVersion
+    // TODO(bogin): Implement getCurrentDBVersion
     throw UnimplementedError();
   }
 
@@ -94,7 +93,7 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Http getHttpObject() {
-    // TODO: implement getHttpObject
+    // TODO(bogin): Implement getHttpObject
     throw UnimplementedError();
   }
 
@@ -104,7 +103,7 @@ class DBHandlerMock implements OfflineDbHandler {
   }
 
   @override
-  // TODO: implement getPictogramDirectory
+  // TODO(bogin): Implement getPictogramDirectory
   Future<String> get getPictogramDirectory => throw UnimplementedError();
 
   @override
@@ -116,11 +115,6 @@ class DBHandlerMock implements OfflineDbHandler {
         roleName: 'Guardian',
         displayName: 'Kurt',
         username: 'SpaceLord67'));
-  }
-
-  @override
-  Future<String> getUserId(String userName) {
-    return Future<String>.value('1');
   }
 
   @override
@@ -143,7 +137,7 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<Database> initializeDatabase() {
-    // TODO: implement initializeDatabase
+    // TODO(bogin): Implement initializeDatabase
     throw UnimplementedError();
   }
 
@@ -160,44 +154,44 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<bool> login(String username, String password) {
-    // TODO: implement login
+    // TODO(bogin): Implement login
     throw UnimplementedError();
   }
 
   @override
   Future<void> removeFailedTransaction(int id) {
-    // TODO: implement removeFailedTransaction
+    // TODO(bogin): Implement removeFailedTransaction
     throw UnimplementedError();
   }
 
   @override
   Future<void> replaceTempIdPictogram(int oldId, int newId) {
-    // TODO: implement replaceTempIdPictogram
+    // TODO(bogin): Implement replaceTempIdPictogram
     throw UnimplementedError();
   }
 
   @override
   Future<void> replaceTempIdUsers(int oldId, int newId) {
-    // TODO: implement replaceTempIdUsers
+    // TODO(bogin): Implement replaceTempIdUsers
     throw UnimplementedError();
   }
 
   @override
   Future<void> replaceTempIdWeekTemplate(int oldId, int newId) {
-    // TODO: implement replaceTempIdWeekTemplate
+    // TODO(bogin): Implement replaceTempIdWeekTemplate
     throw UnimplementedError();
   }
 
   @override
   Future<void> retryFailedTransactions() {
-    // TODO: implement retryFailedTransactions
+    // TODO(bogin): Implement retryFailedTransactions
     throw UnimplementedError();
   }
 
   @override
   Future<void> saveFailedTransactions(String type, String baseUrl, String url,
       {Map<String, dynamic> body, String tableAffected, String tempId}) {
-    // TODO: implement saveFailedTransactions
+    // TODO(bogin): Implement saveFailedTransactions
     throw UnimplementedError();
   }
 
@@ -209,7 +203,7 @@ class DBHandlerMock implements OfflineDbHandler {
   @override
   Future<void> updateIdInOfflineDb(Map<String, dynamic> json,
       String table, int tempId) {
-    // TODO: implement updateIdInOfflineDb
+    // TODO(bogin): Implement updateIdInOfflineDb
     throw UnimplementedError();
   }
 
@@ -226,7 +220,7 @@ class DBHandlerMock implements OfflineDbHandler {
   @override
   Future<void> insertSettingsWeekDayColor(int settingsId,
       WeekdayColorModel weekdayColor) {
-    // TODO: implement insertSettingsWeekDayColor
+    // TODO(bogin): Implement insertSettingsWeekDayColor
     throw UnimplementedError();
   }
 }
