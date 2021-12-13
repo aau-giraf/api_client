@@ -40,7 +40,7 @@ class OfflineDbHandler {
   static final OfflineDbHandler instance = OfflineDbHandler();
   static Database _database;
 
-  GirafUserModel _me;
+  FutureOr<GirafUserModel> _me;
 
   /// Get the database, if it doesnt exist create it
   Future<Database> get database async {
@@ -61,7 +61,7 @@ class OfflineDbHandler {
   Future<Database> initializeDatabase() async {
     /// Not sure if this is the best practice, may want to delete this
     await deleteDatabase(join(await getDatabasesPath(), 'offlineGiraf'));
-    
+
     return openDatabase(
         join(await getDatabasesPath(), 'offlineGiraf'),
         onCreate: (Database db, int version) => createTables(db),
@@ -72,7 +72,7 @@ class OfflineDbHandler {
         /// Remove this comment to enable foreign_keys
         /// By doing this, one must make sure that every fk constraint is met
         //onConfigure: (Database db) => db.execute('PRAGMA foreign_keys = ON'),
-        version: 2,
+        version: 1,
     );
   }
 
@@ -120,10 +120,10 @@ class OfflineDbHandler {
           REFERENCES Users(id) ON DELETE CASCADE)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS WeekDayColors (
-          id integer NOT NULL PRIMARY KEY,
+          settingsId integer NOT NULL,
           day integer NOT NULL,
           hexColor text COLLATE BINARY,
-          settingsId integer NOT NULL,
+          PRIMARY KEY(settingsId, day),
           CONSTRAINT FK_WeekDayColors_Settings_SettingsId
           FOREIGN KEY(settingsId)
           REFERENCES Settings(id) ON DELETE CASCADE)''');
@@ -234,9 +234,19 @@ class OfflineDbHandler {
         <dynamic>[type, baseUrl + url, body.toString(), tableAffected, tempId]);
   }
 
+  /// Remove a previously failed transaction from the
+  /// offline database when it succeeds
+  Future<void> removeFailedTransaction(int id) async {
+    final Database db = await database;
+    await db.rawDelete(
+        'DELETE FROM FailedOnlineTransactions WHERE id = ?',
+        <dynamic>[id]);
+  }
+
   /// Retry sending the failed changes to the online database
   Future<void> retryFailedTransactions() async {
-    final Database db = await database;
+    // todo(): Is not implemented correctly
+    /*final Database db = await database;
 
     final List<Map<String, dynamic>> dbRes =
         await db.rawQuery('SELECT * FROM FailedOnlineTransactions');
@@ -286,7 +296,7 @@ class OfflineDbHandler {
             throw const HttpException('invalid request type');
         }
       }
-    }
+    }*/
   }
 
   /// Exists to be able to override the http used for retry failed transactions
@@ -366,815 +376,250 @@ class OfflineDbHandler {
         <dynamic>[newId, oldId]);
   }
 
-  /// Remove a previously failed transaction from the
-  /// offline database when it succeeds
-  Future<void> removeFailedTransaction(int id) async {
-    final Database db = await database;
-    await db.rawDelete(
-        'DELETE FROM FailedOnlineTransactions WHERE id = ?',
-        <dynamic>[id]);
-  }
-
   // Account API functions
   /// Returns [true] if [password] matches the password saved for [username]
   Future<bool> login(String username, String password) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> res = await db
-        .rawQuery('SELECT password FROM Users WHERE username == $username');
-    return sha512.convert(utf8.encode(password)).toString() ==
-        res[0]['password'];
-  }
-
-  /// register an account for a user
-  Future<GirafUserModel> registerAccount(Map<String, dynamic> body) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> count = await db.rawQuery(
-        'SELECT * FROM Users WHERE username == ${body['username']}');
-
-    if (count.isNotEmpty) {
-      // TODO(Tilasair): better exceptions
-      throw Exception('Username already exists');
-    }
-
-    final Map<String, dynamic> settings = <String, dynamic>{
-      'activitiesCount': 0,
-      'cancelMark': CancelMark.Cross.index,
-      'completeMark': CompleteMark.Checkmark.index,
-      'defaultTimer': DefaultTimer.PieChart.index,
-      'greyScale': 0, //false
-      'nrOfDaysToDisplay': 7,
-      'orientation': Orientation.portrait.index,
-      'theme': GirafTheme.GirafYellow.index,
-      'timerSeconds': 900,
-      'lockTimerControl': 0, //false
-      'pictogramText': 0 //false
-    };
-    // TODO(Tilasair): Make the settings a transaction
-    await db.insert('Settings', settings);
-    final List<Map<String, dynamic>> settingsIdRes =
-        await db.rawQuery('SELECT id FROM Settings WHERE id NOT IN '
-            '(SELECT settingsId FROM Users)');
-    final int settingsId = settingsIdRes[0]['id'];
-    await db.insert('WeekDayColors', <String, dynamic>{
-      'day': Weekday.Monday.index,
-      'hexColor': '#08a045',
-      'settingsId': settingsId
-    });
-    await db.insert('WeekDayColors', <String, dynamic>{
-      'day': Weekday.Tuesday.index,
-      'hexColor': '#540d6e',
-      'settingsId': settingsId
-    });
-    await db.insert('WeekDayColors', <String, dynamic>{
-      'day': Weekday.Wednesday.index,
-      'hexColor': '#f77f00',
-      'settingsId': settingsId
-    });
-    await db.insert('WeekDayColors', <String, dynamic>{
-      'day': Weekday.Thursday.index,
-      'hexColor': '#004777',
-      'settingsId': settingsId
-    });
-    await db.insert('WeekDayColors', <String, dynamic>{
-      'day': Weekday.Friday.index,
-      'hexColor': '#f9c80e',
-      'settingsId': settingsId
-    });
-    await db.insert('WeekDayColors', <String, dynamic>{
-      'day': Weekday.Saturday.index,
-      'hexColor': '#db2b39',
-      'settingsId': settingsId
-    });
-    await db.insert('WeekDayColors', <String, dynamic>{
-      'day': Weekday.Sunday.index,
-      'hexColor': '#ffffff',
-      'settingsId': settingsId
-    });
-    int roleID;
-    switch (body['role']) {
-      case 'Citizen':
-        roleID = 1;
-        break;
-      case 'Department':
-        roleID = 2;
-        break;
-      case 'Guardian':
-        roleID = 3;
-        break;
-      case 'SuperUser':
-        roleID = 4;
-        break;
-      case 'Trustee':
-        roleID = 5;
-        break;
-      default:
-        roleID = 0;
-    }
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'id': Uuid().v1(),
-      'role': roleID,
-      'roleName': body['role'],
-      'username': body['username'],
-      'displayName': body['displayName'],
-      'department': body['department'],
-      'password': sha512.convert(utf8.encode(body['password'])).toString(),
-      'settingsId': settingsId
-    };
-    await db.insert('Users', insertQuery);
-    final List<Map<String, dynamic>> res = await db.rawQuery(
-        'SELECT * FROM Users WHERE username == ${body['username']}');
-    return GirafUserModel.fromJson(res[0]);
+    return (await db.rawQuery(
+        'SELECT password FROM Users WHERE username = ?',
+        <dynamic>[username])).first['password'] == password;
   }
 
   /// Do not call this function without ensuring that the password is
   /// successfully changed online
-  /// change a password of a user with id [id] to [newPassword]
-  Future<bool> changePassword(String id, String newPassword) async {
+  /// change a password of a user with id [userId] to [newPassword]
+  Future<void> changePassword(String userId, String newPassword) async {
     final Database db = await database;
-    final String encryptedPassword =
-        sha512.convert(utf8.encode(newPassword)).toString();
-    final int rowsChanged = await db.rawUpdate(
-        'UPDATE Users SET password = $encryptedPassword WHERE id == $id');
-    return rowsChanged == 1;
-  }
-
-  /// Delete a user from the offline database
-  Future<bool> deleteAccount(String id) async {
-    final Database db = await database;
-    final int res =
-        await db.rawDelete('DELETE FROM Users WHERE id == $id');
-    return res == 1;
-  }
-
-  // Activity API functions
-  /// Add an activity to DB
-  Future<ActivityModel> addActivity(ActivityModel activity, String userId,
-      String weekplanName, int weekYear, int weekNumber, Weekday weekDay,
-      {TimerModel timer}) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> dbWeek =
-        await db.rawQuery('SELECT * FROM Weeks WHERE '
-            'girafUserId == $userId AND '
-            'weekYear == $weekYear AND '
-            'weekNumber == $weekNumber');
-    final List<Map<String, dynamic>> dbDay =
-        await db.rawQuery('SELECT * FROM Weekdays WHERE '
-            'day == ${weekDay.index} AND '
-            'weekId == ${dbWeek[0]['id']}');
-
-    final Map<String, dynamic> insertActivityQuery = <String, dynamic>{
-      'key': activity.id,
-      'order': activity.order,
-      'otherKey': dbDay[0]['id'],
-      'state': activity.state.index,
-      'isChoiceBoard': activity.isChoiceBoard ? 1 : 0,
-    };
-    Map<String, dynamic> insertTimerQuery;
-    if (activity.timer != null) {
-      insertActivityQuery['TimerKey'] = activity.timer.key;
-      insertTimerQuery = <String, dynamic>{
-        'key': activity.timer.key,
-        'startTime': activity.timer.startTime.millisecondsSinceEpoch,
-        'progress': activity.timer.progress,
-        'fullLength': activity.timer.fullLength,
-        'paused': activity.timer.paused ? 1 : 0,
-      };
-    }
-
-    db.transaction((Transaction txn) async {
-      for (PictogramModel pictogram in activity.pictograms) {
-        await txn.insert('PictogramRelations', <String, dynamic>{
-          'activityId': activity.id,
-          'pictogramId': pictogram.id
-        });
-      }
-    });
-    await db.insert('Activities', insertActivityQuery);
-    if (insertTimerQuery != null) {
-      await db.insert('Timers', insertTimerQuery);
-    }
-    return _getActivity(activity.id, db);
-  }
-
-  Future<ActivityModel> _getActivity(int key, Database db) async {
-    final List<Map<String, dynamic>> listResult =
-        await db.rawQuery('SELECT * FROM Activities WHERE key == $key');
-    if (listResult.isEmpty) {
-      return null;
-    }
-    final Map<String, dynamic> result = listResult[0];
-    TimerModel timerModel;
-    if (result != null && result['timerKey'] != null) {
-      timerModel = await _getTimer(result['timerKey']);
-    }
-    final List<PictogramModel> pictoList = await _getActivityPictograms(key);
-
-    return ActivityModel.fromDatabase(result,
-        timer: timerModel, pictograms: pictoList);
-  }
-
-  Future<List<PictogramModel>> _getActivityPictograms(int activityKey) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res = await db.rawQuery(
-        'SELECT * FROM Pictograms '
-        'WHERE onlineId == (SELECT pictogramId FROM PictogramRelations '
-        'WHERE activityId == $activityKey)');
-    final List<PictogramModel> result = <PictogramModel>[];
-    for (Map<String, dynamic> pictogram in res) {
-      result.add(PictogramModel.fromDatabase(pictogram));
-    }
-    return result;
-  }
-
-  Future<TimerModel> _getTimer(int key) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Timers WHERE key == $key');
-    return TimerModel.fromDatabase(res[0]);
-  }
-
-  ///Update an [activity] from its id
-  Future<ActivityModel> updateActivity(
-      ActivityModel activity, String userId) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res = await db
-        .rawQuery('SELECT * FROM Activities WHERE key == ${activity.id}');
-    if (activity.timer == null) {
-      if (res.isNotEmpty) {
-        await db.rawDelete(
-            'DELETE FROM Timers WHERE key == ${res[0]['timerKey']}');
-      }
-      await db.rawUpdate('UPDATE Activities SET '
-          'order = ${activity.order}, '
-          'state = ${activity.state.index}, '
-          'isChoiceBoard = ${activity.isChoiceBoard} '
-          'WHERE key == ${activity.id}');
-    } else {
-      final int timerKey = activity.timer.key ?? Uuid().v1().hashCode;
-      await db.rawUpdate('UPDATE Activities SET '
-          'order = ${activity.order}, '
-          'state = ${activity.state.index}, '
-          'timerKey = $timerKey, '
-          'isChoiceBoard = ${activity.isChoiceBoard} '
-          'WHERE key == ${activity.id}');
-      if (res[0]['timerKey'] == null) {
-        final Map<String, dynamic> insertTimerQuery = <String, dynamic>{
-          'key': timerKey,
-          'startTime': activity.timer.startTime.millisecondsSinceEpoch,
-          'progress': activity.timer.progress,
-          'fullLength': activity.timer.fullLength,
-          'paused': activity.timer.paused ? 1 : 0,
-        };
-        db.insert('Timers', insertTimerQuery);
-      } else {
-        await db.rawUpdate('UPDATE Timers SET '
-          'startTime = ${activity.timer.startTime.millisecondsSinceEpoch}, '
-          'progress = ${activity.timer.progress}, '
-          'fullLength = ${activity.timer.fullLength}, '
-          'paused = ${activity.timer.paused} '
-          'WHERE key == ${activity.timer.key}');
-      }
-    }
-    db.transaction((Transaction txn) async {
-      await txn.rawDelete('DELETE FROM PictogramRelations '
-          'WHERE activityId = ${activity.id}');
-      for (PictogramModel pictogram in activity.pictograms) {
-        await txn.insert('PictogramRelations', <String, dynamic>{
-          'activityId': activity.id,
-          'pictogramId': pictogram.id
-        });
-      }
-    });
-    return _getActivity(activity.id, db);
-  }
-
-  ///Delete an activity with the id [activityId]
-  Future<bool> deleteActivity(int activityId, String userId) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res = await db.rawQuery(
-        'SELECT timerKey FROM Activities WHERE key == $activityId');
-    final int timerKey = res[0]['TimerKey'];
-    final int activityChanged = await db
-        .rawDelete('DELETE FROM Activities WHERE key == $activityId');
-    int timersChanged;
-    if (timerKey != null) {
-      timersChanged =
-          await db.rawDelete('DELETE FROM Timers WHERE key == $timerKey');
-    } else {
-      timersChanged = 1;
-    }
-    final int relationsChanged = await db.rawDelete(
-        'DELETE FROM PictogramRelations WHERE activityId == $activityId');
-    return activityChanged == 1 && timersChanged == 1 && relationsChanged >= 1;
-  }
-
-  // Pictogram API functions
-  ///Get [pageSize] pictograms by adding all pictograms to a list
-  ///and split them into lists with size [pageSize] and then choose
-  ///list number [page]
-  Future<List<PictogramModel>> getAllPictograms(
-      {String query, @required int page, @required int pageSize}) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Pictograms '
-            'WHERE title LIKE %$query%');
-    final List<PictogramModel> allPictograms = <PictogramModel>[];
-    for (Map<String, dynamic> pictogram in res) {
-      allPictograms.add(PictogramModel.fromDatabase(pictogram));
-    }
-    final List<List<PictogramModel>> possibleResults = <List<PictogramModel>>[];
-    for (int i = 0; i < allPictograms.length; i += pageSize) {
-      possibleResults.add(allPictograms.sublist(
-          i,
-          i + pageSize > allPictograms.length
-              ? allPictograms.length
-              : i + pageSize));
-    }
-    return possibleResults[page];
-  }
-
-  ///Get the pictogram with the id [id]
-  Future<PictogramModel> getPictogramID(int id) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Pictograms WHERE onlineId == $id');
-    return PictogramModel.fromDatabase(res[0]);
-  }
-
-  ///Add a pictogram to the offline database
-  Future<PictogramModel> createPictogram(PictogramModel pictogram) async {
-    final Database db = await database;
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'onlineId': pictogram.id ?? Uuid().v1().hashCode,
-      'accessLevel': pictogram.accessLevel.index,
-      'lastEdit': pictogram.lastEdit.toIso8601String(),
-      'title': pictogram.title,
-      'imageHash': pictogram.imageHash,
-    };
-    await db.insert('Pictograms', insertQuery);
-    return getPictogramID(insertQuery['onlineId']);
-  }
-
-  ///Update a given pictogram
-  Future<PictogramModel> updatePictogram(PictogramModel pictogram) async {
-    final Database db = await database;
-    await db.rawUpdate('UPDATE Pictograms SET '
-        'accessLevel = ${pictogram.accessLevel.index}, '
-        'lastEdit = ${pictogram.lastEdit}, '
-        'title = ${pictogram.title}, '
-        'imageHash = ${pictogram.imageHash} '
-        'WHERE onlineId == ${pictogram.id}');
-    return getPictogramID(pictogram.id);
-  }
-
-  /// Delete a pictogram with the id [id]
-  Future<bool> deletePictogram(int id) async {
-    final Database db = await database;
-    final int pictogramsDeleted =
-        await db.rawDelete('DELETE FROM Pictograms WHERE onlineId == $id');
-    final String pictogramDirectoryPath = await getPictogramDirectory;
-    try {
-      await File(join(pictogramDirectoryPath, '$id.png')).delete();
-    } on FileSystemException catch (_) {}
-    return pictogramsDeleted == 1;
-  }
-
-  /// Update an image in the pictogram table
-  Future<PictogramModel> updateImageInPictogram(int id, Uint8List image) async {
-    final Database db = await database;
-    final String pictogramDirectoryPath = await getPictogramDirectory;
-    final File newImage = File(join(pictogramDirectoryPath, '$id.png'));
-    newImage.writeAsBytes(image);
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Pictograms WHERE onlineId == $id');
-    return PictogramModel.fromDatabase(res[0]);
-  }
-
-  /// Get an image from the local pictogram directory
-  Future<Image> getPictogramImage(int id) async {
-    final String pictogramDirectoryPath = await getPictogramDirectory;
-    final File pictogramFile = File(join(pictogramDirectoryPath, '$id.png'));
-    return Image.file(pictogramFile);
+    db.rawUpdate(
+        'UPDATE Users SET password = ? WHERE id = ?',
+        <dynamic>[newPassword, userId]);
   }
 
   // User API functions
   /// Return the me value
-  GirafUserModel getMe() {
-    return _me;
-  }
+  FutureOr<GirafUserModel> getMe() => _me;
 
   /// Set the me value
-  void setMe(GirafUserModel model) {
-    _me = model;
-  }
+  void setMe(FutureOr<GirafUserModel> user) => _me = user;
 
-  /// Get a user
-  Future<GirafUserModel> getUser(String id) async {
+  /// Checks if a user with [userId] already exists
+  Future<bool> userExists(String userId)
+      => _existsInTable('Users', <String>['id'], <String>[userId]);
+
+  /// Get a user with [userId] if it exists, otherwise returns null.
+  Future<GirafUserModel> getUser(String userId) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Users WHERE id == $id');
-    return GirafUserModel.fromJson(res[0]);
+    final List<Map<String, dynamic>> users = await db.rawQuery(
+        'SELECT * FROM Users WHERE id = ?',
+        <String>[userId]);
+    if (users.isNotEmpty) {
+      return GirafUserModel.fromJson(users[0]);
+    } else {
+      return null;
+    }
   }
 
-  /// Return the ID of a user through its username
-  Future<String> getUserId(String userName) async {
-    try {
+  /// Inserts the user if it does not already exist, otherwise updates it.
+  Future<void> insertUser(GirafUserModel user) async {
+    final Database db = await database;
+    if (await userExists(user.id)) {
+      await _updateUser(user);
+    } else {
+      await db.rawInsert('''INSERT INTO Users (id, role, roleName, username,
+          displayName, department, password) VALUES (?, ?, ?, ?, ?, ?, ?)''',
+          <dynamic>[user.id, user.role.index, user.roleName, user.username,
+            user.displayName, user.department,
+            /* This password should be either set together with login on the
+            account api, or just updated on login.
+            Since only user api has been implemented for offline usage
+            this will have to be done at some other time. */
+            'password']);
+    }
+  }
+
+  /// Update a user based on [user.id] with the values from [user]
+  Future<void> _updateUser(GirafUserModel user) async {
+    final Database db = await database;
+    db.rawUpdate('''UPDATE Users SET role = ?, roleName = ?, username = ?,
+        displayName = ?, department = ? WHERE id = ?''',
+        <dynamic>[user.role.index, user.roleName, user.username,
+          user.displayName, user.department, user.id]);
+  }
+
+  /// Return the role of a user through its username
+  Future<int> getUserRole(String username) async {
       final Database db = await database;
-      final List<Map<String, dynamic>> id = await db
-          .rawQuery('SELECT * FROM Users WHERE username == $userName');
-      return id[0]['id'];
+      final List<Map<String, dynamic>> roles = await db.rawQuery(
+          'SELECT role FROM Users WHERE username = ?',
+          <String>[username]);
+      if (roles.isNotEmpty) {
+        return roles.first['role'];
+      } else {
+        return Role.Unknown.index;
+      }
+  }
+
+  /// Update the role of a user through its username
+  Future<void> updateUserRole(String username, int role) async {
+    final Database db = await database;
+    if (await _existsInTable('Users',
+        <String>['username'], <String>[username])) {
+      return db.rawUpdate(
+          'UPDATE Users SET role = ? WHERE username = ?',
+          <dynamic>[role, username]);
+    }
+  }
+
+  /// Get the settings for a user with the id: [userId]
+  Future<SettingsModel> getUserSettings(String userId) async {
+    final Database db = await database;
+    try {
+      final Map<String, dynamic> settings = (await db.rawQuery(
+          '''SELECT * FROM Settings WHERE
+          id = (SELECT settingsId FROM Users WHERE id = ?)''',
+          <String>[userId])).first;
+      final List<Map<String, dynamic>> weekdayColors = await db.rawQuery(
+          'SELECT * FROM WeekDayColors WHERE settingsId = ?',
+          <int>[settings['id']]);
+      return SettingsModel.fromDatabase(settings, weekdayColors);
     } catch (error) {
       return null;
     }
   }
 
-  /// Return the role of a user through its username
-  Future<int> getUserRole(String username) async {
-    try {
-      final Database db = await database;
-      final List<Map<String, dynamic>> users = await db
-          .rawQuery('SELECT * FROM Users WHERE username == $username');
-      return users[0]['role'];
-    } catch (error) {
-      return Role.Unknown.index;
+  /// Insert [settings] for user with the specified [userId]
+  Future<void> insertUserSettings(String userId, SettingsModel settings) async {
+    final Database db = await database;
+    if (await _existsInTable('Users', <String>['id', 'settingsId'],
+        <dynamic>[userId, null])) {
+      final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
+        (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
+        activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
+        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        <dynamic>[settings.orientation.index, settings.completeMark.index,
+          settings.cancelMark.index, settings.defaultTimer.index,
+          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
+          settings.nrOfDaysToDisplay, settings.greyscale,
+          settings.lockTimerControl, settings.pictogramText]);
+
+      await db.rawUpdate(
+          'UPDATE Users SET settingsId = ? WHERE id = ?',
+          <dynamic>[settingsId, userId]);
+
+      /* WeekDayColors is a list in SettingsModel,
+         which means that they have to be saved in its own table */
+      if (settings.weekDayColors != null) {
+        for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
+          insertSettingsWeekDayColor(settingsId, weekdayColor);
+        }
+      }
+    } else {
+      _updateUserSettings(userId, settings);
     }
   }
 
-  /// Inserts the user.
-  ///
-  /// This method should only be called on login,
-  /// when receiving user data from the server.
-  Future<GirafUserModel> insertUser(GirafUserModel user) async {
+  /// Update the settings with [settings] for a user with id: [userId]
+  Future<void> _updateUserSettings(String userId,
+      SettingsModel settings) async {
     final Database db = await database;
-    await db.insert('Users', <String, dynamic>{
-      'id': user.id,
-      'role': user.role.index,
-      'roleName': user.roleName,
-      'username': user.username,
-      'displayName': user.displayName,
-      'department': user.department,
-      'password': 'password'
-    });
+    final int settingsId = (await db.rawQuery(
+        'SELECT settingsId FROM Users WHERE id = ?',
+        <String>[userId])).first['settingsId'];
 
-    return getUser(user.id);
-  }
-
-  /// Update a user based on [user.id] with the values from [user]
-  Future<GirafUserModel> updateUser(GirafUserModel user) async {
-    final Database db = await database;
-    await db.rawUpdate('UPDATE Users SET '
-        'role = ${user.role.index}, '
-        'roleName = ${user.roleName}, '
-        'username = ${user.username}, '
-        'displayName = ${user.displayName}, '
-        'department = ${user.department} '
-        'WHERE id == ${user.id}');
-    return getUser(user.id);
-  }
-
-  /// Get a the relevant settings for a user with the id: [id]
-  Future<SettingsModel> getUserSettings(String id) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> resSettings =
-        await db.rawQuery('SELECT * FROM Settings WHERE '
-            'id == (SELECT settingsId FROM Users WHERE id == $id)');
-    final List<Map<String, dynamic>> resWeekdayColors =
-        await db.rawQuery('SELECT * FROM WeekDayColors WHERE '
-            'settingsId == ${resSettings[0]['id']}');
-    return SettingsModel.fromDatabase(resSettings[0], resWeekdayColors);
-  }
-
-  /// Insert settings for the specified user
-  Future<SettingsModel> insertUserSettings(
-      String userId, SettingsModel settings) async {
-    final Database db = await database;
-    final int settingsId = await db.insert('Settings', <String, dynamic>{
-      'activitiesCount': settings.activitiesCount,
-      'cancelMark': settings.cancelMark.index,
-      'completeMark': settings.completeMark.index,
-      'defaultTimer': settings.defaultTimer.index,
-      'greyScale': settings.greyscale,
-      'nrOfDaysToDisplay': settings.nrOfDaysToDisplay,
-      'orientation': settings.orientation.index,
-      'theme': settings.theme.index,
-      'timerSeconds': settings.timerSeconds,
-      'lockTimerControl': settings.lockTimerControl,
-      'pictogramText': settings.pictogramText
-    });
+    await db.rawUpdate('''UPDATE Settings SET
+        orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
+        timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
+        greyScale = ?, lockTimerControl = ?, pictogramText = ?
+        WHERE settingsId = ?''',
+        <dynamic>[settings.orientation.index, settings.completeMark.index,
+          settings.cancelMark.index, settings.defaultTimer.index,
+          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
+          settings.nrOfDaysToDisplay, settings.greyscale,
+          settings.lockTimerControl, settings.pictogramText, settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
-     * which means that they have to be saved in its own table */
-    for (WeekdayColorModel dayColor in settings.weekDayColors) {
-      final int day = dayColor.day.index;
-      db.insert('WeekDayColors', <String, dynamic>{
-        'hexColor': dayColor.hexColor,
-        'day': day,
-        'settingsId': settingsId
-      });
+       which means that they have to be saved in its own table */
+    if (settings.weekDayColors != null) {
+      for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
+        insertSettingsWeekDayColor(settingsId, weekdayColor);
+      }
     }
-
-    // This will update the settingsId in the user tuple
-    db.update('Users', <String, dynamic>{
-      'settingsId': settingsId
-    }, where: 'id = $userId');
-
-    return getUserSettings(userId);
   }
 
-  /// Update the settings for a Girafuser with the id: [id]
-  Future<bool> updateUserSettings(
-      String id, SettingsModel settings) async {
+  /// Insert [weekdayColor] for settings with id: [settingsId]
+  /// If a weekdayColor with the provided [settingsId] and [weekdayColor.day]
+  /// does already exist in the database, it will be updated instead.
+  Future<void> insertSettingsWeekDayColor(int settingsId,
+      WeekdayColorModel weekdayColor) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT settingsId FROM Users WHERE id == $id');
-    final String settingsId = res[0]['settingsId'].toString();
-    db.rawUpdate('UPDATE Settings SET '
-        'activitiesCount = ${settings.activitiesCount}, '
-        'cancelMark = ${settings.cancelMark.index}, '
-        'completeMark = ${settings.completeMark.index}, '
-        'defaultTimer = ${settings.defaultTimer.index}, '
-        'greyScale = ${settings.greyscale}, '
-        'nrOfDaysToDisplay = ${settings.nrOfDaysToDisplay}, '
-        'orientation = ${settings.orientation.index}, '
-        'theme = ${settings.theme.index}, '
-        'timerSeconds = ${settings.timerSeconds}, '
-        'lockTimerControl = ${settings.lockTimerControl}, '
-        'pictogramText = ${settings.pictogramText} '
-        'WHERE id = $settingsId');
-    for (WeekdayColorModel dayColor in settings.weekDayColors) {
-      final int day = dayColor.day.index;
-      db.rawUpdate('UPDATE WeekDayColors SET hexColor = ${dayColor.hexColor} '
-          'WHERE settingsId == $settingsId AND day == $day');
+    if (!await _existsInTable('WeekDayColors', <String>['settingsId', 'day'],
+        <dynamic>[settingsId, weekdayColor.day.index])) {
+      db.rawInsert(
+          '''INSERT INTO WeekDayColors (settingsId, day, hexColor)
+          VALUES (?, ?, ?)''',
+          <dynamic>[settingsId, weekdayColor.day.index, weekdayColor.hexColor]);
+    } else {
+      _updateSettingsWeekDayColor(settingsId, weekdayColor);
     }
-    return true;
   }
 
-  /// Delete a users icon. as users do not have an icon,
-  /// this is not yet implemented
-  Future<bool> deleteUserIcon(String id) {
-    throw UnimplementedError();
-  }
-
-  /// Get a users icon. as users do not have an icon,
-  /// this is not yet implemented
-  Future<Image> getUserIcon(String id) {
-    throw UnimplementedError();
-  }
-
-  /// Update a users icon. as users do not have an icon,
-  /// this is not yet implemented
-  Future<bool> updateUserIcon() {
-    throw UnimplementedError();
-  }
-  Future<Image> insertUserIcon(String id, Image icon){
-    throw UnimplementedError();
+  /// Update with [weekdayColor] for settings with id: [settingsId]
+  Future<void> _updateSettingsWeekDayColor(int settingsId,
+      WeekdayColorModel weekdayColor) async {
+    final Database db = await database;
+    db.rawUpdate('''UPDATE WeekDayColors SET hexColor = ?
+        WHERE settingsId = ? AND day = ?''',
+        <dynamic>[weekdayColor.hexColor, settingsId, weekdayColor.day.index]);
   }
 
   /// Return list of citizens from database based on guardian id
   Future<List<DisplayNameModel>> getCitizens(String id) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Users AS U JOIN '
-            'GuardianRelations AS GR ON U.id == GR.citizenId '
-            'WHERE GR.guardianId == $id');
-    return res
-        .map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
-            DisplayNameModel.fromDatabase(citizenJson))
-        .toList();
+    // Todo(): This needs to be implemented
+    throw UnimplementedError();
   }
 
   /// Return list of guardians from database based on citizen id
   Future<List<DisplayNameModel>> getGuardians(String id) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Users AS U JOIN '
-            'GuardianRelations AS GR ON U.id == GR.guardianId '
-            'WHERE GR.citizenId == $id');
-    return res
-        .map<DisplayNameModel>((Map<String, dynamic> citizenJson) =>
-            DisplayNameModel.fromDatabase(citizenJson))
-        .toList();
+    // Todo(): This needs to be implemented
+    throw UnimplementedError();
   }
 
   /// Add a [guardianId] to a [citizenId]
   Future<bool> addCitizenToGuardian(String guardianId, String citizenId) async {
-    final Database db = await database;
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'guardianId': guardianId,
-      'citizenId': citizenId
-    };
-    final int addedCount = await db.insert('GuardianRelations', insertQuery);
-    return addedCount == 1;
+    // Todo(): This needs to be implemented
+    throw UnimplementedError();
   }
 
-  // Week API functions
-
-  /// Get all weeks from a user with the Id [id]
-  Future<List<WeekNameModel>> getWeekNames(String id) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Weeks AS W JOIN Users AS U '
-            'ON W.girafUserId == U.id WHERE U.id == $id');
-    return res
-        .map((Map<String, dynamic> json) => WeekNameModel.fromDatabase(json))
-        .toList();
-  }
-
-  /// Get a week based on
-  /// [id] (User id)
-  /// [year]
-  /// [weekNumber]
-  Future<WeekModel> getWeek(String id, int year, int weekNumber) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM Weeks WHERE '
-            'girafUserId == $id AND '
-            'weekYear == $year AND '
-            'weekNumber == $weekNumber');
-    final Map<String, dynamic> weekModel = Map<String, dynamic>.from(res[0]);
-    weekModel['thumbnail'] =
-        (await getPictogramID(res[0]['thumbnailKey'])).toJson();
-    final int weekId = res.single['id'];
-    final List<Map<String, dynamic>> weekDaysFromDb = await db
-        .rawQuery('SELECT * FROM Weekdays WHERE weekId == $weekId');
-    final List<Map<String, dynamic>> weekDays = <Map<String, dynamic>>[];
-    for (Map<String, dynamic> day in weekDaysFromDb) {
-      final List<Map<String, dynamic>> activityFromDb =
-          await db.rawQuery('SELECT * FROM Activities WHERE '
-              'otherKey == ${day['id']}');
-      final Map<String, dynamic> dayRes = <String, dynamic>{
-        'day': day['day'],
-        'id': day['id'],
-        'activities': List<Map<String, dynamic>>.from(activityFromDb)
-      };
-      weekDays.add(dayRes);
+  /// Checks if the [values] of [columns] exists in the [table]
+  /// [columns.length] should be equal to [values.length]
+  Future<bool> _existsInTable(String table, List<String> columns,
+      List<dynamic> values) async {
+    if (columns.length != values.length) {
+      throw Exception('The length of [values] and [columns] should match.');
     }
-    weekModel['days'] = List<Map<String, dynamic>>.from(weekDays);
-    return WeekModel.fromDatabase(weekModel);
-  }
-
-  /// Update a week with all the fields in the given [week]
-  /// With the userid [id]
-  /// Year [year]
-  /// And Weeknumber [weekNumber]
-  Future<WeekModel> updateWeek(
-      String id, int year, int weekNumber, WeekModel week) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> dbWeek =
-        await db.rawQuery('SELECT * FROM Weeks WHERE '
-            'girafUserId == $id AND '
-            'weekYear == $year AND '
-            'weekNumber == $weekNumber');
-    if (dbWeek.isEmpty) {
-      _createWeek(db, week, id);
-    }
-    await db.rawUpdate('UPDATE Weeks SET '
-        'weekYear = ${week.weekYear}, '
-        'name = ${week.name}, '
-        'thumbnailKey = ${week.thumbnail.id}, '
-        'weekNumber = ${week.weekNumber} WHERE '
-        'girafUserId == $id AND '
-        'weekYear == $year AND '
-        'weekNumber == $weekNumber');
-    return getWeek(id, year, weekNumber);
-  }
 
-  Future<void> _createWeek(Database db, WeekModel week, String id) async {
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'name': week.name,
-      'thumbnailKey': week.thumbnail.id,
-      'weekNumber': week.weekNumber,
-      'girafUserId': id,
-      'weekYear': week.weekYear
-    };
-    final int weekId = await db.insert('Weeks', insertQuery);
-    for (WeekdayModel day in week.days) {
-      await _insertWeekday(weekId, day, db, id, week);
-    }
-  }
-
-  Future<void> _insertWeekday(int weekId, WeekdayModel day, Database db,
-      String userId, WeekModel week) async {
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'day': day.day.index,
-      'weekId': weekId
-    };
-    db.insert('Weekdays', insertQuery);
-    if (day.activities != null) {
-      for (ActivityModel activity in day.activities) {
-        if (_getActivity(activity.id, db) == null) {
-          addActivity(activity, userId, week.name, week.weekYear,
-              week.weekNumber, day.day);
-        } else {
-          updateActivity(activity, userId);
-        }
+    /* This is responsible for generating the where clause string for the query.
+       Values that are null, should be checked with "IS NULL",
+       instead of "= null" */
+    final List<int> indicesWhereNull = <int>[];
+    for (int i = 0; i < values.length; i++) {
+      if (values[i] == null) {
+        indicesWhereNull.add(i);
       }
     }
-  }
-
-  /// Delete a Week With the userid [id]
-  /// Year [year]
-  /// And Weeknumber [weekNumber]
-  Future<bool> deleteWeek(String id, int year, int weekNumber) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> weekRes =
-        await db.rawQuery('SELECT * FROM Weeks WHERE '
-            'girafUserId == $id AND '
-            'weekYear == $year AND '
-            'weekNumber == $weekNumber');
-    final List<Map<String, dynamic>> deleteDays =
-        await db.rawQuery('SELECT * FROM Weekdays WHERE '
-            'weekId == ${weekRes[0]['id']}');
-    bool allDaysDeleted = true;
-    for (Map<String, dynamic> day in deleteDays) {
-      if (!(await _deleteWeekDay(id, day['id'], db))) {
-        allDaysDeleted = false;
-      }
+    String whereClause = indicesWhereNull.contains(0)
+        ? '${columns[0]} IS NULL'
+        : '${columns[0]} = ?';
+    for (int i = 1; i < values.length; i++) {
+      whereClause += indicesWhereNull.contains(i)
+          ? ' AND ${columns[i]} IS NULL'
+          : ' AND ${columns[i]} = ?';
     }
-    final int deleteCount = await db.rawDelete('DELETE FROM Weeks WHERE '
-        'girafUserId == $id AND '
-        'weekYear == $year AND '
-        'weekNumber == $weekNumber');
 
-    return 0 < deleteCount && allDaysDeleted;
-  }
-
-  Future<bool> _deleteWeekDay(String userId, int weekDayId, Database db) async {
-    final List<Map<String, dynamic>> deleteActivities = await db.rawQuery(
-        'SELECT * FROM Activities WHERE otherKey == $weekDayId');
-    bool activitiesDeleted = true;
-    for (Map<String, dynamic> activity in deleteActivities) {
-      if (!(await deleteActivity(activity['key'], userId))) {
-        activitiesDeleted = false;
-      }
-    }
-    final int daysDeleted = await db.rawDelete('DELETE FROM Weekdays WHERE '
-        'id == $weekDayId');
-    return daysDeleted == deleteActivities.length && activitiesDeleted;
-  }
-
-  // Week Template API functions
-
-  /// Get all weekTemplateNameModels
-  Future<List<WeekTemplateNameModel>> getTemplateNames() async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM WeekTemplates');
-    final List<WeekTemplateNameModel> weekTemplates = <WeekTemplateNameModel>[];
-    for (Map<String, dynamic> result in res) {
-      weekTemplates.add(WeekTemplateNameModel.fromDatabase(result));
-    }
-    return weekTemplates;
-  }
-
-  /// Create a week template in the database from [template]
-  Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) async {
-    final Database db = await database;
-    final Map<String, dynamic> insertQuery = <String, dynamic>{
-      'name': template.name,
-      'thumbnailKey': template.thumbnail.id,
-      'onlineId': template.id ?? Uuid().v1().hashCode,
-      'department': template.departmentKey
-    };
-    await db.insert('WeekTemplates', insertQuery);
-    return getTemplate(template.id);
-  }
-
-  /// Get a template by its [id]
-  Future<WeekTemplateModel> getTemplate(int id) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> res =
-        await db.rawQuery('SELECT * FROM WeekTemplates WHERE '
-            'onlineId == $id');
-    final Map<String, dynamic> tempRes = res[0];
-    // get the first record
-    final Map<String, dynamic> template = Map<String, dynamic>.from(tempRes);
-    template['thumbnail'] =
-        (await getPictogramID(template['thumbnailKey'])).toJson();
-    return WeekTemplateModel.fromDatabase(template);
-  }
-
-  /// Update a template with all the values from [template]
-  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) async {
-    final Database db = await database;
-    db.rawUpdate('UPDATE WeekTemplates SET '
-        'name = ${template.name}, '
-        'thumbnailKey = ${template.thumbnail.id}, '
-        'department = ${template.departmentKey} WHERE '
-        'id == ${template.id}');
-    final List<Map<String, dynamic>> templateRes =
-        await db.rawQuery('SELECT OnlineId FROM WeekTemplates WHERE '
-            'id == ${template.id} AND name == ${template.name}');
-    return getTemplate(templateRes[0]['onlineId']);
-  }
-
-  /// Delete a template with the id [id]
-  Future<bool> deleteTemplate(int id) async {
-    final Database db = await database;
-    final int deleteCount =
-        await db.rawDelete('DELETE FROM WeekTemplates WHERE '
-        'onlineID == $id');
-    return deleteCount > 0;
+    return (await db.rawQuery(
+        'SELECT * FROM $table WHERE $whereClause',
+        values.where((dynamic value) => value != null).toList())).isNotEmpty;
   }
 
   /// Gets the version of the currently running db

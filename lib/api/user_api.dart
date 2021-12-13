@@ -25,33 +25,25 @@ class UserApi {
 
   /// Find information about the currently authenticated user.
   Stream<GirafUserModel> me() => _connectivity.handle(
-      () => _http
-          .get('/')
-          .map((Response res) => GirafUserModel.fromJson(res.json['data']))
-          .first,
+      () {
+        final Future<GirafUserModel> me = _http.get('/')
+            .map((Response res) => GirafUserModel.fromJson(res.json['data']))
+            .first;
+        _dbHandler.setMe(me);
+        return me;
+      },
       () => _dbHandler.getMe()
   );
 
   /// Find information on the user with the given ID
   ///
   /// [id] ID of the user
-  Stream<GirafUserModel> get(String id) => _connectivity.handle(() {
-        final Future<GirafUserModel> user = _http
-          .get('/$id')
+  Stream<GirafUserModel> get(String id) => _connectivity.handle(
+      () async {
+        final GirafUserModel user = await _http.get('/$id')
           .map((Response res) => GirafUserModel.fromJson(res.json['data']))
           .first;
-
-        user.then((GirafUserModel user) {
-          _dbHandler.getUserId(user.username).then((String id) {
-            if (id != null) {
-              _dbHandler.updateUser(user);
-            }
-            else {
-              _dbHandler.insertUser(user);
-            }
-          });
-        });
-
+        _dbHandler.insertUser(user);
         return user;
       },
       () => _dbHandler.getUser(id)
@@ -61,40 +53,48 @@ class UserApi {
   ///
   /// [username] Username of the user
   Stream<int> role(String username) => _connectivity.handle(
-      () => _http
-              .get('/$username/role')
-              .map<int>((Response res) => res.json['data']).first,
+      () async {
+        final int role = await _http.get('/$username/role')
+            .map<int>((Response res) => res.json['data']).first;
+        _dbHandler.updateUserRole(username, role);
+        return role;
+      },
       () => _dbHandler.getUserRole(username)
   );
 
   /// Updates the user with the information in GirafUserModel
   ///
   /// [user] The updated user
-  Stream<GirafUserModel> update(GirafUserModel user) => _connectivity.handle(
-      () => _http
-              .put('/${user.id}', user.toJson())
+  Stream<void> update(GirafUserModel user) => _connectivity.handle(
+      () async => _dbHandler.insertUser(
+          await _http.put('/${user.id}', user.toJson())
               .map((Response res) => GirafUserModel
-                .fromJson(res.json['data'])).first,
-      () => _dbHandler.updateUser(user)
+                .fromJson(res.json['data'])).first),
+      () => _dbHandler.insertUser(user)
   );
 
   /// Get user-settings for the user with the specified Id
   ///
   /// [id] Identifier of the GirafUser to get settings for
   Stream<SettingsModel> getSettings(String id) => _connectivity.handle(
-      () {
-        final Future<SettingsModel> settings = _http
-            .get('/$id/settings')
-            .map((Response res) => SettingsModel
+      () async {
+        try {
+          final SettingsModel settings = await _http
+              .get('/$id/settings')
+              .map((Response res) => SettingsModel
               .fromJson(res.json['data'])).first;
 
-        // This will save the settings and update the settingsId for the user
-        settings.then((SettingsModel settings) =>
-        // TODO(MathiasNielsen): Only insert if the settings does not exist DB
-        _dbHandler.insertUserSettings(id, settings)
-        );
+          if (!await _dbHandler.userExists(id)) {
+            // Get the user if it does not already exist in the database
+            await get(id).first;
+          }
 
-        return settings;
+          await _dbHandler.insertUserSettings(id, settings);
+
+          return settings;
+        } catch (error) {
+          throw Exception('Error with User/v1/[id]/settings');
+        }
       },
       () => _dbHandler.getUserSettings(id)
   );
@@ -103,60 +103,31 @@ class UserApi {
   ///
   /// [id] Identifier of the GirafUser to update settings for
   /// [settings] reference to a Settings containing the new settings
-  Stream<bool> updateSettings(String id, SettingsModel settings) =>
-      _connectivity.handle(
-          () {
-            final Future<bool> result = _http
-                .put('/$id/settings', settings.toJson())
-                .map((Response res) => res.success()).first;
-
-            _dbHandler.updateUserSettings(id, settings);
-
-            return result;
-          },
-          () => _dbHandler.updateUserSettings(id, settings)
+  Stream<void> updateSettings(String id, SettingsModel settings) =>
+        _connectivity.handle(
+      () async {
+        _http.put('/$id/settings', settings.toJson());
+        return _dbHandler.insertUserSettings(id, settings);
+      },
+      () => _dbHandler.insertUserSettings(id, settings)
   );
 
   /// Deletes the user icon for a given user
   ///
   /// [id] Identifier for the user to which the icon should be deleted
+  /// Todo(): Offline mode needs to be implemented
   Stream<bool> deleteIcon(String id) =>
-      _connectivity.handle(
-          () {
-            final Future<bool> result = _http
-                .delete('/$id/icon')
-                .map((Response res) => res.statusCode() == 200).first;
-
-            _dbHandler.deleteUserIcon(id);
-
-            return result;
-          },
-          () => _dbHandler.deleteUserIcon(id)
-  );
-
-
+      _http.delete('/$id/icon').map((Response res) => res.statusCode() == 200);
 
   /// Gets the raw user icon for a given user
   ///
   /// [id] Identifier of the GirafUser to get icon for
-  Stream<Image> getIcon(String id) =>
-      _connectivity.handle(
-          () {
-            final Future<Image> result = _http
-                .get('/$id/icon/raw')
-                .map((Response res) =>
-                  Image.memory(res.response.bodyBytes)).first;
-
-            result.then((Image icon) =>
-                _dbHandler.insertUserIcon(id,icon));
-
-            return result;
-          },
-          () => _dbHandler.getUserIcon(id)
-  );
-
+  /// Todo(): Offline mode needs to be implemented
+  Stream<Image> getIcon(String id) => _http.get('/$id/icon/raw')
+      .map((Response res) => Image.memory(res.response.bodyBytes));
 
   /// NYI
+  /// Todo(): Offline mode needs to be implemented
   Stream<bool> updateIcon() {
     // TODO(boginw): implement this
     return null;
@@ -166,62 +137,34 @@ class UserApi {
   /// be a guardian
   ///
   /// [id] Identifier of the GirafUser to get citizens for
-  Stream<List<DisplayNameModel>> getCitizens(String id)
-      => _connectivity.handle(
-          () {
-            final Future<List<DisplayNameModel>> result = _http
-                .get('/$id/citizens')
-                .map((Response res) =>
-                List<Map<String, dynamic>>.from(res.json['data'])
-                    .map((Map<String, dynamic> val) =>
-                    DisplayNameModel.fromJson(val))
-                    .toList()).first;
-
-            result.then((List<DisplayNameModel> citizens) {
-              for(DisplayNameModel citizen in citizens) {
-                  _dbHandler.addCitizenToGuardian(id, citizen.id);
-              }
-            });
-
-            return result;
-          },
-          () => _dbHandler.getCitizens(id)
-  );
-
+  /// Todo(): Offline mode needs to be implemented
+  Stream<List<DisplayNameModel>> getCitizens(String id) =>
+      _http.get('/$id/citizens').map((Response res) =>
+          List<Map<String, dynamic>>
+              .from(res.json['data'])
+              .map((Map<String, dynamic> val) =>
+                  DisplayNameModel.fromJson(val))
+              .toList());
 
   /// Gets the guardians for the specific citizen corresponding to the
   /// provided id.
   ///
   /// [id] Identifier for the citizen to get guardians for
+  /// Todo(): Offline mode needs to be implemented
   Stream<List<DisplayNameModel>> getGuardians(String id) =>
-      _connectivity.handle(
-          () => _http
-            .get('/$id/guardians')
-            .map((Response res) =>
-              List<Map<String, dynamic>>.from(res.json['data'])
-                .map((Map<String, dynamic> val) =>
+      _http.get('/$id/guardians').map((Response res) =>
+          List<Map<String, dynamic>>.from(res.json['data'])
+              .map((Map<String, dynamic> val) =>
                   DisplayNameModel.fromJson(val))
-                .toList()).first,
-          () => _dbHandler.getGuardians(id)
-  );
-
+              .toList());
 
   /// Adds relation between the authenticated user (guardian) and an
   /// existing citizen.
   ///
   /// [guardianId] The guardian
   /// [citizenId] The citizen to be added to the guardian
+  /// Todo(): Offline mode needs to be implemented
   Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) =>
-      _connectivity.handle(
-          () {
-            final Future<bool> result = _http
-              .post('/$guardianId/citizens/$citizenId')
-              .map((Response res) => res.statusCode() == 200).first;
-
-            _dbHandler.addCitizenToGuardian(guardianId, citizenId);
-
-            return result;
-          },
-          () => _dbHandler.addCitizenToGuardian(guardianId, citizenId)
-  );
+      _http.post('/$guardianId/citizens/$citizenId')
+          .map((Response res) => res.statusCode() == 200);
 }
