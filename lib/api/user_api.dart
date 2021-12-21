@@ -166,7 +166,6 @@ class UserApi {
   Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) =>
       _http.post('/$guardianId/citizens/$citizenId')
           .map((Response res) => res.statusCode() == 200);
-}
 
 /// Adds relation between the authenticated user (guardian) and an
   /// existing citizen.
