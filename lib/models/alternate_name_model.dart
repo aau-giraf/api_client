@@ -46,5 +46,4 @@ class AlternateNameModel implements Model {
       'name' : name
     };
   }
-
 }

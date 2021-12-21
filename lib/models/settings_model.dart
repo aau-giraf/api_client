@@ -19,9 +19,9 @@ class SettingsModel implements Model {
       this.activitiesCount,
       @required this.theme,
       this.nrOfDaysToDisplay,
+      this.greyscale,
       this.lockTimerControl,
       this.pictogramText,
-      this.greyscale,
       this.weekDayColors});
 
   /// Another constructor used to create from json.
@@ -39,9 +39,9 @@ class SettingsModel implements Model {
     activitiesCount = json['activitiesCount'];
     theme = GirafTheme.values[(json['theme']) - 1];
     nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
+    greyscale = json['greyScale'];
     lockTimerControl = json['lockTimerControl'];
     pictogramText = json['pictogramText'];
-    greyscale = json['greyScale'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
           .map(
@@ -60,17 +60,17 @@ class SettingsModel implements Model {
           '[SettingModel]: Cannot initialize from null');
     }
 
-    orientation = Orientation.values[(settingsJson['Orientation'])];
-    completeMark = CompleteMark.values[(settingsJson['CompleteMark'])];
-    cancelMark = CancelMark.values[(settingsJson['CancelMark'])];
-    defaultTimer = DefaultTimer.values[(settingsJson['DefaultTimer'])];
-    timerSeconds = settingsJson['TimerSeconds'];
-    activitiesCount = settingsJson['ActivitiesCount'];
-    theme = GirafTheme.values[(settingsJson['Theme'])];
-    nrOfDaysToDisplay = settingsJson['NrOfDaysToDisplay'];
-    lockTimerControl = settingsJson['LockTimerControl'] == 1;
-    pictogramText = settingsJson['PictogramText'] == 1;
-    greyscale = settingsJson['GreyScale'] == 1;
+    orientation = Orientation.values[(settingsJson['orientation'])];
+    completeMark = CompleteMark.values[(settingsJson['completeMark'])];
+    cancelMark = CancelMark.values[(settingsJson['cancelMark'])];
+    defaultTimer = DefaultTimer.values[(settingsJson['defaultTimer'])];
+    timerSeconds = settingsJson['timerSeconds'];
+    activitiesCount = settingsJson['activitiesCount'];
+    theme = GirafTheme.values[(settingsJson['theme'])];
+    nrOfDaysToDisplay = settingsJson['nrOfDaysToDisplay'];
+    greyscale = settingsJson['greyScale'] == 1;
+    lockTimerControl = settingsJson['lockTimerControl'] == 1;
+    pictogramText = settingsJson['pictogramText'] == 1;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
@@ -105,11 +105,11 @@ class SettingsModel implements Model {
   /// defines the number of days to display for a user in a weekschedule
   int nrOfDaysToDisplay;
 
-  /// Defines if the user can stop/pause/restart a timer once started
-  bool lockTimerControl;
-
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
+
+  /// Defines if the user can stop/pause/restart a timer once started
+  bool lockTimerControl;
 
   /// Defines if text should be shown alongside the pictograms in the weekplan
   bool pictogramText;
@@ -128,8 +128,8 @@ class SettingsModel implements Model {
       'activitiesCount': activitiesCount,
       'theme': theme.index + 1,
       'nrOfDaysToDisplay': nrOfDaysToDisplay,
-      'lockTimerControl': lockTimerControl,
       'greyScale': greyscale,
+      'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()

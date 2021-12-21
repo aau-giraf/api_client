@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
@@ -12,19 +9,15 @@ import 'package:api_client/models/timer_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_template_model.dart';
 import 'package:api_client/models/weekday_model.dart';
-import 'package:path/path.dart';
-
-import 'OfflineDatabase_test.dart';
 
 //Test GirafUserModel 1
 final GirafUserModel jamesbondTestUser = GirafUserModel(
-    username: 'JamesBond007',
-    department: 1,
-    displayName: 'James Bond',
-    roleName: 'Citizen',
     id: 'james007bond',
     role: Role.Citizen,
-    offlineId: 1);
+    roleName: 'Citizen',
+    username: 'JamesBond007',
+    displayName: 'James Bond',
+    department: 1);
 // Test account body 1
 final Map<String, dynamic> jamesBody = <String, dynamic>{
   'username': jamesbondTestUser.username,
@@ -35,13 +28,12 @@ final Map<String, dynamic> jamesBody = <String, dynamic>{
 };
 //Test GirafUserModel 2
 final GirafUserModel edTestUser = GirafUserModel(
-    department: 34,
-    offlineId: 34,
-    role: Role.Citizen,
     id: 'edmcniel01',
+    role: Role.Citizen,
     roleName: 'Citizen',
+    username: 'EdMcNiel34',
     displayName: 'Ed McNiel',
-    username: 'EdMcNiel34');
+    department: 34);
 //Test account body 2
 final Map<String, dynamic> edBody = <String, dynamic>{
   'username': edTestUser.username,
@@ -53,13 +45,12 @@ final Map<String, dynamic> edBody = <String, dynamic>{
 
 //Test GirafUserModel 3
 final GirafUserModel jamesbondSuperUser = GirafUserModel(
-    username: 'JamesBond007',
-    department: 1,
-    displayName: 'James Bond',
-    roleName: 'SuperUser',
     id: 'james007bond',
     role: Role.SuperUser,
-    offlineId: 1);
+    roleName: 'SuperUser',
+    username: 'JamesBond007',
+    displayName: 'James Bond',
+    department: 1);
 // Test account body 3
 final Map<String, dynamic> jamesBodySuper = <String, dynamic>{
   'username': jamesbondTestUser.username,
@@ -169,20 +160,3 @@ final WeekTemplateModel weekTemplate2 = WeekTemplateModel(
     departmentKey: 2,
     id: 40,
     thumbnail: scrum);
-
-Future<File> addImageToPictogram(
-    PictogramModel picto, MockOfflineDbHandler db) async {
-  final String tempDir = Directory.current.path;
-  Directory pictoDirectory;
-  if (tempDir.split(separator).last == 'test') {
-    pictoDirectory = Directory(join(tempDir, 'pictograms'));
-  } else {
-    pictoDirectory = Directory(join(tempDir, 'test', 'pictograms'));
-  }
-  final File pictoPath = File(join(pictoDirectory.path, 'giraf.png'));
-  final Uint8List pictoUInt8 = await pictoPath.readAsBytes();
-  await db.updateImageInPictogram(picto.id, pictoUInt8);
-  final File pictoImage = File(join(pictoDirectory.path, '${picto.id}.png'));
-
-  return pictoImage;
-}

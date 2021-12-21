@@ -39,12 +39,12 @@ class PictogramModel implements Model {
           '[PictogramModel]: Cannot initialize from null');
     }
 
-    id = json['OnlineId'];
+    id = json['onlineId'];
     lastEdit =
-        json['LastEdit'] == null ? null : DateTime.tryParse(json['LastEdit']);
-    title = json['Title'];
-    accessLevel = AccessLevel.values[(json['AccessLevel'])];
-    imageHash = json['ImageHash'];
+        json['lastEdit'] == null ? null : DateTime.tryParse(json['lastEdit']);
+    title = json['title'];
+    accessLevel = AccessLevel.values[(json['accessLevel'])];
+    imageHash = json['imageHash'];
   }
 
   /// pictogram id
