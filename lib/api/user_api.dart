@@ -167,13 +167,13 @@ class UserApi {
       _http.post('/$guardianId/citizens/$citizenId')
           .map((Response res) => res.statusCode() == 200);
 
-/// Adds relation between the authenticated user (guardian) and an
+
+/// Adds relation between the authenticated user (trustee) and an
   /// existing citizen.
   ///
   /// [trusteeId] The trustee
   /// [citizenId] The citizen to be added to the guardian
-  /// 
-
+  ///
   Stream<bool> addCitizenToTrustee(String trusteeId, String citizenId) =>
       _http.post('/$trusteeId/citizens/$citizenId')
           .map((Response res) => res.statusCode() == 200);
