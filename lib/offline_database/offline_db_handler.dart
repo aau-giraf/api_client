@@ -72,8 +72,7 @@ class OfflineDbHandler {
           nrOfDaysToDisplay integer DEFAULT NULL,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
-          pictogramText integer DEFAULT 0,
-          showPopup integer DEFAULT 0)''');
+          pictogramText integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
@@ -476,13 +475,12 @@ class OfflineDbHandler {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
-        pictogramText, showPopup) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
           settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText,
-          settings.showPopup]);
+          settings.lockTimerControl, settings.pictogramText]);
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
@@ -511,14 +509,13 @@ class OfflineDbHandler {
     await db.rawUpdate('''UPDATE Settings SET
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-        greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?
+        greyScale = ?, lockTimerControl = ?, pictogramText = ?
         WHERE settingsId = ?''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
           settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText,
-          settings.showPopup, settingsId]);
+          settings.lockTimerControl, settings.pictogramText, settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
        which means that they have to be saved in its own table */
