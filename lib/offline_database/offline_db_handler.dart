@@ -489,7 +489,7 @@ class OfflineDbHandler {
          which means that they have to be saved in its own table */
       if (settings.weekDayColors != null) {
         for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
-          insertSettingsWeekDayColor(settingsId, weekdayColor);
+         // insertSettingsWeekDayColor(settingsId, weekdayColor);
         }
       }
     } else {
