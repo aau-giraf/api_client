@@ -488,9 +488,9 @@ class OfflineDbHandler {
       /* WeekDayColors is a list in SettingsModel,
          which means that they have to be saved in its own table */
       if (settings.weekDayColors != null) {
-        for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
-         // insertSettingsWeekDayColor(settingsId, weekdayColor);
-        }
+        //for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
+        //  insertSettingsWeekDayColor(settingsId, weekdayColor);
+        //}
       }
     } else {
       _updateUserSettings(userId, settings);
@@ -538,7 +538,7 @@ class OfflineDbHandler {
   /// Insert [weekdayColor] for settings with id: [settingsId]
   /// If a weekdayColor with the provided [settingsId] and [weekdayColor.day]
   /// does already exist in the database, it will be updated instead.
-  /*
+  
   Future<void> insertSettingsWeekDayColor(int settingsId,
       WeekdayColorModel weekdayColor) async {
     final Database db = await database;
@@ -562,7 +562,7 @@ class OfflineDbHandler {
         WHERE settingsId = ? AND day = ?''',
         <dynamic>[weekdayColor.hexColor, settingsId, weekdayColor.day.index]);
   }
- */
+ 
   /// Return list of citizens from database based on guardian id
   Future<List<DisplayNameModel>> getCitizens(String id) async {
     // Todo(): This needs to be implemented
