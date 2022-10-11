@@ -552,7 +552,7 @@ class OfflineDbHandler {
       _updateSettingsWeekDayColor(settingsId, weekdayColor);
     }
   }
-  */
+ 
 
   /// Update with [weekdayColor] for settings with id: [settingsId]
   Future<void> _updateSettingsWeekDayColor(int settingsId,
@@ -562,7 +562,7 @@ class OfflineDbHandler {
         WHERE settingsId = ? AND day = ?''',
         <dynamic>[weekdayColor.hexColor, settingsId, weekdayColor.day.index]);
   }
-
+ */
   /// Return list of citizens from database based on guardian id
   Future<List<DisplayNameModel>> getCitizens(String id) async {
     // Todo(): This needs to be implemented
