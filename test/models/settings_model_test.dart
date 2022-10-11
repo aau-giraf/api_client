@@ -19,7 +19,6 @@ void main() {
     'LockTimerControl': false,
     'GreyScale': false,
     'PictogramText' : false,
-    'ShowPopup' : false,
     'WeekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
@@ -46,7 +45,6 @@ void main() {
     expect(settings.theme, GirafTheme.values[response['Theme'] - 1]);
     expect(settings.lockTimerControl, false);
     expect(settings.pictogramText, false);
-    expect(settings.showPopup, false);
     expect(settings.greyscale, false);
     expect(settings.weekDayColors.length, 7);
     expect(settings.weekDayColors[0].toJson(), response['WeekDayColors'][0]);
@@ -55,7 +53,7 @@ void main() {
     expect(settings.weekDayColors[3].toJson(), response['WeekDayColors'][3]);
     expect(settings.weekDayColors[4].toJson(), response['WeekDayColors'][4]);
     expect(settings.weekDayColors[5].toJson(), response['WeekDayColors'][5]);
-    expect(settings.weekDayColors[6].toJson(), response['WeekDayColors'][6]);
+    expect(settings.weekDayColors[6].toJson(), response['weekDayColors'][6]);
   });
 
   test('Will throw exception when JSON is null', () {
