@@ -466,8 +466,7 @@ class OfflineDbHandler {
       return null;
     }
   }
-
-  /// Insert [settings] for user with the specified [userId]
+ /// Insert [settings] for user with the specified [userId]
   Future<void> insertUserSettings(String userId, SettingsModel settings) async {
     final Database db = await database;
     if (await _existsInTable('Users', <String>['id', 'settingsId'],
@@ -502,27 +501,31 @@ class OfflineDbHandler {
   Future<void> _updateUserSettings(String userId,
       SettingsModel settings) async {
     final Database db = await database;
+
     final int settingsId = (await db.rawQuery(
         'SELECT settingsId FROM Users WHERE id = ?',
         <String>[userId])).first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
+        id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
         greyScale = ?, lockTimerControl = ?, pictogramText = ?
-        WHERE settingsId = ?''',
-        <dynamic>[settings.orientation.index, settings.completeMark.index,
+        WHERE id = ?''',
+        <dynamic>[settingsId, settings.orientation.index,
+          settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
           settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText, settingsId]);
+          settings.lockTimerControl,
+          settings.pictogramText == true ? 1 : 0, settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
        which means that they have to be saved in its own table */
     if (settings.weekDayColors != null) {
-      for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
-        insertSettingsWeekDayColor(settingsId, weekdayColor);
-      }
+      //for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
+        //insertSettingsWeekDayColor(settingsId, weekdayColor);
+      //}
     }
   }
 
