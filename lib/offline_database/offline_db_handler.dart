@@ -511,25 +511,34 @@ class OfflineDbHandler {
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
         greyScale = ?, lockTimerControl = ?, pictogramText = ?
-        WHERE id = ?''',
-        <dynamic>[settingsId, settings.orientation.index, settings.completeMark.index,
-          settings.cancelMark.index, settings.defaultTimer.index,
-          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
-          settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText == true ? 1 : 0, settingsId]);
+        WHERE id = ?''',  
+        <dynamic>[settingsId, 
+          settings.orientation.index, 
+          settings.completeMark.index,
+          settings.cancelMark.index, 
+          settings.defaultTimer.index,
+          settings.timerSeconds, 
+          settings.activitiesCount, 
+          settings.theme.index,
+          settings.nrOfDaysToDisplay, 
+          settings.greyscale,
+          settings.lockTimerControl, 
+          settings.pictogramText == true ? 1 : 0, 
+          settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
-       which means that they have to be saved in its own table */
+       which means that they have to be saved in its own table 
     if (settings.weekDayColors != null) {
       for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
         //insertSettingsWeekDayColor(settingsId, weekdayColor);
       }
-    }
+    }*/
   }
 
   /// Insert [weekdayColor] for settings with id: [settingsId]
   /// If a weekdayColor with the provided [settingsId] and [weekdayColor.day]
   /// does already exist in the database, it will be updated instead.
+  /*
   Future<void> insertSettingsWeekDayColor(int settingsId,
       WeekdayColorModel weekdayColor) async {
     final Database db = await database;
@@ -543,6 +552,7 @@ class OfflineDbHandler {
       _updateSettingsWeekDayColor(settingsId, weekdayColor);
     }
   }
+  */
 
   /// Update with [weekdayColor] for settings with id: [settingsId]
   Future<void> _updateSettingsWeekDayColor(int settingsId,
