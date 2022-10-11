@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:api_client/http/http.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +13,8 @@ class UserApi {
   /// Default constructor
   UserApi(this._http, this._connectivity)
       : _dbHandler = OfflineDbHandler.instance;
-
   /// Constructor with custom DbHandler
   UserApi.withMockDbHandler(this._http, this._connectivity, this._dbHandler);
-
   final Http _http;
   final ConnectivityApi _connectivity;
   final OfflineDbHandler _dbHandler;
@@ -82,14 +79,11 @@ class UserApi {
               .get('/$id/settings')
               .map((Response res) => SettingsModel
               .fromJson(res.json['data'])).first;
-
           if (!await _dbHandler.userExists(id)) {
             // Get the user if it does not already exist in the database
             await get(id).first;
           }
-
           await _dbHandler.insertUserSettings(id, settings);
-
           return settings;
         } catch (error) {
           throw Exception('Error with User/v1/[id]/settings');
@@ -105,10 +99,9 @@ class UserApi {
   Stream<void> updateSettings(String id, SettingsModel settings) =>
         _connectivity.handle(
       () async {
-        _http.put('/$id/settings', settings.toJson());
-        return _dbHandler.insertUserSettings(id, settings);
+        return _http.put('/$id/settings', settings.toJson()).toList();
       },
-      () => _dbHandler.insertUserSettings(id, settings)
+      () => _dbHandler.insertUserSettings(id, settings),
   );
 
   /// Deletes the user icon for a given user
@@ -165,16 +158,5 @@ class UserApi {
   /// Todo(): Offline mode needs to be implemented
   Stream<bool> addCitizenToGuardian(String guardianId, String citizenId) =>
       _http.post('/$guardianId/citizens/$citizenId')
-          .map((Response res) => res.statusCode() == 200);
-
-
-/// Adds relation between the authenticated user (trustee) and an
-  /// existing citizen.
-  ///
-  /// [trusteeId] The trustee
-  /// [citizenId] The citizen to be added to the guardian
-  ///
-  Stream<bool> addCitizenToTrustee(String trusteeId, String citizenId) =>
-      _http.post('/$trusteeId/citizens/$citizenId')
           .map((Response res) => res.statusCode() == 200);
 }

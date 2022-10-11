@@ -11,7 +11,8 @@ import 'package:api_client/models/weekday_color_model.dart';
 class SettingsModel implements Model {
   /// Constructor
   SettingsModel(
-      {@required this.orientation,
+      {
+      @required this.orientation,
       @required this.completeMark,
       @required this.cancelMark,
       @required this.defaultTimer,
@@ -30,7 +31,6 @@ class SettingsModel implements Model {
       throw const FormatException(
           '[SettingModel]: Cannot initialize from null');
     }
-
     orientation = Orientation.values[(json['orientation']) - 1];
     completeMark = CompleteMark.values[(json['completeMark']) - 1];
     cancelMark = CancelMark.values[(json['cancelMark']) - 1];
@@ -59,7 +59,6 @@ class SettingsModel implements Model {
       throw const FormatException(
           '[SettingModel]: Cannot initialize from null');
     }
-
     orientation = Orientation.values[(settingsJson['orientation'])];
     completeMark = CompleteMark.values[(settingsJson['completeMark'])];
     cancelMark = CancelMark.values[(settingsJson['cancelMark'])];
@@ -77,11 +76,10 @@ class SettingsModel implements Model {
               WeekdayColorModel.fromDatabase(value))
           .toList();
     } else {
+      throw ("weekdaycolor is null");
       // TODO(TobiasPalludan): Throw appropriate error.
     }
   }
-  /// the key the user has
-  int key;
   /// Preferred orientation of device/screen
   Orientation orientation;
 
@@ -121,38 +119,19 @@ class SettingsModel implements Model {
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'orientation': orientation.index + 1,
-      'completeMark': completeMark.index + 1,
-      'cancelMark': cancelMark.index + 1,
-      'defaultTimer': defaultTimer.index + 1,
-      'timerSeconds': timerSeconds,
-      'activitiesCount': activitiesCount,
-      'theme': theme.index + 1,
-      'nrOfDaysToDisplay': nrOfDaysToDisplay,
-      'greyScale': greyscale,
-      'lockTimerControl': lockTimerControl,
-      'pictogramText': pictogramText,
-      'weekDayColors':
-          weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
-    };
-  }
-
-  Map<String, dynamic> toSql() {
-    return <String, dynamic>{
-      'Key': key,
-      'orientation': orientation.index + 1,
-      'completeMark': completeMark.index + 1,
-      'cancelMark': cancelMark.index + 1,
-      'defaultTimer': defaultTimer.index + 1,
-      'timerSeconds': timerSeconds,
-      'activitiesCount': activitiesCount,
-      'theme': theme.index + 1,
-      'nrOfDaysToDisplay': nrOfDaysToDisplay,
-      'greyScale': greyscale,
-      'lockTimerControl': lockTimerControl,
-      'pictogramText': pictogramText,
-      'weekDayColors':
-          weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
+      'Orientation': orientation.index + 1,
+      'CompleteMark': completeMark.index + 1,
+      'CancelMark': cancelMark.index + 1,
+      'DefaultTimer': defaultTimer.index + 1,
+      'TimerSeconds': timerSeconds,
+      'ActivitiesCount': activitiesCount,
+      'Theme': theme.index + 1,
+      'NrOfDaysToDisplay': nrOfDaysToDisplay,
+      'GreyScale': greyscale,
+      'PictogramText': pictogramText,
+      'LockTimerControl': lockTimerControl,
+      'WeekDayColors':
+      weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
   }
 }
