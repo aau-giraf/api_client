@@ -16,9 +16,10 @@ void main() {
     'activitiesCount': null,
     'theme': 1,
     'nrOfDaysToDisplay': 7,
+    'lockTimerControl': false,
     'greyScale': false,
     'pictogramText' : false,
-    'lockTimerControl': false,
+    'showPopup' : false,
     'weekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
