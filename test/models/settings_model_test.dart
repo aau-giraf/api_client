@@ -8,19 +8,19 @@ import 'package:api_client/models/settings_model.dart';
 
 void main() {
   final Map<String, dynamic> response = <String, dynamic>{
-    'orientation': 1,
-    'completeMark': 2,
-    'cancelMark': 2,
-    'defaultTimer': 2,
-    'timerSeconds': 900,
-    'activitiesCount': null,
-    'theme': 1,
-    'nrOfDaysToDisplay': 7,
-    'lockTimerControl': false,
-    'greyScale': false,
-    'pictogramText' : false,
-    'showPopup' : false,
-    'weekDayColors': <dynamic>[
+    'Orientation': 1,
+    'CompleteMark': 2,
+    'CancelMark': 2,
+    'DefaultTimer': 2,
+    'TimerSeconds': 900,
+    'ActivitiesCount': null,
+    'Theme': 1,
+    'NrOfDaysToDisplay': 7,
+    'LockTimerControl': false,
+    'GreyScale': false,
+    'PictogramText' : false,
+    'ShowPopup' : false,
+    'WeekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
       <String, dynamic>{'hexColor': '#ff7f00', 'day': 3},
@@ -35,27 +35,27 @@ void main() {
     final SettingsModel settings = SettingsModel.fromJson(response);
 
     expect(
-        settings.orientation, Orientation.values[response['orientation'] - 1]);
+        settings.orientation, Orientation.values[response['Orientation'] - 1]);
     expect(settings.completeMark,
-        CompleteMark.values[response['completeMark'] - 1]);
-    expect(settings.cancelMark, CancelMark.values[response['cancelMark'] - 1]);
+        CompleteMark.values[response['CompleteMark'] - 1]);
+    expect(settings.cancelMark, CancelMark.values[response['CancelMark'] - 1]);
     expect(settings.defaultTimer,
-        DefaultTimer.values[response['defaultTimer'] - 1]);
-    expect(settings.timerSeconds, response['timerSeconds']);
-    expect(settings.activitiesCount, response['activitiesCount']);
-    expect(settings.theme, GirafTheme.values[response['theme'] - 1]);
+        DefaultTimer.values[response['DefaultTimer'] - 1]);
+    expect(settings.timerSeconds, response['TimerSeconds']);
+    expect(settings.activitiesCount, response['ActivitiesCount']);
+    expect(settings.theme, GirafTheme.values[response['Theme'] - 1]);
     expect(settings.lockTimerControl, false);
     expect(settings.pictogramText, false);
     expect(settings.showPopup, false);
     expect(settings.greyscale, false);
     expect(settings.weekDayColors.length, 7);
-    expect(settings.weekDayColors[0].toJson(), response['weekDayColors'][0]);
-    expect(settings.weekDayColors[1].toJson(), response['weekDayColors'][1]);
-    expect(settings.weekDayColors[2].toJson(), response['weekDayColors'][2]);
-    expect(settings.weekDayColors[3].toJson(), response['weekDayColors'][3]);
-    expect(settings.weekDayColors[4].toJson(), response['weekDayColors'][4]);
-    expect(settings.weekDayColors[5].toJson(), response['weekDayColors'][5]);
-    expect(settings.weekDayColors[6].toJson(), response['weekDayColors'][6]);
+    expect(settings.weekDayColors[0].toJson(), response['WeekDayColors'][0]);
+    expect(settings.weekDayColors[1].toJson(), response['WeekDayColors'][1]);
+    expect(settings.weekDayColors[2].toJson(), response['WeekDayColors'][2]);
+    expect(settings.weekDayColors[3].toJson(), response['WeekDayColors'][3]);
+    expect(settings.weekDayColors[4].toJson(), response['WeekDayColors'][4]);
+    expect(settings.weekDayColors[5].toJson(), response['WeekDayColors'][5]);
+    expect(settings.weekDayColors[6].toJson(), response['WeekDayColors'][6]);
   });
 
   test('Will throw exception when JSON is null', () {
