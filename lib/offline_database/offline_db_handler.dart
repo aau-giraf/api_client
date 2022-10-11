@@ -72,7 +72,8 @@ class OfflineDbHandler {
           nrOfDaysToDisplay integer DEFAULT NULL,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
-          pictogramText integer DEFAULT 0)''');
+          pictogramText integer DEFAULT 0,
+          showPopup integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
@@ -510,7 +511,7 @@ class OfflineDbHandler {
     await db.rawUpdate('''UPDATE Settings SET
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-        greyScale = ?, lockTimerControl = ?, pictogramText = ?
+        greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?
         WHERE settingsId = ?''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
