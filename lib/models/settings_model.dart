@@ -76,7 +76,7 @@ class SettingsModel implements Model {
               WeekdayColorModel.fromDatabase(value))
           .toList();
     } else {
-      throw ("weekdaycolor is null");
+      throw 'weekdaycolor is null';
       // TODO(TobiasPalludan): Throw appropriate error.
     }
   }
