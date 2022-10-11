@@ -80,7 +80,8 @@ class SettingsModel implements Model {
       // TODO(TobiasPalludan): Throw appropriate error.
     }
   }
-
+  /// the key the user has
+  int key;
   /// Preferred orientation of device/screen
   Orientation orientation;
 
@@ -120,6 +121,25 @@ class SettingsModel implements Model {
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
+      'orientation': orientation.index + 1,
+      'completeMark': completeMark.index + 1,
+      'cancelMark': cancelMark.index + 1,
+      'defaultTimer': defaultTimer.index + 1,
+      'timerSeconds': timerSeconds,
+      'activitiesCount': activitiesCount,
+      'theme': theme.index + 1,
+      'nrOfDaysToDisplay': nrOfDaysToDisplay,
+      'greyScale': greyscale,
+      'lockTimerControl': lockTimerControl,
+      'pictogramText': pictogramText,
+      'weekDayColors':
+          weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
+    };
+  }
+
+  Map<String, dynamic> toSql() {
+    return <String, dynamic>{
+      'Key': key,
       'orientation': orientation.index + 1,
       'completeMark': completeMark.index + 1,
       'cancelMark': cancelMark.index + 1,
