@@ -31,19 +31,19 @@ class SettingsModel implements Model {
       throw const FormatException(
           '[SettingModel]: Cannot initialize from null');
     }
-    orientation = Orientation.values[(json['orientation']) - 1];
-    completeMark = CompleteMark.values[(json['completeMark']) - 1];
-    cancelMark = CancelMark.values[(json['cancelMark']) - 1];
-    defaultTimer = DefaultTimer.values[(json['defaultTimer']) - 1];
-    timerSeconds = json['timerSeconds'];
-    activitiesCount = json['activitiesCount'];
-    theme = GirafTheme.values[(json['theme']) - 1];
-    nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
-    greyscale = json['greyScale'];
-    lockTimerControl = json['lockTimerControl'];
-    pictogramText = json['pictogramText'];
-    if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
-      weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
+    orientation = Orientation.values[(json['Orientation']) - 1];
+    completeMark = CompleteMark.values[(json['CompleteMark']) - 1];
+    cancelMark = CancelMark.values[(json['CancelMark']) - 1];
+    defaultTimer = DefaultTimer.values[(json['DefaultTimer']) - 1];
+    timerSeconds = json['TimerSeconds'];
+    activitiesCount = json['ActivitiesCount'];
+    theme = GirafTheme.values[(json['Theme']) - 1];
+    nrOfDaysToDisplay = json['NrOfDaysToDisplay'];
+    greyscale = json['GreyScale'];
+    lockTimerControl = json['LockTimerControl'];
+    pictogramText = json['PictogramText'];
+    if (json['WeekDayColors'] != null && json['WeekDayColors'] is List) {
+      weekDayColors = List<Map<String, dynamic>>.from(json['WeekDayColors'])
           .map(
               (Map<String, dynamic> value) => WeekdayColorModel.fromJson(value))
           .toList();
@@ -59,24 +59,25 @@ class SettingsModel implements Model {
       throw const FormatException(
           '[SettingModel]: Cannot initialize from null');
     }
-    orientation = Orientation.values[(settingsJson['orientation'])];
-    completeMark = CompleteMark.values[(settingsJson['completeMark'])];
-    cancelMark = CancelMark.values[(settingsJson['cancelMark'])];
-    defaultTimer = DefaultTimer.values[(settingsJson['defaultTimer'])];
-    timerSeconds = settingsJson['timerSeconds'];
-    activitiesCount = settingsJson['activitiesCount'];
-    theme = GirafTheme.values[(settingsJson['theme'])];
-    nrOfDaysToDisplay = settingsJson['nrOfDaysToDisplay'];
-    greyscale = settingsJson['greyScale'] == 1;
-    lockTimerControl = settingsJson['lockTimerControl'] == 1;
-    pictogramText = settingsJson['pictogramText'] == 1;
+    orientation = Orientation.values[(settingsJson['Orientation'])];
+    completeMark = CompleteMark.values[(settingsJson['CompleteMark'])];
+    cancelMark = CancelMark.values[(settingsJson['CancelMark'])];
+    defaultTimer = DefaultTimer.values[(settingsJson['DefaultTimer'])];
+    timerSeconds = settingsJson['TimerSeconds'];
+    activitiesCount = settingsJson['ActivitiesCount'];
+    theme = GirafTheme.values[(settingsJson['Theme'])];
+    nrOfDaysToDisplay = settingsJson['NrOfDaysToDisplay'];
+    greyscale = settingsJson['GreyScale'] == 1;
+    pictogramText = settingsJson['PictogramText'] == 1;
+    lockTimerControl = settingsJson['LockTimerControl'] == 1;
+
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
               WeekdayColorModel.fromDatabase(value))
           .toList();
     } else {
-      throw 'weekdaycolor is null';
+      //throw 'weekdaycolor is null';
       // TODO(TobiasPalludan): Throw appropriate error.
     }
   }

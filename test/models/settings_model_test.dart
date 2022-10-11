@@ -53,7 +53,7 @@ void main() {
     expect(settings.weekDayColors[3].toJson(), response['WeekDayColors'][3]);
     expect(settings.weekDayColors[4].toJson(), response['WeekDayColors'][4]);
     expect(settings.weekDayColors[5].toJson(), response['WeekDayColors'][5]);
-    expect(settings.weekDayColors[6].toJson(), response['weekDayColors'][6]);
+    expect(settings.weekDayColors[6].toJson(), response['WeekDayColors'][6]);
   });
 
   test('Will throw exception when JSON is null', () {
