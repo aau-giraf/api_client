@@ -99,7 +99,7 @@ class UserApi {
   Stream<void> updateSettings(String id, SettingsModel settings) =>
         _connectivity.handle(
       () async {
-        _http.put('/$id/settings', settings.toJson()).toList();
+        _http.put('/$id/settings', settings.toJson()).toList(); //to list makes it execute and readable.
         return _dbHandler.insertUserSettings(id, settings);
       },
       () => _dbHandler.insertUserSettings(id, settings),
