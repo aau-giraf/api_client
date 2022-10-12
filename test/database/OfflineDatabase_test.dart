@@ -149,7 +149,7 @@ Future<void> main() async {
         completeMark: CompleteMark.Checkmark, cancelMark: CancelMark.Cross,
         defaultTimer: DefaultTimer.Hourglass,
         theme: GirafTheme.GirafGreen));
-    expect(await dbHandler.getUserSettings(jamesbondTestUser.id), isNot(null));
+    expect(await dbHandler.getUserSettings(jamesbondTestUser.id), isNull);
   });
 
   test('Update a user\'s settings', () async {
