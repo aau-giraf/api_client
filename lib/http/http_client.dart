@@ -62,7 +62,6 @@ class HttpClient implements Http {
 
   @override
   Stream<Response> post(String url, [dynamic body]) {
-    print(body.toString());
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) => _parseJson(http.post(baseUrl + url,
             body: _bodyHandler(body), headers: headers))
@@ -71,7 +70,6 @@ class HttpClient implements Http {
 
   @override
   Stream<Response> put(String url, [dynamic body]) {
-    print(body.toString());
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
             _parseJson(http.put(baseUrl + url,
