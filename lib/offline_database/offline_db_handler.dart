@@ -481,7 +481,8 @@ class OfflineDbHandler {
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
           settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText, settings.showPopup]);
+          settings.lockTimerControl, settings.pictogramText,
+          settings.showPopup]);
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
@@ -516,7 +517,8 @@ class OfflineDbHandler {
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
           settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText, settingsId]);
+          settings.lockTimerControl, settings.pictogramText, settings.showPopup,
+          settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
        which means that they have to be saved in its own table */
