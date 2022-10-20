@@ -469,8 +469,7 @@ class OfflineDbHandler {
       return null;
     }
   }
-
-  /// Insert [settings] for user with the specified [userId]
+ /// Insert [settings] for user with the specified [userId]
   Future<void> insertUserSettings(String userId, SettingsModel settings) async {
     final Database db = await database;
     if (await _existsInTable('Users', <String>['id', 'settingsId'],
@@ -497,9 +496,9 @@ class OfflineDbHandler {
       /* WeekDayColors is a list in SettingsModel,
          which means that they have to be saved in its own table */
       if (settings.weekDayColors != null) {
-        for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
-          insertSettingsWeekDayColor(settingsId, weekdayColor);
-        }
+        //for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
+        //  insertSettingsWeekDayColor(settingsId, weekdayColor);
+        //}
       }
     } else {
       _updateUserSettings(userId, settings);
@@ -510,38 +509,49 @@ class OfflineDbHandler {
   Future<void> _updateUserSettings(String userId,
       SettingsModel settings) async {
     final Database db = await database;
+
     final int settingsId = (await db.rawQuery(
         'SELECT settingsId FROM Users WHERE id = ?',
         <String>[userId])).first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
+        id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, 
         nrOfDaysToDisplayPortrait = ?, displayDaysRelativePortrait = ?, 
         nrOfDaysToDisplayLandscape = ?, displayDaysRelativeLandscape = ?, 
         greyScale = ?, lockTimerControl = ?, 
-        pictogramText = ? WHERE settingsId = ?''',
-        <dynamic>[settings.orientation.index, settings.completeMark.index,
-          settings.cancelMark.index, settings.defaultTimer.index,
-          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
+        pictogramText = ? WHERE settingsId = ?''', 
+        <dynamic>[settingsId, 
+          settings.orientation.index, 
+          settings.completeMark.index,
+          settings.cancelMark.index, 
+          settings.defaultTimer.index,
+          settings.timerSeconds, 
+          settings.activitiesCount, 
+          settings.theme.index,
           settings.nrOfDaysToDisplayPortrait,
           settings.displayDaysRelativePortrait,
           settings.nrOfDaysToDisplayLandscape,
-          settings.displayDaysRelativeLandscape, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText, settingsId]);
+          settings.displayDaysRelativeLandscape, 
+          settings.greyscale,
+          settings.lockTimerControl, 
+          settings.pictogramText == true ? 1 : 0, 
+          settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
-       which means that they have to be saved in its own table */
+       which means that they have to be saved in its own table 
     if (settings.weekDayColors != null) {
       for (WeekdayColorModel weekdayColor in settings.weekDayColors) {
-        insertSettingsWeekDayColor(settingsId, weekdayColor);
+        //insertSettingsWeekDayColor(settingsId, weekdayColor);
       }
-    }
+    }*/
   }
 
   /// Insert [weekdayColor] for settings with id: [settingsId]
   /// If a weekdayColor with the provided [settingsId] and [weekdayColor.day]
   /// does already exist in the database, it will be updated instead.
+  
   Future<void> insertSettingsWeekDayColor(int settingsId,
       WeekdayColorModel weekdayColor) async {
     final Database db = await database;
@@ -555,6 +565,7 @@ class OfflineDbHandler {
       _updateSettingsWeekDayColor(settingsId, weekdayColor);
     }
   }
+ 
 
   /// Update with [weekdayColor] for settings with id: [settingsId]
   Future<void> _updateSettingsWeekDayColor(int settingsId,
@@ -564,7 +575,7 @@ class OfflineDbHandler {
         WHERE settingsId = ? AND day = ?''',
         <dynamic>[weekdayColor.hexColor, settingsId, weekdayColor.day.index]);
   }
-
+ 
   /// Return list of citizens from database based on guardian id
   Future<List<DisplayNameModel>> getCitizens(String id) async {
     // Todo(): This needs to be implemented
