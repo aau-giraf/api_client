@@ -19,7 +19,9 @@ class SettingsModel implements Model {
       this.activitiesCount,
       @required this.theme,
       this.nrOfDaysToDisplayPortrait,
+      this.displayDaysRelativePortrait,
       this.nrOfDaysToDisplayLandscape,
+      this.displayDaysRelativeLandscape,
       this.greyscale,
       this.lockTimerControl,
       this.pictogramText,
@@ -41,7 +43,9 @@ class SettingsModel implements Model {
     activitiesCount = json['activitiesCount'];
     theme = GirafTheme.values[(json['theme']) - 1];
     nrOfDaysToDisplayPortrait = json['nrOfDaysToDisplayPortrait'];
+    displayDaysRelativePortrait = json['displayDaysRelativePortrait'];
     nrOfDaysToDisplayLandscape = json['nrOfDaysToDisplayLandscape'];
+    displayDaysRelativeLandscape = json['displayDaysRelativeLandscape'];
     greyscale = json['greyScale'];
     lockTimerControl = json['lockTimerControl'];
     pictogramText = json['pictogramText'];
@@ -73,8 +77,12 @@ class SettingsModel implements Model {
     theme = GirafTheme.values[(settingsJson['theme'])];
     nrOfDaysToDisplayPortrait =
     settingsJson['nrOfDaysToDisplayPortrait'];
+    displayDaysRelativePortrait =
+    settingsJson['displayDaysRelativePortrait'];
     nrOfDaysToDisplayLandscape =
     settingsJson['nrOfDaysToDisplayLandscape'];
+    displayDaysRelativeLandscape =
+    settingsJson['displayDaysRelativeLandscape'];
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;
@@ -156,7 +164,9 @@ class SettingsModel implements Model {
       'activitiesCount': activitiesCount,
       'theme': theme.index + 1,
       'nrOfDaysToDisplayPortrait': nrOfDaysToDisplayPortrait,
+      'displayDaysRelativePortrait': displayDaysRelativePortrait,
       'nrOfDaysToDisplayLandscape': nrOfDaysToDisplayLandscape,
+      'displayDaysRelativeLandscape': displayDaysRelativeLandscape,
       'greyScale': greyscale,
       'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
