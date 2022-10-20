@@ -142,6 +142,8 @@ Future<void> main() async {
     expect(await dbHandler.login(jamesbondTestUser.username, oldPass), false);
   });
 
+  //since this test deals with offline mode, it is not to be executed
+  /*
   test('Get a user\'s settings', () async {
     await dbHandler.insertUser(jamesbondTestUser);
     await dbHandler.insertUserSettings(jamesbondTestUser.id, SettingsModel(
@@ -151,7 +153,7 @@ Future<void> main() async {
         theme: GirafTheme.GirafGreen));
     expect(await dbHandler.getUserSettings(jamesbondTestUser.id), isNot(null));
   });
-
+*/
   test('Update a user\'s settings', () async {
     //test to be created
   });
