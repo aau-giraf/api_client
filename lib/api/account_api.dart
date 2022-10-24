@@ -8,7 +8,7 @@ import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/persistence/persistence.dart';
 
 import '../models/giraf_user_model.dart';
-
+/// Hello world
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
