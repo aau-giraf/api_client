@@ -137,7 +137,7 @@ class SettingsModel implements Model {
       'greyScale': greyscale,
       'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
-      'ShowPopup': showPopup,
+      'ShowPopup': showPopup == null ? false : true,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
