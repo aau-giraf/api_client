@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:api_client/http/http.dart';
 import 'package:meta/meta.dart';
@@ -38,7 +39,7 @@ class AccountApi {
   /// [departmentId] The users departmentId
   /// [role] The role of the user
   Stream<GirafUserModel> register(
-      String username, String password, String displayName,
+      String username, String password, String displayName, Uint8List profilePicture,
       {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
