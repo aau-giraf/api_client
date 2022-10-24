@@ -43,7 +43,7 @@ class SettingsModel implements Model {
     greyscale = json['greyScale'];
     lockTimerControl = json['lockTimerControl'];
     pictogramText = json['pictogramText'];
-    showPopup = json['ShowPopup'];
+    showPopup = json['showPopup'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
           .map(
@@ -73,7 +73,7 @@ class SettingsModel implements Model {
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;
-    showPopup = settingsJson['ShowPopup'] == 0;
+    showPopup = settingsJson['showPopup'] == 0;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
@@ -137,7 +137,7 @@ class SettingsModel implements Model {
       'greyScale': greyscale,
       'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
-      'ShowPopup': showPopup == null ? false : true,
+      'showPopup': showPopup == null ? false : true,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
