@@ -49,4 +49,16 @@ class ActivityApi {
       return res.success();
     });
   }
+  /// Updates the activitys timer with the specified ID
+  ///
+  /// [activity] Activity with an id that updates values in the database
+  /// [userId] User ID
+  Stream<bool> updatetimer(ActivityModel activity, String userId) {
+    return _http
+        .put('/$userId/update', activity.toJson())
+        .map((Response res) {
+      return ActivityModel.fromJson(res.json['data']);
+    });
+  }
+
 }
