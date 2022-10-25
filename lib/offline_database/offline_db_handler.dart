@@ -482,7 +482,7 @@ class OfflineDbHandler {
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
           settings.nrOfDaysToDisplay, settings.greyscale,
           settings.lockTimerControl, settings.pictogramText,
-          settings.showPopup == null ? false : true]);
+          settings.showPopup == null ? false : settings.showPopup]);
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
@@ -517,7 +517,7 @@ class OfflineDbHandler {
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
           settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText, settings.showPopup == null ? false : true,
+          settings.lockTimerControl, settings.pictogramText, settings.showPopup == null ? false : settings.showPopup,
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
