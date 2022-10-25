@@ -64,7 +64,8 @@ class HttpClient implements Http {
   Stream<Response> post(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) => _parseJson(http.post(baseUrl + url,
-            body: _bodyHandler(body), headers: headers))
+             headers: headers, 
+             body: _bodyHandler(body)))
     );
   }
 

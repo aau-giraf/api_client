@@ -507,12 +507,11 @@ class OfflineDbHandler {
         <String>[userId])).first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
-        id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
         greyScale = ?, lockTimerControl = ?, pictogramText = ?
         WHERE id = ?''',  
-        <dynamic>[settingsId, 
+        <dynamic>[ 
           settings.orientation.index, 
           settings.completeMark.index,
           settings.cancelMark.index, 
@@ -523,7 +522,7 @@ class OfflineDbHandler {
           settings.nrOfDaysToDisplay, 
           settings.greyscale,
           settings.lockTimerControl, 
-          settings.pictogramText == true ? 1 : 0, 
+          settings.pictogramText, 
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
