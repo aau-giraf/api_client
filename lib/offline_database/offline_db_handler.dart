@@ -72,7 +72,8 @@ class OfflineDbHandler {
           nrOfDaysToDisplay integer DEFAULT NULL,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
-          pictogramText integer DEFAULT 0)''');
+          pictogramText integer DEFAULT 0,
+          showPopup integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
@@ -486,7 +487,8 @@ class OfflineDbHandler {
           settings.nrOfDaysToDisplay, 
           settings.greyscale,
           settings.lockTimerControl, 
-          settings.pictogramText]);
+          settings.pictogramText,
+          settings.showPopup]);
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
@@ -529,7 +531,8 @@ class OfflineDbHandler {
           settings.nrOfDaysToDisplay, 
           settings.greyscale,
           settings.lockTimerControl, 
-          settings.pictogramText, 
+          settings.pictogramText,
+          settings.showPopup,
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
