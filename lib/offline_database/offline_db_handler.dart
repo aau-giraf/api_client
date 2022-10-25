@@ -475,11 +475,19 @@ class OfflineDbHandler {
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
         pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-        <dynamic>[settings.orientation.index, settings.completeMark.index,
-          settings.cancelMark.index, settings.defaultTimer.index,
-          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
-          settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText]);
+        <dynamic>[
+          settings.orientation.index, 
+          settings.completeMark.index,
+          settings.cancelMark.index, 
+          settings.defaultTimer.index,
+          settings.timerSeconds, 
+          settings.activitiesCount, 
+          settings.theme.index,
+          settings.nrOfDaysToDisplay, 
+          settings.greyscale,
+          settings.lockTimerControl, 
+          settings.pictogramText, 
+          settings.showPopup]);
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
@@ -507,12 +515,11 @@ class OfflineDbHandler {
         <String>[userId])).first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
-        id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-        greyScale = ?, lockTimerControl = ?, pictogramText = ?
+        greyScale = ?, lockTimerControl = ?, pictogramText = ?, showpopup = ?,
         WHERE id = ?''',  
-        <dynamic>[settingsId, 
+        <dynamic>[ 
           settings.orientation.index, 
           settings.completeMark.index,
           settings.cancelMark.index, 
@@ -524,6 +531,7 @@ class OfflineDbHandler {
           settings.greyscale,
           settings.lockTimerControl, 
           settings.pictogramText == true ? 1 : 0, 
+          settings.showPopup == true ? 1 : 0, 
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
