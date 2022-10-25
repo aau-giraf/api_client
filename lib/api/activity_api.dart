@@ -55,7 +55,7 @@ class ActivityApi {
   /// [userId] User ID
   Stream<ActivityModel> updateTimer(ActivityModel activity, String userId) {
     return _http
-        .put('/$userId/update', activity.toJson())
+        .put('/$userId/updatetimer', activity.toJson())
         .map((Response res) {
       return ActivityModel.fromJson(res.json['data']);
     });
