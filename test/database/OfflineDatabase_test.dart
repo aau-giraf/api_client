@@ -146,7 +146,8 @@ Future<void> main() async {
     await dbHandler.insertUser(jamesbondTestUser);
     await dbHandler.insertUserSettings(jamesbondTestUser.id, SettingsModel(
         orientation: orient.Orientation.Landscape,
-        completeMark: CompleteMark.Checkmark, cancelMark: CancelMark.Cross,
+        completeMark: CompleteMark.Checkmark, 
+        cancelMark: CancelMark.Cross,
         defaultTimer: DefaultTimer.Hourglass,
         theme: GirafTheme.GirafGreen));
     expect(await dbHandler.getUserSettings(jamesbondTestUser.id), isNot(null));
