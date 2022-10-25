@@ -65,8 +65,8 @@ class HttpClient implements Http {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
             _parseJson(http.post(baseUrl + url,
-            body: _bodyHandler(body),
-            headers: headers))
+            headers: headers,
+            body: _bodyHandler(body)))
     );
   }
 
@@ -75,8 +75,8 @@ class HttpClient implements Http {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
             _parseJson(http.put(baseUrl + url,
-                body: _bodyHandler(body),
-                headers: headers))
+                headers: headers,
+                body: _bodyHandler(body)))
     );
   }
 
@@ -85,8 +85,8 @@ class HttpClient implements Http {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
             _parseJson(http.patch(baseUrl + url,
-                body: _bodyHandler(body),
-                headers: headers))
+                headers: headers,
+                body: _bodyHandler(body)))
     );
   }
 
