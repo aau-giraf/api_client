@@ -72,7 +72,8 @@ class OfflineDbHandler {
           nrOfDaysToDisplay integer DEFAULT NULL,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
-          pictogramText integer DEFAULT 0)''');
+          pictogramText integer DEFAULT 0,
+          showPopup integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
@@ -474,12 +475,20 @@ class OfflineDbHandler {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
-        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-        <dynamic>[settings.orientation.index, settings.completeMark.index,
-          settings.cancelMark.index, settings.defaultTimer.index,
-          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
-          settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText]);
+        pictogramText, showPopup) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        <dynamic>[
+          settings.orientation.index, 
+          settings.completeMark.index,
+          settings.cancelMark.index, 
+          settings.defaultTimer.index,
+          settings.timerSeconds, 
+          settings.activitiesCount, 
+          settings.theme.index,
+          settings.nrOfDaysToDisplay, 
+          settings.greyscale,
+          settings.lockTimerControl, 
+          settings.pictogramText,
+          settings.showPopup]);
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
@@ -510,9 +519,10 @@ class OfflineDbHandler {
         id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-        greyScale = ?, lockTimerControl = ?, pictogramText = ?
+
+        greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?
         WHERE id = ?''',  
-        <dynamic>[settingsId, 
+        <dynamic>[ 
           settings.orientation.index, 
           settings.completeMark.index,
           settings.cancelMark.index, 
@@ -523,7 +533,8 @@ class OfflineDbHandler {
           settings.nrOfDaysToDisplay, 
           settings.greyscale,
           settings.lockTimerControl, 
-          settings.pictogramText == true ? 1 : 0, 
+          settings.pictogramText,
+          settings.showPopup,
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
