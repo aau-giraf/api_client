@@ -516,8 +516,10 @@ class OfflineDbHandler {
         <String>[userId])).first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
+        id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
+
         greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?
         WHERE id = ?''',  
         <dynamic>[ 
