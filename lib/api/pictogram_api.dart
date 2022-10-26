@@ -100,4 +100,13 @@ class PictogramApi {
       return Image.memory(res.response.bodyBytes);
     });
   }
+  
+ ///Returns the title of the given pictogram
+  Stream<String> getTitle(int id) {
+    return _http.get('/$id').map((Response res) {
+      PictogramModel p= PictogramModel.fromJson(res.json['data']);
+      return p.title;
+
+    });
+  }
 }
