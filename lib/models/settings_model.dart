@@ -43,6 +43,7 @@ class SettingsModel implements Model {
     theme = GirafTheme.values[(json['theme']) - 1];
     showOnlyActivities = json['showOnlyActivities'];
     nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
+    nrOfActivitiesToDisplay = json['nrOfActivitiesToDisplay'];
     greyscale = json['greyScale'];
     lockTimerControl = json['lockTimerControl'];
     pictogramText = json['pictogramText'];
@@ -72,7 +73,7 @@ class SettingsModel implements Model {
     timerSeconds = settingsJson['timerSeconds'];
     activitiesCount = settingsJson['activitiesCount'];
     theme = GirafTheme.values[(settingsJson['theme'])];
-    showOnlyActivities = settingsJson['showOnlyActivities'];
+    showOnlyActivities = settingsJson['showOnlyActivities'] == 0;
     nrOfDaysToDisplay = settingsJson['nrOfDaysToDisplay'];
     nrOfActivitiesToDisplay = settingsJson['nrOfActivitiesToDisplay'];
     greyscale = settingsJson['greyScale'] == 1;
@@ -113,10 +114,10 @@ class SettingsModel implements Model {
   /// Flag to indicate whether citizen should see one or more days or only activities
   bool showOnlyActivities;
 
-  /// defines the number of days to display for a user in a weekschedule
+  /// Defines the number of days to display for a user in a weekschedule
   int nrOfDaysToDisplay;
 
-  /// defines the number of days to display for a user in a weekschedule
+  /// Defines the number of activities to display for a user in a weekschedule
   int nrOfActivitiesToDisplay;
 
   /// Flag for indicating whether or not greyscale is enabled
