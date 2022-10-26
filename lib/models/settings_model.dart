@@ -150,6 +150,8 @@ class SettingsModel implements Model {
       'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
       'showPopup': showPopup,
+      'nrOfActivitiesToDisplay': nrOfActivitiesToDisplay,
+      'showOnlyActivities': showOnlyActivities,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
