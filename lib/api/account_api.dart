@@ -9,6 +9,7 @@ import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/persistence/persistence.dart';
 
 import '../models/giraf_user_model.dart';
+
 /// Hello world
 /// All Account Endpoints
 class AccountApi {
@@ -24,11 +25,11 @@ class AccountApi {
   /// [username] The users username
   /// [password] The users password
   Stream<bool> login(String username, String password) {
-    return _http.post('/login', <String, String> {
-          'username': username,
-          'password': password,
-        }).flatMap((Response res) => Stream<bool>
-            .fromFuture(_persist.set('token', res.json['data'])));
+    return _http.post('/login', <String, String>{
+      'username': username,
+      'password': password,
+    }).flatMap((Response res) =>
+        Stream<bool>.fromFuture(_persist.set('token', res.json['data'])));
   }
 
   /// Register a new user
@@ -38,8 +39,8 @@ class AccountApi {
   /// [displayName] The users DisplayName
   /// [departmentId] The users departmentId
   /// [role] The role of the user
-  Stream<GirafUserModel> register(
-      String username, String password, String displayName, Uint8List profilePicture,
+  Stream<GirafUserModel> register(String username, String password,
+      String displayName, Uint8List profilePicture,
       {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
