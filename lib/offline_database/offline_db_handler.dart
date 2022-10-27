@@ -69,7 +69,10 @@ class OfflineDbHandler {
           timerSeconds integer DEFAULT NULL,
           activitiesCount integer DEFAULT NULL,
           theme integer NOT NULL,
-          nrOfDaysToDisplay integer DEFAULT NULL,
+          nrOfDaysToDisplayPortrait integer DEFAULT NULL,
+          displayDaysRelativePortrait integer DEFAULT 0,
+          nrOfDaysToDisplayLandscape integer DEFAULT NULL,
+          displayDaysRelativeLandscape integer DEFAULT 0,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
           pictogramText integer DEFAULT 0)''');
@@ -473,12 +476,17 @@ class OfflineDbHandler {
         <dynamic>[userId, null])) {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
-        activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
+        activitiesCount, theme, nrOfDaysToDisplayPortrait, 
+        displayDaysRelativePortrait, nrOfDaysToDisplayLandscape,
+        displayDaysRelativeLandscape, greyScale, lockTimerControl,
         pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
-          settings.nrOfDaysToDisplay, settings.greyscale,
+          settings.nrOfDaysToDisplayPortrait,
+          settings.displayDaysRelativePortrait,
+          settings.nrOfDaysToDisplayLandscape,
+          settings.displayDaysRelativeLandscape, settings.greyscale,
           settings.lockTimerControl, settings.pictogramText]);
 
       await db.rawUpdate(
@@ -509,9 +517,11 @@ class OfflineDbHandler {
     await db.rawUpdate('''UPDATE Settings SET
         id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
-        timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-        greyScale = ?, lockTimerControl = ?, pictogramText = ?
-        WHERE id = ?''',  
+        timerSeconds = ?, activitiesCount = ?, theme = ?, 
+        nrOfDaysToDisplayPortrait = ?, displayDaysRelativePortrait = ?, 
+        nrOfDaysToDisplayLandscape = ?, displayDaysRelativeLandscape = ?, 
+        greyScale = ?, lockTimerControl = ?, 
+        pictogramText = ? WHERE settingsId = ?''', 
         <dynamic>[settingsId, 
           settings.orientation.index, 
           settings.completeMark.index,
@@ -520,7 +530,10 @@ class OfflineDbHandler {
           settings.timerSeconds, 
           settings.activitiesCount, 
           settings.theme.index,
-          settings.nrOfDaysToDisplay, 
+          settings.nrOfDaysToDisplayPortrait,
+          settings.displayDaysRelativePortrait,
+          settings.nrOfDaysToDisplayLandscape,
+          settings.displayDaysRelativeLandscape, 
           settings.greyscale,
           settings.lockTimerControl, 
           settings.pictogramText == true ? 1 : 0, 

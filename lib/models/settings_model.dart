@@ -18,7 +18,10 @@ class SettingsModel implements Model {
       this.timerSeconds,
       this.activitiesCount,
       @required this.theme,
-      this.nrOfDaysToDisplay,
+      this.nrOfDaysToDisplayPortrait,
+      this.displayDaysRelativePortrait,
+      this.nrOfDaysToDisplayLandscape,
+      this.displayDaysRelativeLandscape,
       this.greyscale,
       this.lockTimerControl,
       this.pictogramText,
@@ -39,7 +42,10 @@ class SettingsModel implements Model {
     timerSeconds = json['timerSeconds'];
     activitiesCount = json['activitiesCount'];
     theme = GirafTheme.values[(json['theme']) - 1];
-    nrOfDaysToDisplay = json['nrOfDaysToDisplay'];
+    nrOfDaysToDisplayPortrait = json['nrOfDaysToDisplayPortrait'];
+    displayDaysRelativePortrait = json['displayDaysRelativePortrait'];
+    nrOfDaysToDisplayLandscape = json['nrOfDaysToDisplayLandscape'];
+    displayDaysRelativeLandscape = json['displayDaysRelativeLandscape'];
     greyscale = json['greyScale'];
     lockTimerControl = json['lockTimerControl'];
     pictogramText = json['pictogramText'];
@@ -54,7 +60,7 @@ class SettingsModel implements Model {
     }
   }
 
-  /// Create a Settingsmodel from jason from the database
+  /// Create a Settingsmodel from json from the database
   SettingsModel.fromDatabase(Map<String, dynamic> settingsJson,
       List<Map<String, dynamic>> weekdayColorsJson) {
     if (settingsJson == null) {
@@ -69,7 +75,14 @@ class SettingsModel implements Model {
     timerSeconds = settingsJson['timerSeconds'];
     activitiesCount = settingsJson['activitiesCount'];
     theme = GirafTheme.values[(settingsJson['theme'])];
-    nrOfDaysToDisplay = settingsJson['nrOfDaysToDisplay'];
+    nrOfDaysToDisplayPortrait =
+    settingsJson['nrOfDaysToDisplayPortrait'];
+    displayDaysRelativePortrait =
+    settingsJson['displayDaysRelativePortrait'];
+    nrOfDaysToDisplayLandscape =
+    settingsJson['nrOfDaysToDisplayLandscape'];
+    displayDaysRelativeLandscape =
+    settingsJson['displayDaysRelativeLandscape'];
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;
@@ -105,8 +118,25 @@ class SettingsModel implements Model {
   /// The preferred theme
   GirafTheme theme;
 
-  /// defines the number of days to display for a user in a weekschedule
-  int nrOfDaysToDisplay;
+  /// Defines the number of days to display in portrait mode
+  /// for a user in a weekplan
+  int nrOfDaysToDisplayPortrait;
+
+  /// true: if the first day shown in the weekplanner in portrait mode
+  /// should be today
+  /// false: if the first day shown in the weekplanner in portrait mode
+  /// should be monday
+  bool displayDaysRelativePortrait;
+
+  /// Defines the number of days to display in landscape mode
+  /// for a user in a weekplan
+  int nrOfDaysToDisplayLandscape;
+
+  /// true: if the first day shown in the weekplanner in landscape mode
+  /// should be today
+  /// false: if the first day shown in the weekplanner in landscape mode
+  /// should be monday
+  bool displayDaysRelativeLandscape;
 
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
@@ -117,7 +147,7 @@ class SettingsModel implements Model {
   /// Defines if text should be shown alongside the pictograms in the weekplan
   bool pictogramText;
 
-  // Defines if a popup should be shown on the choice board and activity timers
+  /// Defines if a popup should be shown on the choice board and activity timers
   bool showPopup;
 
   /// List of weekday colors shown in the weekplan
@@ -133,7 +163,10 @@ class SettingsModel implements Model {
       'timerSeconds': timerSeconds,
       'activitiesCount': activitiesCount,
       'theme': theme.index + 1,
-      'nrOfDaysToDisplay': nrOfDaysToDisplay,
+      'nrOfDaysToDisplayPortrait': nrOfDaysToDisplayPortrait,
+      'displayDaysRelativePortrait': displayDaysRelativePortrait,
+      'nrOfDaysToDisplayLandscape': nrOfDaysToDisplayLandscape,
+      'displayDaysRelativeLandscape': displayDaysRelativeLandscape,
       'greyScale': greyscale,
       'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
