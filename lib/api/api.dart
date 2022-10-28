@@ -28,41 +28,37 @@ class Api {
     connectivity = ConnectivityApi(status);
     account = AccountApi(
         HttpClient(
-            baseUrl: '$baseUrl/v2/Account',
+            //baseUrl: '$baseUrl/v2/Account'
+            baseUrl: baseUrl,
             persist: persist,
             tokenKey: tokenKey,
             timeout: timeout),
         persist);
-    department = DepartmentApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/Department',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    week = WeekApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/Week',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    pictogram = PictogramApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/Pictogram',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    activity = ActivityApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v2/Activity',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    weekTemplate = WeekTemplateApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/WeekTemplate',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
+    department = DepartmentApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Department',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    week = WeekApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Week',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    pictogram = PictogramApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Pictogram',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    activity = ActivityApi(HttpClient(
+        baseUrl: '$baseUrl/v2/Activity',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    weekTemplate = WeekTemplateApi(HttpClient(
+        baseUrl: '$baseUrl/v1/WeekTemplate',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
     user = UserApi(
         HttpClient(
             baseUrl: '$baseUrl/v1/User',
@@ -70,12 +66,11 @@ class Api {
             tokenKey: tokenKey,
             timeout: timeout),
         connectivity);
-    alternateName = AlternateNameApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v2/AlternateName',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
+    alternateName = AlternateNameApi(HttpClient(
+        baseUrl: '$baseUrl/v2/AlternateName',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
   }
 
   /// To access account endpoints

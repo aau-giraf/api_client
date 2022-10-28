@@ -43,24 +43,24 @@ class OfflineDbHandler {
   /// Initiate the database
   Future<Database> initializeDatabase() async {
     return openDatabase(
-        join(await getDatabasesPath(), 'offlineGiraf'),
-        onCreate: (Database db, int version) => createTables(db),
-        onUpgrade: (Database db, int oldVersion, int newVersion)
-          => createTables(db),
-        onDowngrade: (Database db, int oldVersion, int newVersion)
-          => createTables(db),
-        /// Remove this comment to enable foreign_keys
-        /// By doing this, one must make sure that every fk constraint is met
-        //onConfigure: (Database db) => db.execute('PRAGMA foreign_keys = ON'),
-        version: 1,
+      join(await getDatabasesPath(), 'offlineGiraf'),
+      onCreate: (Database db, int version) => createTables(db),
+      onUpgrade: (Database db, int oldVersion, int newVersion) =>
+          createTables(db),
+      onDowngrade: (Database db, int oldVersion, int newVersion) =>
+          createTables(db),
+
+      /// Remove this comment to enable foreign_keys
+      /// By doing this, one must make sure that every fk constraint is met
+      //onConfigure: (Database db) => db.execute('PRAGMA foreign_keys = ON'),
+      version: 1,
     );
   }
 
   ///Creates all of the tables in the DB
   Future<void> createTables(Database db) async {
     await db.transaction((Transaction txn) async {
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS Settings (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS Settings (
           id integer NOT NULL PRIMARY KEY,
           orientation integer NOT NULL,
           completeMark integer NOT NULL,
@@ -73,8 +73,7 @@ class OfflineDbHandler {
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
           pictogramText integer DEFAULT 0)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS Users (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
           role integer NOT NULL,
           roleName text DEFAULT NULL,
@@ -87,8 +86,7 @@ class OfflineDbHandler {
           CONSTRAINT FK_Users_Settings_SettingsKey
           FOREIGN KEY(settingsId)
           REFERENCES Settings(id) ON DELETE RESTRICT)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS GuardianRelations (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS GuardianRelations (
           citizenId text NOT NULL,
           guardianId text NOT NULL,
           PRIMARY KEY(citizenId, guardianId),
@@ -98,8 +96,7 @@ class OfflineDbHandler {
           CONSTRAINT FK_GuardianRelations_Users_GuardianId
           FOREIGN KEY(guardianId)
           REFERENCES Users(id) ON DELETE CASCADE)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS WeekDayColors (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS WeekDayColors (
           settingsId integer NOT NULL,
           day integer NOT NULL,
           hexColor text COLLATE BINARY,
@@ -107,10 +104,8 @@ class OfflineDbHandler {
           CONSTRAINT FK_WeekDayColors_Settings_SettingsId
           FOREIGN KEY(settingsId)
           REFERENCES Settings(id) ON DELETE CASCADE)''');
-      
-      
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS Pictograms (
+
+      await txn.execute('''CREATE TABLE IF NOT EXISTS Pictograms (
           id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           accessLevel integer NOT NULL,
           lastEdit datetime NOT NULL,
@@ -118,8 +113,7 @@ class OfflineDbHandler {
           imageHash	text COLLATE BINARY,
           onlineId integer NOT NULL,
           UNIQUE(title, onlineId))''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS WeekTemplates (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS WeekTemplates (
           id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           name text COLLATE BINARY,
           thumbnailKey integer NOT NULL,
@@ -128,8 +122,7 @@ class OfflineDbHandler {
           CONSTRAINT FK_WeekTemplates_Pictograms_ThumbnailKey
           FOREIGN KEY(thumbnailKey)
           REFERENCES Pictograms(onlineId) ON DELETE CASCADE)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS Weeks (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS Weeks (
           id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           girafUserId text NOT NULL,
           name text COLLATE BINARY,
@@ -142,8 +135,7 @@ class OfflineDbHandler {
           CONSTRAINT FK_Weeks_Pictograms_ThumbnailKey
           FOREIGN KEY(thumbnailKey)
           REFERENCES Pictograms(onlineId) ON DELETE CASCADE)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS Weekdays (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS Weekdays (
           id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           day integer NOT NULL,
           weekId integer DEFAULT NULL,
@@ -154,15 +146,13 @@ class OfflineDbHandler {
           CONSTRAINT FK_Weekdays_Weeks_WeekId
           FOREIGN KEY(weekId)
           REFERENCES Weeks(id) ON DELETE CASCADE)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS Timers (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS Timers (
           key integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           startTime integer NOT NULL,
           progress integer NOT NULL,
           fullLength integer NOT NULL,
           paused integer NOT NULL)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS Activities (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS Activities (
           key integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           orderValue integer NOT NULL,
           otherKey integer NOT NULL,
@@ -175,8 +165,7 @@ class OfflineDbHandler {
           CONSTRAINT FK_Activities_Weekdays_OtherKey
           FOREIGN KEY(otherKey)
           REFERENCES Weekdays(id) ON DELETE CASCADE)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS PictogramRelations (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS PictogramRelations (
           activityId integer NOT NULL,
           pictogramId integer NOT NULL,
           PRIMARY KEY(activityId,pictogramId),
@@ -186,8 +175,7 @@ class OfflineDbHandler {
           CONSTRAINT FK_PictogramRelations_Pictograms_PictogramId
           FOREIGN KEY(pictogramId)
           REFERENCES Pictograms(onlineId) ON DELETE CASCADE)''');
-      await txn.execute(
-          '''CREATE TABLE IF NOT EXISTS FailedOnlineTransactions (
+      await txn.execute('''CREATE TABLE IF NOT EXISTS FailedOnlineTransactions (
           id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
           type text NOT NULL,
           url text NOT NULL,
@@ -207,8 +195,7 @@ class OfflineDbHandler {
   Future<void> saveFailedTransactions(String type, String baseUrl, String url,
       {Map<String, dynamic> body, String tableAffected, String tempId}) async {
     final Database db = await database;
-    await db.rawInsert(
-        '''INSERT INTO FailedOnlineTransactions
+    await db.rawInsert('''INSERT INTO FailedOnlineTransactions
         (type, url, body, tableAffected, tempId)
         VALUES(?, ?, ?, ?, ?)''',
         <dynamic>[type, baseUrl + url, body.toString(), tableAffected, tempId]);
@@ -219,8 +206,7 @@ class OfflineDbHandler {
   Future<void> removeFailedTransaction(int id) async {
     final Database db = await database;
     await db.rawDelete(
-        'DELETE FROM FailedOnlineTransactions WHERE id = ?',
-        <dynamic>[id]);
+        'DELETE FROM FailedOnlineTransactions WHERE id = ?', <dynamic>[id]);
   }
 
   /// Retry sending the failed changes to the online database
@@ -311,16 +297,14 @@ class OfflineDbHandler {
   Future<void> replaceTempIdUsers(int oldId, int newId) async {
     final Database db = await database;
     db.rawUpdate(
-        'UPDATE Users SET id = ? WHERE id = ?',
-        <dynamic>[newId, oldId]);
+        'UPDATE Users SET id = ? WHERE id = ?', <dynamic>[newId, oldId]);
     db.rawUpdate(
         'UPDATE GuardianRelations SET citizenId = ? WHERE citizenId = ?',
         <dynamic>[newId, oldId]);
     db.rawUpdate(
         'UPDATE GuardianRelations SET guardianId = ? WHERE guardianId = ?',
         <dynamic>[newId, oldId]);
-    db.rawUpdate(
-        'UPDATE Weeks SET girafUserId = ? WHERE girafUserId = ?',
+    db.rawUpdate('UPDATE Weeks SET girafUserId = ? WHERE girafUserId = ?',
         <dynamic>[newId, oldId]);
   }
 
@@ -330,13 +314,11 @@ class OfflineDbHandler {
   Future<void> replaceTempIdPictogram(int oldId, int newId) async {
     final Database db = await database;
     db.rawUpdate(
-        'UPDATE Pictograms SET id = ? WHERE id = ?',
-        <dynamic>[newId, oldId]);
+        'UPDATE Pictograms SET id = ? WHERE id = ?', <dynamic>[newId, oldId]);
     db.rawUpdate(
         'UPDATE WeekTemplates SET thumbnailKey = ? WHERE thumbnailKey = ?',
         <dynamic>[newId, oldId]);
-    db.rawUpdate(
-        'UPDATE Weeks SET thumbnailKey = ? WHERE thumbnailKey = ?',
+    db.rawUpdate('UPDATE Weeks SET thumbnailKey = ? WHERE thumbnailKey = ?',
         <dynamic>[newId, oldId]);
     db.rawUpdate(
         'UPDATE PictogramRelations SET pictogramId = ? WHERE pictogramId = ?',
@@ -348,8 +330,7 @@ class OfflineDbHandler {
   /// online database, such that they are synchonized
   Future<void> replaceTempIdWeekTemplate(int oldId, int newId) async {
     final Database db = await database;
-    db.rawUpdate(
-        'UPDATE WeekTemplates SET onlineId = ? WHERE onlineId = ?',
+    db.rawUpdate('UPDATE WeekTemplates SET onlineId = ? WHERE onlineId = ?',
         <dynamic>[newId, oldId]);
     db.rawUpdate(
         'UPDATE Weekdays SET weekTemplateId = ? WHERE weekTemplateId = ?',
@@ -360,9 +341,10 @@ class OfflineDbHandler {
   /// Returns [true] if [password] matches the password saved for [username]
   Future<bool> login(String username, String password) async {
     final Database db = await database;
-    return (await db.rawQuery(
-        'SELECT password FROM Users WHERE username = ?',
-        <dynamic>[username])).first['password'] == password;
+    return (await db.rawQuery('SELECT password FROM Users WHERE username = ?',
+                <dynamic>[username]))
+            .first['password'] ==
+        password;
   }
 
   /// Do not call this function without ensuring that the password is
@@ -370,8 +352,7 @@ class OfflineDbHandler {
   /// change a password of a user with id [userId] to [newPassword]
   Future<void> changePassword(String userId, String newPassword) async {
     final Database db = await database;
-    db.rawUpdate(
-        'UPDATE Users SET password = ? WHERE id = ?',
+    db.rawUpdate('UPDATE Users SET password = ? WHERE id = ?',
         <dynamic>[newPassword, userId]);
   }
 
@@ -383,15 +364,26 @@ class OfflineDbHandler {
   void setMe(FutureOr<GirafUserModel> user) => _me = user;
 
   /// Checks if a user with [userId] already exists
-  Future<bool> userExists(String userId)
-      => _existsInTable('Users', <String>['id'], <String>[userId]);
+  Future<bool> userExists(String userId) =>
+      _existsInTable('Users', <String>['id'], <String>[userId]);
 
   /// Get a user with [userId] if it exists, otherwise returns null.
   Future<GirafUserModel> getUser(String userId) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> users = await db.rawQuery(
-        'SELECT * FROM Users WHERE id = ?',
-        <String>[userId]);
+    final List<Map<String, dynamic>> users =
+        await db.rawQuery('SELECT * FROM Users WHERE id = ?', <String>[userId]);
+    if (users.isNotEmpty) {
+      return GirafUserModel.fromJson(users[0]);
+    } else {
+      return null;
+    }
+  }
+
+  /// Get a user with [username] if it exists, otherwise returns null.
+  Future<GirafUserModel> getUserByUsername(String username) async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> users = await db
+        .rawQuery('SELECT * FROM Users WHERE username = ?', <String>[username]);
     if (users.isNotEmpty) {
       return GirafUserModel.fromJson(users[0]);
     } else {
@@ -405,15 +397,22 @@ class OfflineDbHandler {
     if (await userExists(user.id)) {
       await _updateUser(user);
     } else {
-      await db.rawInsert('''INSERT INTO Users (id, role, roleName, username,
+      await db.rawInsert(
+          '''INSERT INTO Users (id, role, roleName, username,
           displayName, department, password) VALUES (?, ?, ?, ?, ?, ?, ?)''',
-          <dynamic>[user.id, user.role.index, user.roleName, user.username,
-            user.displayName, user.department,
+          <dynamic>[
+            user.id,
+            user.role.index,
+            user.roleName,
+            user.username,
+            user.displayName,
+            user.department,
             /* This password should be either set together with login on the
             account api, or just updated on login.
             Since only user api has been implemented for offline usage
             this will have to be done at some other time. */
-            'password']);
+            'password'
+          ]);
     }
   }
 
@@ -421,31 +420,34 @@ class OfflineDbHandler {
   Future<void> _updateUser(GirafUserModel user) async {
     final Database db = await database;
     db.rawUpdate('''UPDATE Users SET role = ?, roleName = ?, username = ?,
-        displayName = ?, department = ? WHERE id = ?''',
-        <dynamic>[user.role.index, user.roleName, user.username,
-          user.displayName, user.department, user.id]);
+        displayName = ?, department = ? WHERE id = ?''', <dynamic>[
+      user.role.index,
+      user.roleName,
+      user.username,
+      user.displayName,
+      user.department,
+      user.id
+    ]);
   }
 
   /// Return the role of a user through its username
   Future<int> getUserRole(String username) async {
-      final Database db = await database;
-      final List<Map<String, dynamic>> roles = await db.rawQuery(
-          'SELECT role FROM Users WHERE username = ?',
-          <String>[username]);
-      if (roles.isNotEmpty) {
-        return roles.first['role'];
-      } else {
-        return Role.Unknown.index;
-      }
+    final Database db = await database;
+    final List<Map<String, dynamic>> roles = await db.rawQuery(
+        'SELECT role FROM Users WHERE username = ?', <String>[username]);
+    if (roles.isNotEmpty) {
+      return roles.first['role'];
+    } else {
+      return Role.Unknown.index;
+    }
   }
 
   /// Update the role of a user through its username
   Future<void> updateUserRole(String username, int role) async {
     final Database db = await database;
-    if (await _existsInTable('Users',
-        <String>['username'], <String>[username])) {
-      return db.rawUpdate(
-          'UPDATE Users SET role = ? WHERE username = ?',
+    if (await _existsInTable(
+        'Users', <String>['username'], <String>[username])) {
+      return db.rawUpdate('UPDATE Users SET role = ? WHERE username = ?',
           <dynamic>[role, username]);
     }
   }
@@ -455,9 +457,10 @@ class OfflineDbHandler {
     final Database db = await database;
     try {
       final Map<String, dynamic> settings = (await db.rawQuery(
-          '''SELECT * FROM Settings WHERE
+              '''SELECT * FROM Settings WHERE
           id = (SELECT settingsId FROM Users WHERE id = ?)''',
-          <String>[userId])).first;
+              <String>[userId]))
+          .first;
       final List<Map<String, dynamic>> weekdayColors = await db.rawQuery(
           'SELECT * FROM WeekDayColors WHERE settingsId = ?',
           <int>[settings['id']]);
@@ -470,20 +473,26 @@ class OfflineDbHandler {
   /// Insert [settings] for user with the specified [userId]
   Future<void> insertUserSettings(String userId, SettingsModel settings) async {
     final Database db = await database;
-    if (await _existsInTable('Users', <String>['id', 'settingsId'],
-        <dynamic>[userId, null])) {
+    if (await _existsInTable(
+        'Users', <String>['id', 'settingsId'], <dynamic>[userId, null])) {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
-        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-        <dynamic>[settings.orientation.index, settings.completeMark.index,
-          settings.cancelMark.index, settings.defaultTimer.index,
-          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
-          settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText]);
+        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', <dynamic>[
+        settings.orientation.index,
+        settings.completeMark.index,
+        settings.cancelMark.index,
+        settings.defaultTimer.index,
+        settings.timerSeconds,
+        settings.activitiesCount,
+        settings.theme.index,
+        settings.nrOfDaysToDisplay,
+        settings.greyscale,
+        settings.lockTimerControl,
+        settings.pictogramText
+      ]);
 
-      await db.rawUpdate(
-          'UPDATE Users SET settingsId = ? WHERE id = ?',
+      await db.rawUpdate('UPDATE Users SET settingsId = ? WHERE id = ?',
           <dynamic>[settingsId, userId]);
 
       /* WeekDayColors is a list in SettingsModel,
@@ -499,23 +508,31 @@ class OfflineDbHandler {
   }
 
   /// Update the settings with [settings] for a user with id: [userId]
-  Future<void> _updateUserSettings(String userId,
-      SettingsModel settings) async {
+  Future<void> _updateUserSettings(
+      String userId, SettingsModel settings) async {
     final Database db = await database;
     final int settingsId = (await db.rawQuery(
-        'SELECT settingsId FROM Users WHERE id = ?',
-        <String>[userId])).first['settingsId'];
+            'SELECT settingsId FROM Users WHERE id = ?', <String>[userId]))
+        .first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
         greyScale = ?, lockTimerControl = ?, pictogramText = ?
-        WHERE settingsId = ?''',
-        <dynamic>[settings.orientation.index, settings.completeMark.index,
-          settings.cancelMark.index, settings.defaultTimer.index,
-          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
-          settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText, settingsId]);
+        WHERE settingsId = ?''', <dynamic>[
+      settings.orientation.index,
+      settings.completeMark.index,
+      settings.cancelMark.index,
+      settings.defaultTimer.index,
+      settings.timerSeconds,
+      settings.activitiesCount,
+      settings.theme.index,
+      settings.nrOfDaysToDisplay,
+      settings.greyscale,
+      settings.lockTimerControl,
+      settings.pictogramText,
+      settingsId
+    ]);
 
     /* WeekDayColors is a list in SettingsModel,
        which means that they have to be saved in its own table */
@@ -529,13 +546,12 @@ class OfflineDbHandler {
   /// Insert [weekdayColor] for settings with id: [settingsId]
   /// If a weekdayColor with the provided [settingsId] and [weekdayColor.day]
   /// does already exist in the database, it will be updated instead.
-  Future<void> insertSettingsWeekDayColor(int settingsId,
-      WeekdayColorModel weekdayColor) async {
+  Future<void> insertSettingsWeekDayColor(
+      int settingsId, WeekdayColorModel weekdayColor) async {
     final Database db = await database;
     if (!await _existsInTable('WeekDayColors', <String>['settingsId', 'day'],
         <dynamic>[settingsId, weekdayColor.day.index])) {
-      db.rawInsert(
-          '''INSERT INTO WeekDayColors (settingsId, day, hexColor)
+      db.rawInsert('''INSERT INTO WeekDayColors (settingsId, day, hexColor)
           VALUES (?, ?, ?)''',
           <dynamic>[settingsId, weekdayColor.day.index, weekdayColor.hexColor]);
     } else {
@@ -544,8 +560,8 @@ class OfflineDbHandler {
   }
 
   /// Update with [weekdayColor] for settings with id: [settingsId]
-  Future<void> _updateSettingsWeekDayColor(int settingsId,
-      WeekdayColorModel weekdayColor) async {
+  Future<void> _updateSettingsWeekDayColor(
+      int settingsId, WeekdayColorModel weekdayColor) async {
     final Database db = await database;
     db.rawUpdate('''UPDATE WeekDayColors SET hexColor = ?
         WHERE settingsId = ? AND day = ?''',
@@ -572,8 +588,8 @@ class OfflineDbHandler {
 
   /// Checks if the [values] of [columns] exists in the [table]
   /// [columns.length] should be equal to [values.length]
-  Future<bool> _existsInTable(String table, List<String> columns,
-      List<dynamic> values) async {
+  Future<bool> _existsInTable(
+      String table, List<String> columns, List<dynamic> values) async {
     if (columns.length != values.length) {
       throw Exception('The length of [values] and [columns] should match.');
     }
@@ -597,9 +613,9 @@ class OfflineDbHandler {
           : ' AND ${columns[i]} = ?';
     }
 
-    return (await db.rawQuery(
-        'SELECT * FROM $table WHERE $whereClause',
-        values.where((dynamic value) => value != null).toList())).isNotEmpty;
+    return (await db.rawQuery('SELECT * FROM $table WHERE $whereClause',
+            values.where((dynamic value) => value != null).toList()))
+        .isNotEmpty;
   }
 
   /// Gets the version of the currently running db
