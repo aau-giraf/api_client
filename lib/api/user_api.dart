@@ -44,6 +44,19 @@ class UserApi {
         return user;
       }, () => _dbHandler.getUser(id));
 
+  /// Find information on the user with the given username
+  ///
+  /// [username] Username of the user
+  Stream<GirafUserModel> getUserByName(String username) =>
+      _connectivity.handle(() async {
+        final GirafUserModel user = await _http
+            .get('/$username')
+            .map((Response res) => GirafUserModel.fromJson(res.json['data']))
+            .first;
+        _dbHandler.insertUser(user);
+        return user;
+      }, () => _dbHandler.getUserByUsername(username));
+
   /// Get the role of the user with the username inputted
   ///
   /// [username] Username of the user
