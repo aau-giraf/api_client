@@ -522,8 +522,8 @@ class OfflineDbHandler {
 
         greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?
         WHERE id = ?''',  
-        <dynamic>[ 
-          settings.orientation.index, 
+        <dynamic>[
+          settings.orientation.index,
           settings.completeMark.index,
           settings.cancelMark.index, 
           settings.defaultTimer.index,
@@ -532,7 +532,7 @@ class OfflineDbHandler {
           settings.theme.index,
           settings.nrOfDaysToDisplay, 
           settings.greyscale,
-          settings.lockTimerControl, 
+          settings.lockTimerControl,
           settings.pictogramText,
           settings.showPopup,
           settingsId]);
