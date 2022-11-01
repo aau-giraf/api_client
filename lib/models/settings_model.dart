@@ -111,7 +111,7 @@ class SettingsModel implements Model {
   /// The preferred theme
   GirafTheme theme;
 
-  /// Flag to indicate whether citizen should see one or more days or only activities
+  /// Flag to indicate whether citizen should see only activities
   bool showOnlyActivities;
 
   /// Defines the number of days to display for a user in a weekschedule
@@ -129,7 +129,7 @@ class SettingsModel implements Model {
   /// Defines if text should be shown alongside the pictograms in the weekplan
   bool pictogramText;
 
-  // Defines if a popup should be shown on the choice board and activity timers
+  /// Defines if a popup should be shown on the choice board and activity timers
   bool showPopup;
 
   /// List of weekday colors shown in the weekplan
