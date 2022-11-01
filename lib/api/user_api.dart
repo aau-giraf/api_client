@@ -77,6 +77,7 @@ class UserApi {
   /// [id] Identifier of the GirafUser to get settings for
   Stream<SettingsModel> getSettings(String id) => _connectivity.handle(
       () async {
+        debugPrint(id);
         try {
           final SettingsModel settings = await _http
               .get('/$id/settings')
@@ -92,7 +93,7 @@ class UserApi {
 
           return settings;
         } catch (error) {
-          throw Exception('Error with User/v1/[id]/settings' + id);
+          throw Exception('Error with User/v1/[id]/settings');
         }
       },
       () => _dbHandler.getUserSettings(id)
