@@ -25,8 +25,8 @@ class SettingsModel implements Model {
       this.greyscale,
       this.lockTimerControl,
       this.pictogramText,
-      this.showPopup,
-      this.weekDayColors});
+      this.weekDayColors,
+      this.showPopup});
 
   /// Another constructor used to create from json.
   SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -86,7 +86,7 @@ class SettingsModel implements Model {
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;
-    showPopup = settingsJson['showPopup'] == 1;
+    showPopup = settingsJson['showPopup'] == 0;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
