@@ -70,6 +70,8 @@ class OfflineDbHandler {
           activitiesCount integer DEFAULT NULL,
           theme integer NOT NULL,
           nrOfDaysToDisplay integer DEFAULT NULL,
+          nrOfActivitiesToDisplay integer DEFAULT 0,
+          showOnlyActivities integer DEFAULT 0,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
           pictogramText integer DEFAULT 0,
@@ -470,10 +472,8 @@ class OfflineDbHandler {
  /// Insert [settings] for user with the specified [userId]
   Future<void> insertUserSettings(String userId, SettingsModel settings) async {
     final Database db = await database;
-    debugPrint("I should get here.");
     if (await _existsInTable('Users', <String>['id', 'settingsId'],
         <dynamic>[userId, null])) {
-      debugPrint("Do I go here...");
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
@@ -489,10 +489,10 @@ class OfflineDbHandler {
           settings.nrOfDaysToDisplay,
           settings.greyscale,
           settings.lockTimerControl,
-          settings.pictogramText/*,
+          settings.pictogramText,
           settings.showPopup,
           settings.nrOfActivitiesToDisplay,
-          settings.showOnlyActivities*/]);
+          settings.showOnlyActivities]);
 
 
       await db.rawUpdate(
