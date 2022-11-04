@@ -477,7 +477,8 @@ class OfflineDbHandler {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
-        pictogramText, showPopup) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText, showPopup, nrOfActivitiesToDisplay, showOnlyActivities
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[
           settings.orientation.index,
           settings.completeMark.index,
@@ -490,7 +491,9 @@ class OfflineDbHandler {
           settings.greyscale,
           settings.lockTimerControl,
           settings.pictogramText,
-          settings.showPopup]);
+          settings.showPopup,
+          settings.nrOfActivitiesToDisplay,
+          settings.showOnlyActivities]);
 
 
       await db.rawUpdate(
@@ -505,7 +508,6 @@ class OfflineDbHandler {
         //}
       }
     } else {
-      debugPrint("...Or do I go here?");
       _updateUserSettings(userId, settings);
     }
   }
@@ -522,7 +524,8 @@ class OfflineDbHandler {
     await db.rawUpdate('''UPDATE Settings SET
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-        greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?
+        greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?, 
+        nrOfActivitiesToDisplay = ?, showOnlyActivities = ?
         WHERE id = ?''',  
         <dynamic>[
           settings.orientation.index,
@@ -537,6 +540,8 @@ class OfflineDbHandler {
           settings.lockTimerControl,
           settings.pictogramText,
           settings.showPopup,
+          settings.nrOfActivitiesToDisplay,
+          settings.showOnlyActivities,
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
