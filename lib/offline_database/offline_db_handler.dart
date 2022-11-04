@@ -70,12 +70,12 @@ class OfflineDbHandler {
           activitiesCount integer DEFAULT NULL,
           theme integer NOT NULL,
           nrOfDaysToDisplay integer DEFAULT NULL,
-          nrOfActivitiesToDisplay integer DEFAULT 0,
-          showOnlyActivities integer DEFAULT 0,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
           pictogramText integer DEFAULT 0,
-          showPopup integer DEFAULT 0)''');
+          showPopup integer DEFAULT 0,
+          nrOfActivitiesToDisplay integer DEFAULT 0,
+          showOnlyActivities integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
