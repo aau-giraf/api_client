@@ -520,7 +520,6 @@ class OfflineDbHandler {
     await db.rawUpdate('''UPDATE Settings SET
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-
         greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?
         WHERE id = ?''',  
         <dynamic>[

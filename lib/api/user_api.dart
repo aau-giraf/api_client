@@ -77,23 +77,28 @@ class UserApi {
   /// [id] Identifier of the GirafUser to get settings for
   Stream<SettingsModel> getSettings(String id) => _connectivity.handle(
       () async {
-        debugPrint(id);
         try {
           final SettingsModel settings = await _http
               .get('/$id/settings')
               .map((Response res) => SettingsModel
               .fromJson(res.json['data'])).first;
 
+          debugPrint(id);
+
           if (!await _dbHandler.userExists(id)) {
             // Get the user if it does not already exist in the database
             await get(id).first;
           }
 
+          debugPrint(id);
+
           await _dbHandler.insertUserSettings(id, settings);
+
+          debugPrint(id);
 
           return settings;
         } catch (error) {
-          throw Exception('Error with User/v1/[id]/settings');
+          throw Exception('Error with User/v1/[id]/settings ' + id);
         }
       },
       () => _dbHandler.getUserSettings(id)
