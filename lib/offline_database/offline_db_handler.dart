@@ -489,8 +489,8 @@ class OfflineDbHandler {
           settings.nrOfDaysToDisplay,
           settings.greyscale,
           settings.lockTimerControl,
-          settings.pictogramText,
-          settings.showPopup/*,
+          settings.pictogramText/*,
+          settings.showPopup,
           settings.nrOfActivitiesToDisplay,
           settings.showOnlyActivities*/]);
 
