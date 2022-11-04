@@ -490,9 +490,9 @@ class OfflineDbHandler {
           settings.greyscale,
           settings.lockTimerControl,
           settings.pictogramText,
-          settings.showPopup/*,
+          settings.showPopup,
           settings.nrOfActivitiesToDisplay,
-          settings.showOnlyActivities*/]);
+          settings.showOnlyActivities/**/]);
 
 
       await db.rawUpdate(
