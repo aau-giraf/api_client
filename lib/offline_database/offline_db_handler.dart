@@ -477,7 +477,7 @@ class OfflineDbHandler {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
-        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText, nrOfActivitiesToDisplay, showOnlyActivities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[
           settings.orientation.index,
           settings.completeMark.index,
@@ -491,8 +491,8 @@ class OfflineDbHandler {
           settings.lockTimerControl,
           settings.pictogramText,
           ///settings.showPopup,
-          ///settings.nrOfActivitiesToDisplay,
-          ///settings.showOnlyActivities]);
+          settings.nrOfActivitiesToDisplay,
+          settings.showOnlyActivities]);
 
 
       await db.rawUpdate(
