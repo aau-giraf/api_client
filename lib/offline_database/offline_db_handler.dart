@@ -473,27 +473,27 @@ class OfflineDbHandler {
     debugPrint("I should get here.");
     if (await _existsInTable('Users', <String>['id', 'settingsId'],
         <dynamic>[userId, null])) {
+      debugPrint("Do I go here...");
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
         pictogramText, showPopup, nrOfActivitiesToDisplay, showOnlyActivities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[
-          settings.orientation.index, 
+          settings.orientation.index,
           settings.completeMark.index,
-          settings.cancelMark.index, 
+          settings.cancelMark.index,
           settings.defaultTimer.index,
-          settings.timerSeconds, 
-          settings.activitiesCount, 
+          settings.timerSeconds,
+          settings.activitiesCount,
           settings.theme.index,
-          settings.nrOfDaysToDisplay, 
+          settings.nrOfDaysToDisplay,
           settings.greyscale,
-          settings.lockTimerControl, 
+          settings.lockTimerControl,
           settings.pictogramText,
           settings.showPopup,
           settings.nrOfActivitiesToDisplay,
           settings.showOnlyActivities]);
 
-      debugPrint("Do I go here...");
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
