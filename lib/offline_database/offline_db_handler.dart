@@ -470,6 +470,7 @@ class OfflineDbHandler {
  /// Insert [settings] for user with the specified [userId]
   Future<void> insertUserSettings(String userId, SettingsModel settings) async {
     final Database db = await database;
+    debugPrint("I should get here.");
     if (await _existsInTable('Users', <String>['id', 'settingsId'],
         <dynamic>[userId, null])) {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
@@ -492,6 +493,8 @@ class OfflineDbHandler {
           settings.nrOfActivitiesToDisplay,
           settings.showOnlyActivities]);
 
+      debugPrint("Do I go here...");
+
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
           <dynamic>[settingsId, userId]);
@@ -504,6 +507,7 @@ class OfflineDbHandler {
         //}
       }
     } else {
+      debugPrint("...Or do I go here?");
       _updateUserSettings(userId, settings);
     }
   }
