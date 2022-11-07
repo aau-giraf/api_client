@@ -496,8 +496,7 @@ class OfflineDbHandler {
           settings.nrOfActivitiesToDisplay,
           settings.showOnlyActivities,
           settings.showSettingsForCitizen]);
-
-
+      
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
           <dynamic>[settingsId, userId]);

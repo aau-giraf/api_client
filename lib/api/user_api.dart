@@ -83,18 +83,12 @@ class UserApi {
               .map((Response res) => SettingsModel
               .fromJson(res.json['data'])).first;
 
-          debugPrint(id);
-
           if (!await _dbHandler.userExists(id)) {
             // Get the user if it does not already exist in the database
             await get(id).first;
           }
 
-          debugPrint(id);
-
           await _dbHandler.insertUserSettings(id, settings);
-
-          debugPrint(id);
 
           return settings;
         } catch (error) {
