@@ -82,7 +82,7 @@ class SettingsModel implements Model {
     showPopup = settingsJson['showPopup'] == 1;
     nrOfActivitiesToDisplay = settingsJson['nrOfActivitiesToDisplay'];
     showOnlyActivities = settingsJson['showOnlyActivities'] == 0;
-    showSettingsForCitizen = settingsJson['showSettingsForCitizen'] == 1;
+    showSettingsForCitizen = settingsJson['showSettingsForCitizen'] == 0;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
