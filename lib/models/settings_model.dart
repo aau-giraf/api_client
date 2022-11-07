@@ -25,6 +25,7 @@ class SettingsModel implements Model {
       this.showPopup,
       this.nrOfActivitiesToDisplay,
       this.showOnlyActivities,
+      this.showSettingsForCitizen,
       this.weekDayColors});
 
   /// Another constructor used to create from json.
@@ -48,6 +49,7 @@ class SettingsModel implements Model {
     showPopup = json['showPopup'];
     nrOfActivitiesToDisplay = json['nrOfActivitiesToDisplay'];
     showOnlyActivities = json['showOnlyActivities'];
+    showSettingsForCitizen = json['showSettingsForCitizen'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
           .map(
@@ -80,6 +82,7 @@ class SettingsModel implements Model {
     showPopup = settingsJson['showPopup'] == 1;
     nrOfActivitiesToDisplay = settingsJson['nrOfActivitiesToDisplay'];
     showOnlyActivities = settingsJson['showOnlyActivities'] == 0;
+    showSettingsForCitizen = settingsJson['showSettingsForCitizen'] == 1;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
@@ -132,6 +135,9 @@ class SettingsModel implements Model {
   /// Defines if a popup should be shown on the choice board and activity timers
   bool showPopup;
 
+  /// Defines if settings should be shown for a citizen
+  bool showSettingsForCitizen;
+
   /// List of weekday colors shown in the weekplan
   List<WeekdayColorModel> weekDayColors;
 
@@ -152,6 +158,7 @@ class SettingsModel implements Model {
       'showPopup': showPopup,
       'nrOfActivitiesToDisplay': nrOfActivitiesToDisplay,
       'showOnlyActivities': showOnlyActivities,
+      'showSettingsForCitizen': showSettingsForCitizen,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };

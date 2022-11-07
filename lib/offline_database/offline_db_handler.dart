@@ -75,7 +75,8 @@ class OfflineDbHandler {
           pictogramText integer DEFAULT 0,
           showPopup integer DEFAULT 0,
           nrOfActivitiesToDisplay integer DEFAULT 0,
-          showOnlyActivities integer DEFAULT 0)''');
+          showOnlyActivities integer DEFAULT 0,
+          showSettingsForCitizen integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
@@ -477,8 +478,8 @@ class OfflineDbHandler {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
-        pictogramText, showPopup, nrOfActivitiesToDisplay, showOnlyActivities
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText, showPopup, nrOfActivitiesToDisplay, showOnlyActivities, 
+        showSettingsForCitizen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[
           settings.orientation.index,
           settings.completeMark.index,
@@ -493,7 +494,8 @@ class OfflineDbHandler {
           settings.pictogramText,
           settings.showPopup,
           settings.nrOfActivitiesToDisplay,
-          settings.showOnlyActivities]);
+          settings.showOnlyActivities,
+          settings.showSettingsForCitizen]);
 
 
       await db.rawUpdate(
@@ -525,7 +527,7 @@ class OfflineDbHandler {
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
         greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?, 
-        nrOfActivitiesToDisplay = ?, showOnlyActivities = ?
+        nrOfActivitiesToDisplay = ?, showOnlyActivities = ?, showSettingsForCitizen = ?
         WHERE id = ?''',  
         <dynamic>[
           settings.orientation.index,
@@ -542,6 +544,7 @@ class OfflineDbHandler {
           settings.showPopup,
           settings.nrOfActivitiesToDisplay,
           settings.showOnlyActivities,
+          settings.showSettingsForCitizen,
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
