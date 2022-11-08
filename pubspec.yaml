@@ -20,7 +20,7 @@ dependencies:
   sqflite_common: ^1.0.2+1
   sqflite_common_ffi: ^1.1.1
   uuid: ^2.2.2
-  tuple: 1.0.3
+  tuple: 2.0.1
 
 dev_dependencies:
   flutter_test:
