@@ -11,7 +11,7 @@ dependencies:
   connectivity: 3.0.6
   rxdart: ^0.27.5
   http: ^0.13.5
-  shared_preferences: ^0.5.1+1
+  shared_preferences: ^2.0.15
   flutter:
     sdk: flutter
   sqflite: 2.2.0+3
