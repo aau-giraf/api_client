@@ -8,25 +8,25 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  connectivity: 3.0.6
+  connectivity: ^3.0.6
   rxdart: ^0.27.5
   http: ^0.13.5
   shared_preferences: ^2.0.15
   flutter:
     sdk: flutter
-  sqflite: 2.2.0+3
-  path: 1.8.2
-  path_provider: 2.0.11
-  sqflite_common: 2.4.0+2
-  sqflite_common_ffi: 2.2.0+1
-  uuid: 3.0.6
-  tuple: 2.0.1
-  audioplayers: 1.1.1
+  sqflite: ^2.2.0+3
+  path: ^1.8.2
+  path_provider: ^2.0.11
+  sqflite_common: ^2.4.0+2
+  sqflite_common_ffi: ^2.2.0+1
+  uuid: ^3.0.6
+  tuple: ^2.0.1
+  audioplayers: ^1.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: 5.3.2
+  mockito: ^5.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
