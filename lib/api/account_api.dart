@@ -40,7 +40,7 @@ class AccountApi {
   /// [departmentId] The users departmentId
   /// [role] The role of the user
   Stream<GirafUserModel> register(String username, String password,
-      String displayName, Uint8List userIcon,
+      String displayName, Uint8List profilePicture,
       {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
@@ -48,6 +48,7 @@ class AccountApi {
       'password': password,
       'departmentId': departmentId,
       'role': role.toString().split('.').last,
+      'userIcon': profilePicture
     };
 
     return _http
