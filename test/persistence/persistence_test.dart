@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   test('Should store', () async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues(<String, Object>{});
     WidgetsFlutterBinding.ensureInitialized();
     //The old package is deprecated so we had to write it ourselves
     TestDefaultBinaryMessengerBinding.instance?.defaultBinaryMessenger
@@ -29,7 +29,7 @@ void main() {
   });
 
   test('Should get token', () async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues(<String, Object>{});
     WidgetsFlutterBinding.ensureInitialized();
 
     //The old package is deprecated so we had to write it ourselves
