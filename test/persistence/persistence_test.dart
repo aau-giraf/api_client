@@ -6,17 +6,20 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Should store', () async {
     WidgetsFlutterBinding.ensureInitialized();
-    const MethodChannel('plugins.flutter.io/shared_preferences')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return <String, dynamic>{}; // set initial values here if desired
-      }
+    //The old package is deprecated so we had to write it ourselves 
+    TestDefaultBinaryMessengerBinding.instance?.defaultBinaryMessenger
+        ?.setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/shared_preferences'),
+    (MethodCall methodCall) async {
+    if (methodCall.method == 'getAll') {
+    return <String, dynamic>{}; // set initial values here if desired
+    }
 
-      if (methodCall.method == 'setString') {
-        // pass here
-        return null;
-      }
-      fail('Should call setString');
+    if (methodCall.method == 'setString') {
+    // pass here
+    return null;
+    }
+    fail('Should call setString');
     });
 
     const String token = 'Test Token';
@@ -25,18 +28,22 @@ void main() {
 
   test('Should get token', () async {
     WidgetsFlutterBinding.ensureInitialized();
-    const MethodChannel('plugins.flutter.io/shared_preferences')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return <String, dynamic>{}; // set initial values here if desired
-      }
 
-      if (methodCall.method == 'getString') {
-        // pass here
-        return null;
-      }
-      fail('Should call setString');
-    });
+    //The old package is deprecated so we had to write it ourselves
+    TestDefaultBinaryMessengerBinding.instance?.defaultBinaryMessenger
+        ?.setMockMethodCallHandler(
+        const MethodChannel('plugins.flutter.io/shared_preferences'),
+            (MethodCall methodCall) async {
+          if (methodCall.method == 'getAll') {
+            return <String, dynamic>{}; // set initial values here if desired
+          }
+
+          if (methodCall.method == 'setString') {
+            // pass here
+            return null;
+          }
+          fail('Should call setString');
+        });
 
     await PersistenceClient().get('token');
   });
