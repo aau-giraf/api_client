@@ -49,45 +49,41 @@ class HttpClient implements Http {
   Stream<Response> get(String url) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
-            _parseJson(http.get(Uri.parse(baseUrl + url), headers: headers))
-    );
+            _parseJson(http.get(Uri.parse(baseUrl + url), headers: headers)));
   }
 
   @override
   Stream<Response> delete(String url) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.delete(Uri.parse(baseUrl + url), headers: headers)));
+        (Map<String, String> headers) => _parseJson(
+            http.delete(Uri.parse(baseUrl + url), headers: headers)));
   }
 
   @override
   Stream<Response> post(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.post(Uri.parse(baseUrl + url),
+        (Map<String, String> headers) => _parseJson(http.post(
+            Uri.parse(baseUrl + url),
             headers: headers,
-            body: _bodyHandler(body)))
-    );
+            body: _bodyHandler(body))));
   }
 
   @override
   Stream<Response> put(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.put(Uri.parse(baseUrl + url),
-                headers: headers,
-                body: _bodyHandler(body)))
-    );
+        (Map<String, String> headers) => _parseJson(http.put(
+            Uri.parse(baseUrl + url),
+            headers: headers,
+            body: _bodyHandler(body))));
   }
 
   @override
   Stream<Response> patch(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.patch(Uri.parse(baseUrl + url),
-                headers: headers,
-                body: _bodyHandler(body)))
-    );
+        (Map<String, String> headers) => _parseJson(http.patch(
+            Uri.parse(baseUrl + url),
+            headers: headers,
+            body: _bodyHandler(body))));
   }
 
   dynamic _bodyHandler(dynamic body) {
