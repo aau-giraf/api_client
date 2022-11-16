@@ -7,20 +7,20 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  audioplayers: ^1.1.1
   connectivity: ^3.0.6
-  rxdart: ^0.27.5
-  http: ^0.13.5
-  shared_preferences: ^2.0.15
   flutter:
     sdk: flutter
-  sqflite: ^2.2.0+3
+  http: ^0.13.5
   path: ^1.8.2
   path_provider: ^2.0.11
+  rxdart: ^0.27.5
+  shared_preferences: ^2.0.15
+  sqflite: ^2.2.0+3
   sqflite_common: ^2.4.0+2
   sqflite_common_ffi: ^2.2.0+1
-  uuid: ^3.0.6
   tuple: ^2.0.1
-  audioplayers: ^1.1.1
+  uuid: ^3.0.6
 
 dev_dependencies:
   flutter_test:

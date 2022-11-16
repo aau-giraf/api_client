@@ -1,5 +1,5 @@
-import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
+import 'package:api_client/models/model.dart';
 
 /// Represents the weekday color
 class WeekdayColorModel implements Model {

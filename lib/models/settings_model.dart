@@ -1,11 +1,11 @@
-import 'package:meta/meta.dart';
-import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
-import 'package:api_client/models/model.dart';
+import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
+import 'package:api_client/models/model.dart';
 import 'package:api_client/models/weekday_color_model.dart';
+import 'package:meta/meta.dart';
 
 /// A model used to store settings values
 class SettingsModel implements Model {

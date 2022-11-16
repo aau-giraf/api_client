@@ -1,10 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
+import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final Map<String, dynamic> response = <String, dynamic>{

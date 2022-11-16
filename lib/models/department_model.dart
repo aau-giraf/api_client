@@ -1,6 +1,6 @@
-import 'package:meta/meta.dart';
-import 'package:api_client/models/model.dart';
 import 'package:api_client/models/displayname_model.dart';
+import 'package:api_client/models/model.dart';
+import 'package:meta/meta.dart';
 
 /// A model for departments
 class DepartmentModel implements Model {

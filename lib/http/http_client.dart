@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/persistence/persistence.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:http/http.dart' as http;
 
 /// Default implementation of Http
 class HttpClient implements Http {

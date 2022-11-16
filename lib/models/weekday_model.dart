@@ -1,7 +1,7 @@
-import 'package:meta/meta.dart';
 import 'package:api_client/models/activity_model.dart';
-import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
+import 'package:api_client/models/model.dart';
+import 'package:meta/meta.dart';
 
 /// Represents the Weekday
 class WeekdayModel implements Model {
