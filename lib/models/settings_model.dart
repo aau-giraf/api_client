@@ -117,7 +117,7 @@ class SettingsModel implements Model {
   /// Defines if text should be shown alongside the pictograms in the weekplan
   bool pictogramText;
 
-  // Defines if a popup should be shown on the choice board and activity timers
+  /// Defines if a popup should be shown on the choice board and activity timers
   bool showPopup;
 
   /// List of weekday colors shown in the weekplan
