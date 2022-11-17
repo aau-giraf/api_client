@@ -483,7 +483,7 @@ class OfflineDbHandler {
         activitiesCount, theme, nrOfDaysToDisplayPortrait, 
         displayDaysRelativePortrait, nrOfDaysToDisplayLandscape,
         displayDaysRelativeLandscape, greyScale, lockTimerControl,
-        pictogramText, showPopup, nrOfActivitiesToDisplay, showOnlyActivities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText, showPopup, nrOfActivitiesToDisplay, showOnlyActivities, showSettingsForCitizen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
@@ -496,7 +496,8 @@ class OfflineDbHandler {
           settings.pictogramText,
           settings.showPopup,
           settings.nrOfActivitiesToDisplay,
-          settings.showOnlyActivities]);
+          settings.showOnlyActivities,
+          settings.showSettingsForCitizen]);
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
           <dynamic>[settingsId, userId]);
