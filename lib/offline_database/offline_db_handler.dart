@@ -536,7 +536,7 @@ class OfflineDbHandler {
         pictogramText = ?, showPopup = ?,
         nrOfActivitiesToDisplay = ?, showOnlyActivities = ?,
         showSettingsForCitizen = ? WHERE Id = ?''', 
-        <dynamic>[settingsId, 
+        <dynamic>[
           settings.orientation.index,
           settings.completeMark.index,
           settings.cancelMark.index, 
