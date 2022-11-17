@@ -483,7 +483,7 @@ class OfflineDbHandler {
         activitiesCount, theme, nrOfDaysToDisplayPortrait, 
         displayDaysRelativePortrait, nrOfDaysToDisplayLandscape,
         displayDaysRelativeLandscape, greyScale, lockTimerControl,
-        pictogramText, nrOfActivitiesToDisplay, showOnlyActivities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText, showPopup, nrOfActivitiesToDisplay, showOnlyActivities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
@@ -494,6 +494,7 @@ class OfflineDbHandler {
           settings.greyscale,
           settings.lockTimerControl, 
           settings.pictogramText,
+          settings.showPopup,
           settings.nrOfActivitiesToDisplay,
           settings.showOnlyActivities]);
       await db.rawUpdate(
