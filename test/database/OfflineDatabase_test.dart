@@ -1,15 +1,8 @@
 import 'dart:io';
-
 import 'package:api_client/http/http.dart';
 import 'package:api_client/http/http_mock.dart';
-/*import 'package:api_client/models/enums/cancel_mark_enum.dart';
-import 'package:api_client/models/enums/complete_mark_enum.dart';
-import 'package:api_client/models/enums/default_timer_enum.dart';
-import 'package:api_client/models/enums/giraf_theme_enum.dart';
-import 'package:api_client/models/enums/orientation_enum.dart' as orient;*/
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
-/*import 'package:api_client/models/settings_model.dart';*/
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -115,8 +108,11 @@ Future<void> main() async {
     await dbHandler.insertUser(jamesbondTestUser);
     expect((await dbHandler.getUser(jamesbondTestUser.id)).username,
         jamesbondTestUser.username);
-    await dbHandler.insertUser(GirafUserModel(id: jamesbondTestUser.id,
-        role: Role.Guardian, username: 'newUsername', displayName: 'user'));
+    await dbHandler.insertUser(GirafUserModel(
+        id: jamesbondTestUser.id,
+        role: Role.Guardian,
+        username: 'newUsername',
+        displayName: 'user'));
     expect((await dbHandler.getUser(jamesbondTestUser.id)).username,
         'newUsername');
   });
