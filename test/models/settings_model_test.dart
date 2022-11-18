@@ -23,6 +23,9 @@ void main() {
     'greyScale': false,
     'pictogramText' : false,
     'showPopup' : false,
+    'nrOfActivitiesToDisplay' : 0,
+    'showOnlyActivities' : false,
+    'showSettingsForCitizen' : false,
     'weekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
@@ -55,6 +58,9 @@ void main() {
     expect(settings.pictogramText, false);
     expect(settings.showPopup, false);
     expect(settings.greyscale, false);
+    expect(settings.nrOfActivitiesToDisplay, 0);
+    expect(settings.showOnlyActivities, false);
+    expect(settings.showSettingsForCitizen, false);
     expect(settings.weekDayColors.length, 7);
     expect(settings.weekDayColors[0].toJson(), response['weekDayColors'][0]);
     expect(settings.weekDayColors[1].toJson(), response['weekDayColors'][1]);
