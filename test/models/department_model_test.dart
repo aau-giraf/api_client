@@ -13,6 +13,7 @@ void main() {
       'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
+      'userIcon': null
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
@@ -35,6 +36,7 @@ void main() {
       'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
+      'userIcon': null
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
