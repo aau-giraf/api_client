@@ -14,6 +14,7 @@ void main() {
       'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
+      'userIcon': null
     };
 
     final DisplayNameModel model = DisplayNameModel.fromJson(json);
@@ -27,6 +28,7 @@ void main() {
       'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
+      'userIcon': null
     };
 
     final DisplayNameModel model = DisplayNameModel.fromJson(json);
