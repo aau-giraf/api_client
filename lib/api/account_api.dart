@@ -23,11 +23,11 @@ class AccountApi {
   /// [username] The users username
   /// [password] The users password
   Stream<bool> login(String username, String password) {
-    return _http.post('/login', <String, String> {
-          'username': username,
-          'password': password,
-        }).flatMap((Response res) => Stream<bool>
-            .fromFuture(_persist.set('token', res.json['data'])));
+    return _http.post('/login', <String, String>{
+      'username': username,
+      'password': password,
+    }).flatMap((Response res) =>
+        Stream<bool>.fromFuture(_persist.set('token', res.json['data'])));
   }
 
   /// Register a new user

@@ -379,18 +379,6 @@ class OfflineDbHandler {
     }
   }
 
-  /// Get a user with [username] if it exists, otherwise returns null.
-  Future<GirafUserModel> getUserByUsername(String username) async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> users = await db
-        .rawQuery('SELECT * FROM Users WHERE username = ?', <String>[username]);
-    if (users.isNotEmpty) {
-      return GirafUserModel.fromJson(users[0]);
-    } else {
-      return null;
-    }
-  }
-
   /// Inserts the user if it does not already exist, otherwise updates it.
   Future<void> insertUser(GirafUserModel user) async {
     final Database db = await database;
