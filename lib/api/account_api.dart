@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/role_enum.dart';
@@ -7,6 +8,7 @@ import 'package:api_client/persistence/persistence.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// Hello world
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
@@ -21,11 +23,11 @@ class AccountApi {
   /// [username] The users username
   /// [password] The users password
   Stream<bool> login(String username, String password) {
-    return _http.post('/login', <String, String> {
-          'username': username,
-          'password': password,
-        }).flatMap((Response res) => Stream<bool>
-            .fromFuture(_persist.set('token', res.json['data'])));
+    return _http.post('/login', <String, String>{
+      'username': username,
+      'password': password,
+    }).flatMap((Response res) =>
+        Stream<bool>.fromFuture(_persist.set('token', res.json['data'])));
   }
 
   /// Register a new user
@@ -35,8 +37,8 @@ class AccountApi {
   /// [displayName] The users DisplayName
   /// [departmentId] The users departmentId
   /// [role] The role of the user
-  Stream<GirafUserModel> register(
-      String username, String password, String displayName,
+  Stream<GirafUserModel> register(String username, String password,
+      String displayName, Uint8List profilePicture,
       {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
@@ -44,6 +46,7 @@ class AccountApi {
       'password': password,
       'departmentId': departmentId,
       'role': role.toString().split('.').last,
+      'userIcon': profilePicture
     };
 
     return _http

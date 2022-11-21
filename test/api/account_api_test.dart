@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:api_client/api/account_api.dart';
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
@@ -72,11 +73,12 @@ void main() {
     const String username = 'username';
     const String displayName = 'displayname';
     const String password = 'password';
+    const Uint8List profilePicture = null;
     const int departmentId = 123;
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, displayName, password,
+        .register(username, displayName, password, profilePicture,
             departmentId: departmentId, role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);
