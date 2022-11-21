@@ -480,7 +480,7 @@ class OfflineDbHandler {
         activitiesCount, theme, nrOfDaysToDisplayPortrait, 
         displayDaysRelativePortrait, nrOfDaysToDisplayLandscape,
         displayDaysRelativeLandscape, greyScale, lockTimerControl,
-        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
