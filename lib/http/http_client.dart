@@ -110,7 +110,6 @@ class HttpClient implements Http {
         json = jsonDecode(res.body);
 
         if (res.statusCode > 300) {
-          print(res.statusCode);
           throw ApiException(Response(res, json));
         }
       }
