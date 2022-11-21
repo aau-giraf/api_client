@@ -521,8 +521,8 @@ class OfflineDbHandler {
         nrOfDaysToDisplayPortrait = ?, displayDaysRelativePortrait = ?, 
         nrOfDaysToDisplayLandscape = ?, displayDaysRelativeLandscape = ?, 
         greyScale = ?, lockTimerControl = ?, 
-        pictogramText = ?, showPopup = ? WHERE settingsId = ?''',
-        <dynamic>[settingsId, 
+        pictogramText = ?, showPopup = ? WHERE id = ?''',
+        <dynamic>[
           settings.orientation.index,
           settings.completeMark.index,
           settings.cancelMark.index, 
