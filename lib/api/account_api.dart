@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:api_client/http/http.dart';
 import 'package:meta/meta.dart';
@@ -9,6 +10,7 @@ import 'package:api_client/persistence/persistence.dart';
 
 import '../models/giraf_user_model.dart';
 
+/// Hello world
 /// All Account Endpoints
 class AccountApi {
   /// Default constructor
@@ -37,8 +39,8 @@ class AccountApi {
   /// [displayName] The users DisplayName
   /// [departmentId] The users departmentId
   /// [role] The role of the user
-  Stream<GirafUserModel> register(
-      String username, String password, String displayName,
+  Stream<GirafUserModel> register(String username, String password,
+      String displayName, Uint8List profilePicture,
       {@required int departmentId, @required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
@@ -46,6 +48,7 @@ class AccountApi {
       'password': password,
       'departmentId': departmentId,
       'role': role.toString().split('.').last,
+      'userIcon': profilePicture
     };
 
     return _http

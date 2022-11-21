@@ -49,7 +49,8 @@ class HttpClient implements Http {
   Stream<Response> get(String url) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
-            _parseJson(http.get(baseUrl + url, headers: headers)));
+            _parseJson(http.get(baseUrl + url, headers: headers))
+    );
   }
 
   @override
@@ -62,22 +63,31 @@ class HttpClient implements Http {
   @override
   Stream<Response> post(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) => _parseJson(http.post(baseUrl + url,
-            body: _bodyHandler(body), headers: headers)));
+        (Map<String, String> headers) =>
+            _parseJson(http.post(baseUrl + url,
+            headers: headers,
+            body: _bodyHandler(body)))
+    );
   }
 
   @override
   Stream<Response> put(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) => _parseJson(http.put(baseUrl + url,
-            body: _bodyHandler(body), headers: headers)));
+        (Map<String, String> headers) =>
+            _parseJson(http.put(baseUrl + url,
+                headers: headers,
+                body: _bodyHandler(body)))
+    );
   }
 
   @override
   Stream<Response> patch(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) => _parseJson(http.patch(baseUrl + url,
-            body: _bodyHandler(body), headers: headers)));
+        (Map<String, String> headers) =>
+            _parseJson(http.patch(baseUrl + url,
+                headers: headers,
+                body: _bodyHandler(body)))
+    );
   }
 
   dynamic _bodyHandler(dynamic body) {

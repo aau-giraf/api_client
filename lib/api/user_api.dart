@@ -95,8 +95,9 @@ class UserApi {
   /// [id] Identifier of the GirafUser to update settings for
   /// [settings] reference to a Settings containing the new settings
   Stream<void> updateSettings(String id, SettingsModel settings) =>
-      _connectivity.handle(() async {
-        _http.put('/$id/settings', settings.toJson());
+        _connectivity.handle(
+      () async {
+        _http.put('/$id/settings', settings.toJson()).toList();
         return _dbHandler.insertUserSettings(id, settings);
       }, () => _dbHandler.insertUserSettings(id, settings));
 

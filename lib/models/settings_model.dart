@@ -22,7 +22,8 @@ class SettingsModel implements Model {
       this.greyscale,
       this.lockTimerControl,
       this.pictogramText,
-      this.weekDayColors});
+      this.weekDayColors,
+      this.showPopup});
 
   /// Another constructor used to create from json.
   SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -42,6 +43,7 @@ class SettingsModel implements Model {
     greyscale = json['greyScale'];
     lockTimerControl = json['lockTimerControl'];
     pictogramText = json['pictogramText'];
+    showPopup = json['showPopup'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
           .map(
@@ -71,6 +73,7 @@ class SettingsModel implements Model {
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;
+    showPopup = settingsJson['showPopup'] == 0;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
@@ -114,6 +117,9 @@ class SettingsModel implements Model {
   /// Defines if text should be shown alongside the pictograms in the weekplan
   bool pictogramText;
 
+  // Defines if a popup should be shown on the choice board and activity timers
+  bool showPopup;
+
   /// List of weekday colors shown in the weekplan
   List<WeekdayColorModel> weekDayColors;
 
@@ -131,6 +137,7 @@ class SettingsModel implements Model {
       'greyScale': greyscale,
       'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
+      'showPopup': showPopup,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
