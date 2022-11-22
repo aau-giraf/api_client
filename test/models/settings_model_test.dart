@@ -15,14 +15,14 @@ void main() {
     'timerSeconds': 900,
     'activitiesCount': null,
     'theme': 1,
-    'nrOfDaysToDisplayPortrait': 1,
-    'displayDaysRelativePortrait': true,
-    'nrOfDaysToDisplayLandscape': 7,
-    'displayDaysRelativeLandscape': false,
+    'nrOfDaysToDisplay': 7,
     'lockTimerControl': false,
     'greyScale': false,
     'pictogramText' : false,
     'showPopup' : false,
+    'nrOfActivitiesToDisplay' : 0,
+    'showOnlyActivities' : false,
+    'showSettingsForCitizen' : false,
     'weekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
@@ -47,14 +47,13 @@ void main() {
     expect(settings.timerSeconds, response['timerSeconds']);
     expect(settings.activitiesCount, response['activitiesCount']);
     expect(settings.theme, GirafTheme.values[response['theme'] - 1]);
-    expect(settings.nrOfDaysToDisplayPortrait, 1);
-    expect(settings.displayDaysRelativePortrait, true);
-    expect(settings.nrOfDaysToDisplayLandscape, 7);
-    expect(settings.displayDaysRelativeLandscape, false);
     expect(settings.lockTimerControl, false);
     expect(settings.pictogramText, false);
     expect(settings.showPopup, false);
     expect(settings.greyscale, false);
+    expect(settings.nrOfActivitiesToDisplay, 0);
+    expect(settings.showOnlyActivities, false);
+    expect(settings.showSettingsForCitizen, false);
     expect(settings.weekDayColors.length, 7);
     expect(settings.weekDayColors[0].toJson(), response['weekDayColors'][0]);
     expect(settings.weekDayColors[1].toJson(), response['weekDayColors'][1]);
