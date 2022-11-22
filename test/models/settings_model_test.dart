@@ -15,10 +15,7 @@ void main() {
     'timerSeconds': 900,
     'activitiesCount': null,
     'theme': 1,
-    'nrOfDaysToDisplayPortrait': 1,
-    'displayDaysRelativePortrait': true,
-    'nrOfDaysToDisplayLandscape': 7,
-    'displayDaysRelativeLandscape': false,
+    'nrOfDaysToDisplay': 7,
     'lockTimerControl': false,
     'greyScale': false,
     'pictogramText' : false,
@@ -50,10 +47,6 @@ void main() {
     expect(settings.timerSeconds, response['timerSeconds']);
     expect(settings.activitiesCount, response['activitiesCount']);
     expect(settings.theme, GirafTheme.values[response['theme'] - 1]);
-    expect(settings.nrOfDaysToDisplayPortrait, 1);
-    expect(settings.displayDaysRelativePortrait, true);
-    expect(settings.nrOfDaysToDisplayLandscape, 7);
-    expect(settings.displayDaysRelativeLandscape, false);
     expect(settings.lockTimerControl, false);
     expect(settings.pictogramText, false);
     expect(settings.showPopup, false);
