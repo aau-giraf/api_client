@@ -129,8 +129,11 @@ class SettingsModel implements Model {
   /// Defines if text should be shown alongside the pictograms in the weekplan
   bool pictogramText;
 
-  // Defines if a popup should be shown on the choice board and activity timers
+  /// Defines if a popup should be shown on the choice board and activity timers
   bool showPopup;
+
+  /// Flag for only showing activities instead of days
+  bool showOnlyActivities;
 
   /// Defines if settings should be shown for a citizen
   bool showSettingsForCitizen;
