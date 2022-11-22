@@ -22,8 +22,11 @@ class SettingsModel implements Model {
       this.greyscale,
       this.lockTimerControl,
       this.pictogramText,
-      this.weekDayColors,
-      this.showPopup});
+      this.showPopup,
+      this.nrOfActivitiesToDisplay,
+      this.showOnlyActivities,
+      this.showSettingsForCitizen,
+      this.weekDayColors});
 
   /// Another constructor used to create from json.
   SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +47,9 @@ class SettingsModel implements Model {
     lockTimerControl = json['lockTimerControl'];
     pictogramText = json['pictogramText'];
     showPopup = json['showPopup'];
+    nrOfActivitiesToDisplay = json['nrOfActivitiesToDisplay'];
+    showOnlyActivities = json['showOnlyActivities'];
+    showSettingsForCitizen = json['showSettingsForCitizen'];
     if (json['weekDayColors'] != null && json['weekDayColors'] is List) {
       weekDayColors = List<Map<String, dynamic>>.from(json['weekDayColors'])
           .map(
@@ -73,7 +79,10 @@ class SettingsModel implements Model {
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;
-    showPopup = settingsJson['showPopup'] == 0;
+    showPopup = settingsJson['showPopup'] == 1;
+    nrOfActivitiesToDisplay = settingsJson['nrOfActivitiesToDisplay'];
+    showOnlyActivities = settingsJson['showOnlyActivities'] == 0;
+    showSettingsForCitizen = settingsJson['showSettingsForCitizen'] == 0;
     if (weekdayColorsJson != null) {
       weekDayColors = weekdayColorsJson
           .map((Map<String, dynamic> value) =>
@@ -108,6 +117,9 @@ class SettingsModel implements Model {
   /// defines the number of days to display for a user in a weekschedule
   int nrOfDaysToDisplay;
 
+  /// Defines the number of activities to display for a user in a weekschedule
+  int nrOfActivitiesToDisplay;
+
   /// Flag for indicating whether or not greyscale is enabled
   bool greyscale;
 
@@ -117,8 +129,14 @@ class SettingsModel implements Model {
   /// Defines if text should be shown alongside the pictograms in the weekplan
   bool pictogramText;
 
-  // Defines if a popup should be shown on the choice board and activity timers
+  /// Defines if a popup should be shown on the choice board and activity timers
   bool showPopup;
+
+  /// Flag for only showing activities instead of days
+  bool showOnlyActivities;
+
+  /// Defines if settings should be shown for a citizen
+  bool showSettingsForCitizen;
 
   /// List of weekday colors shown in the weekplan
   List<WeekdayColorModel> weekDayColors;
@@ -138,6 +156,9 @@ class SettingsModel implements Model {
       'lockTimerControl': lockTimerControl,
       'pictogramText': pictogramText,
       'showPopup': showPopup,
+      'nrOfActivitiesToDisplay': nrOfActivitiesToDisplay,
+      'showOnlyActivities': showOnlyActivities,
+      'showSettingsForCitizen': showSettingsForCitizen,
       'weekDayColors':
           weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
     };
