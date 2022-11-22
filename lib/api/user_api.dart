@@ -86,7 +86,7 @@ class UserApi {
 
           return settings;
         } catch (error) {
-          throw Exception('Error with User/v1/[id]/settings');
+          throw Exception('Error with User/v1/[id]/settings ' + id);
         }
       }, () => _dbHandler.getUserSettings(id));
 
