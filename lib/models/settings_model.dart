@@ -78,11 +78,11 @@ class SettingsModel implements Model {
     nrOfDaysToDisplayPortrait =
     settingsJson['nrOfDaysToDisplayPortrait'];
     displayDaysRelativePortrait =
-    settingsJson['displayDaysRelativePortrait'];
+    settingsJson['displayDaysRelativePortrait'] == 1;
     nrOfDaysToDisplayLandscape =
     settingsJson['nrOfDaysToDisplayLandscape'];
     displayDaysRelativeLandscape =
-    settingsJson['displayDaysRelativeLandscape'];
+    settingsJson['displayDaysRelativeLandscape'] == 1;
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;

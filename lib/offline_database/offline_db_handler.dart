@@ -70,7 +70,7 @@ class OfflineDbHandler {
           activitiesCount integer DEFAULT NULL,
           theme integer NOT NULL,
           nrOfDaysToDisplayPortrait integer DEFAULT NULL,
-          displayDaysRelativePortrait integer DEFAULT 0,
+          displayDaysRelativePortrait integer DEFAULT 1,
           nrOfDaysToDisplayLandscape integer DEFAULT NULL,
           displayDaysRelativeLandscape integer DEFAULT 0,
           greyScale integer DEFAULT 0,
