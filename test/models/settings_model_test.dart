@@ -1,10 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
 import 'package:api_client/models/enums/complete_mark_enum.dart';
 import 'package:api_client/models/enums/default_timer_enum.dart';
+import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
 import 'package:api_client/models/settings_model.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final Map<String, dynamic> response = <String, dynamic>{
@@ -23,6 +23,9 @@ void main() {
     'greyScale': false,
     'pictogramText' : false,
     'showPopup' : false,
+    'nrOfActivitiesToDisplay' : 0,
+    'showOnlyActivities' : false,
+    'showSettingsForCitizen' : false,
     'weekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
@@ -55,6 +58,9 @@ void main() {
     expect(settings.pictogramText, false);
     expect(settings.showPopup, false);
     expect(settings.greyscale, false);
+    expect(settings.nrOfActivitiesToDisplay, 0);
+    expect(settings.showOnlyActivities, false);
+    expect(settings.showSettingsForCitizen, false);
     expect(settings.weekDayColors.length, 7);
     expect(settings.weekDayColors[0].toJson(), response['weekDayColors'][0]);
     expect(settings.weekDayColors[1].toJson(), response['weekDayColors'][1]);

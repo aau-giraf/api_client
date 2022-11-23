@@ -1,13 +1,13 @@
 import 'package:api_client/api/activity_api.dart';
+import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/activity_model.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/enums/activity_state_enum.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/pictogram_model.dart';
-import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/weekday_model.dart';
-import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 

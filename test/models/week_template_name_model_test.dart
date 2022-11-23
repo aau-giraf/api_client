@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:api_client/models/week_template_name_model.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final Map<String, dynamic> response = <String, dynamic>{

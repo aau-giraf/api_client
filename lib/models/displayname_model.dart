@@ -1,7 +1,7 @@
 import 'package:api_client/models/giraf_user_model.dart';
+import 'package:api_client/models/model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
-import 'package:api_client/models/model.dart';
 
 ///
 class DisplayNameModel implements Model {
@@ -19,6 +19,7 @@ class DisplayNameModel implements Model {
     id = json['userId'];
     displayName = json['displayName'];
     role = json['userRole'];
+    icon = json['userIcon'];
   }
 
   ///Create DisplayNameModel from database json
@@ -31,6 +32,7 @@ class DisplayNameModel implements Model {
     id = json['id'];
     displayName = json['displayName'];
     role = json['roleName'];
+    icon = json['userIcon'];
   }
 
   /// Create object from GirafUserModel
@@ -49,10 +51,14 @@ class DisplayNameModel implements Model {
   /// The user's ID
   String id;
 
+  ///The user's icon
+  String icon;
+
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{
         'userId': id,
         'displayName': displayName,
-        'userRole': role
+        'userRole': role,
+        'userIcon': icon
       };
 }

@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:api_client/models/department_model.dart';
 import 'package:api_client/models/displayname_model.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws on JSON is null', () {
@@ -13,6 +13,7 @@ void main() {
       'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
+      'userIcon': null
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
@@ -35,6 +36,7 @@ void main() {
       'displayName': 'testUsername',
       'userRole': 'testRole',
       'userId': 'testID',
+      'userIcon': null
     };
 
     final Map<String, dynamic> json = <String, dynamic>{

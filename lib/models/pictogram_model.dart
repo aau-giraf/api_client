@@ -1,6 +1,6 @@
-import 'package:meta/meta.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
+import 'package:meta/meta.dart';
 
 /// Model with a pictogram
 class PictogramModel implements Model {

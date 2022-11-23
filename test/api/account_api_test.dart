@@ -1,10 +1,11 @@
+import 'dart:typed_data';
+import 'package:api_client/api/account_api.dart';
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
-import 'package:api_client/models/enums/error_key.dart';
-import 'package:api_client/models/giraf_user_model.dart';
-import 'package:api_client/models/enums/role_enum.dart';
-import 'package:api_client/api/account_api.dart';
 import 'package:api_client/http/http_mock.dart';
+import 'package:api_client/models/enums/error_key.dart';
+import 'package:api_client/models/enums/role_enum.dart';
+import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -72,11 +73,12 @@ void main() {
     const String username = 'username';
     const String displayName = 'displayname';
     const String password = 'password';
+    const Uint8List profilePicture = null;
     const int departmentId = 123;
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, displayName, password,
+        .register(username, displayName, password, profilePicture,
             departmentId: departmentId, role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);

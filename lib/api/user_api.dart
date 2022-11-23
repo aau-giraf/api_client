@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:api_client/http/http.dart';
-import 'package:api_client/offline_database/offline_db_handler.dart';
-import 'package:flutter/material.dart';
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/settings_model.dart';
-import 'package:api_client/models/displayname_model.dart';
+import 'package:api_client/offline_database/offline_db_handler.dart';
+import 'package:flutter/material.dart';
 
 import 'connectivity_api.dart';
 
@@ -92,7 +92,7 @@ class UserApi {
 
           return settings;
         } catch (error) {
-          throw Exception('Error with User/v1/[id]/settings');
+          throw Exception('Error with User/v1/[id]/settings ' + id);
         }
       },
       () => _dbHandler.getUserSettings(id)
