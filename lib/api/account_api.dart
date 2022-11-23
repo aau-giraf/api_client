@@ -97,8 +97,9 @@ class AccountApi {
   ///
   /// [id] ID of the user
   Stream<bool> delete(String id) {
-    return _http.delete('/user/$id').flatMap(
-        (Response res) => Stream<bool>.fromFuture(_persist.remove('token')));
+    return _http.delete('/user/$id').map((Response res) {
+      return res.success();
+    });
   }
 
   /// Logout the currently logged in user
