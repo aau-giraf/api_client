@@ -1,7 +1,7 @@
+import 'package:api_client/models/displayname_model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:api_client/models/displayname_model.dart';
 
 void main() {
   test('Throws on JSON is null', () {

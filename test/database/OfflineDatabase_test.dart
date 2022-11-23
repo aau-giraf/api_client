@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:io';
-
 import 'package:api_client/http/http.dart';
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/enums/cancel_mark_enum.dart';
@@ -116,8 +114,11 @@ Future<void> main() async {
     await dbHandler.insertUser(jamesbondTestUser);
     expect((await dbHandler.getUser(jamesbondTestUser.id)).username,
         jamesbondTestUser.username);
-    await dbHandler.insertUser(GirafUserModel(id: jamesbondTestUser.id,
-        role: Role.Guardian, username: 'newUsername', displayName: 'user'));
+    await dbHandler.insertUser(GirafUserModel(
+        id: jamesbondTestUser.id,
+        role: Role.Guardian,
+        username: 'newUsername',
+        displayName: 'user'));
     expect((await dbHandler.getUser(jamesbondTestUser.id)).username,
         'newUsername');
   });

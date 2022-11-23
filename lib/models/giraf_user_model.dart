@@ -1,5 +1,5 @@
-import 'package:api_client/models/model.dart';
 import 'package:api_client/models/enums/role_enum.dart';
+import 'package:api_client/models/model.dart';
 
 /// Model for users
 class GirafUserModel implements Model {

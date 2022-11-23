@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:api_client/http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:http/http.dart' as http;
 
 import '../api/api_exception.dart';
 
