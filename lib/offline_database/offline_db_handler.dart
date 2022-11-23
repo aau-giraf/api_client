@@ -76,7 +76,10 @@ class OfflineDbHandler {
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
           pictogramText integer DEFAULT 0,
-          showPopup integer DEFAULT 0)''');
+          showPopup integer DEFAULT 0,
+          nrOfActivitiesToDisplay integer DEFAULT 0,
+          showOnlyActivities integer DEFAULT 0,
+          showSettingsForCitizen integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
@@ -480,7 +483,9 @@ class OfflineDbHandler {
         activitiesCount, theme, nrOfDaysToDisplayPortrait, 
         displayDaysRelativePortrait, nrOfDaysToDisplayLandscape,
         displayDaysRelativeLandscape, greyScale, lockTimerControl,
-        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        pictogramText, 
+        nrOfActivitiesToDisplay, showOnlyActivities, 
+        showSettingsForCitizen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
         <dynamic>[settings.orientation.index, settings.completeMark.index,
           settings.cancelMark.index, settings.defaultTimer.index,
           settings.timerSeconds, settings.activitiesCount, settings.theme.index,
@@ -488,7 +493,10 @@ class OfflineDbHandler {
           settings.displayDaysRelativePortrait,
           settings.nrOfDaysToDisplayLandscape,
           settings.displayDaysRelativeLandscape, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText]);
+          settings.lockTimerControl, settings.pictogramText,
+          settings.nrOfActivitiesToDisplay,
+          settings.showOnlyActivities,
+          settings.showSettingsForCitizen]);
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
           <dynamic>[settingsId, userId]);
@@ -515,13 +523,13 @@ class OfflineDbHandler {
         <String>[userId])).first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
-        id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, 
         nrOfDaysToDisplayPortrait = ?, displayDaysRelativePortrait = ?, 
         nrOfDaysToDisplayLandscape = ?, displayDaysRelativeLandscape = ?, 
         greyScale = ?, lockTimerControl = ?, 
-        pictogramText = ?, showPopup = ? WHERE id = ?''',
+        pictogramText = ?, showPopup = ?, nrOfActivitiesToDisplay = ?, 
+        showOnlyActivities = ?, showSettingsForCitizen = ? WHERE id = ?''',
         <dynamic>[
           settings.orientation.index,
           settings.completeMark.index,
@@ -538,6 +546,9 @@ class OfflineDbHandler {
           settings.lockTimerControl,
           settings.pictogramText,
           settings.showPopup,
+          settings.nrOfActivitiesToDisplay,
+          settings.showOnlyActivities,
+          settings.showSettingsForCitizen,
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
