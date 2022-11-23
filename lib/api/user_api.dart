@@ -92,7 +92,7 @@ class UserApi {
 
           return settings;
         } catch (error) {
-          throw Exception('Error with User/v1/[id]/settings');
+          throw Exception('Error with User/v1/[id]/settings ' + id);
         }
       },
       () => _dbHandler.getUserSettings(id)
@@ -105,7 +105,7 @@ class UserApi {
   Stream<void> updateSettings(String id, SettingsModel settings) =>
         _connectivity.handle(
       () async {
-        _http.put('/$id/settings', settings.toJson());
+        _http.put('/$id/settings', settings.toJson()).toList();
         return _dbHandler.insertUserSettings(id, settings);
       },
       () => _dbHandler.insertUserSettings(id, settings)

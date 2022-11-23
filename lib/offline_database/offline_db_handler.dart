@@ -72,7 +72,11 @@ class OfflineDbHandler {
           nrOfDaysToDisplay integer DEFAULT NULL,
           greyScale integer DEFAULT 0,
           lockTimerControl integer DEFAULT 0,
-          pictogramText integer DEFAULT 0)''');
+          pictogramText integer DEFAULT 0,
+          showPopup integer DEFAULT 0,
+          nrOfActivitiesToDisplay integer DEFAULT 0,
+          showOnlyActivities integer DEFAULT 0,
+          showSettingsForCitizen integer DEFAULT 0)''');
       await txn.execute(
           '''CREATE TABLE IF NOT EXISTS Users (
           id text NOT NULL PRIMARY KEY,
@@ -474,12 +478,25 @@ class OfflineDbHandler {
       final int settingsId = await db.rawInsert('''INSERT INTO SETTINGS
         (orientation, completeMark, cancelMark, defaultTimer, timerSeconds,
         activitiesCount, theme, nrOfDaysToDisplay, greyScale, lockTimerControl,
-        pictogramText) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-        <dynamic>[settings.orientation.index, settings.completeMark.index,
-          settings.cancelMark.index, settings.defaultTimer.index,
-          settings.timerSeconds, settings.activitiesCount, settings.theme.index,
-          settings.nrOfDaysToDisplay, settings.greyscale,
-          settings.lockTimerControl, settings.pictogramText]);
+        pictogramText, showPopup, 
+        nrOfActivitiesToDisplay, showOnlyActivities, 
+        showSettingsForCitizen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        <dynamic>[
+          settings.orientation.index, 
+          settings.completeMark.index,
+          settings.cancelMark.index, 
+          settings.defaultTimer.index,
+          settings.timerSeconds, 
+          settings.activitiesCount, 
+          settings.theme.index,
+          settings.nrOfDaysToDisplay, 
+          settings.greyscale,
+          settings.lockTimerControl, 
+          settings.pictogramText,
+          settings.showPopup,
+          settings.nrOfActivitiesToDisplay,
+          settings.showOnlyActivities,
+          settings.showSettingsForCitizen]);
 
       await db.rawUpdate(
           'UPDATE Users SET settingsId = ? WHERE id = ?',
@@ -507,13 +524,13 @@ class OfflineDbHandler {
         <String>[userId])).first['settingsId'];
 
     await db.rawUpdate('''UPDATE Settings SET
-        id = ?,
         orientation = ?, completeMark = ?, cancelMark = ?, defaultTimer = ?,
         timerSeconds = ?, activitiesCount = ?, theme = ?, nrOfDaysToDisplay = ?,
-        greyScale = ?, lockTimerControl = ?, pictogramText = ?
-        WHERE id = ?''',  
-        <dynamic>[settingsId, 
-          settings.orientation.index, 
+        greyScale = ?, lockTimerControl = ?, pictogramText = ?, showPopup = ?,
+        nrOfActivitiesToDisplay = ?, showOnlyActivities = ?,
+        showSettingsForCitizen = ? WHERE id = ?''',  
+        <dynamic>[
+          settings.orientation.index,
           settings.completeMark.index,
           settings.cancelMark.index, 
           settings.defaultTimer.index,
@@ -522,8 +539,12 @@ class OfflineDbHandler {
           settings.theme.index,
           settings.nrOfDaysToDisplay, 
           settings.greyscale,
-          settings.lockTimerControl, 
-          settings.pictogramText == true ? 1 : 0, 
+          settings.lockTimerControl,
+          settings.pictogramText,
+          settings.showPopup,
+          settings.nrOfActivitiesToDisplay,
+          settings.showOnlyActivities,
+          settings.showSettingsForCitizen,
           settingsId]);
 
     /* WeekDayColors is a list in SettingsModel,
