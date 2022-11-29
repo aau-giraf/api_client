@@ -1,7 +1,7 @@
 # Api-client
 This repository contains a dart package which the weekplanner-app uses for comunnicating with the backend.   part of the weekplanner-app, which communicates with uses the api-client-repository to communicate with the backend (web-api-repository). 
 
-The repository uses the Flutter framework to maintain the dart package, and it is currently running on Flutter version 2.0.5. The language used in this repository is Dart, which is the language the Flutter framework uses.
+The repository uses the Flutter framework to maintain the dart package, and it is currently running on Flutter version 3.3.8. The language used in this repository is Dart, which is the language the Flutter framework uses.
 
 # Branches
 This repository contains to main branches, develop and release, where develop is the branch that all developers should branch from when solving an issue, and release contains the code for the latest release of the api-client package. The weekplanners develop branch is running against the develop-branch whereas all of the release branches on the weekplanner are running against the release-branch. 
