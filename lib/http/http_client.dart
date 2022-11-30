@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/persistence/persistence.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:http/http.dart' as http;
 
 /// Default implementation of Http
 class HttpClient implements Http {
@@ -49,45 +50,41 @@ class HttpClient implements Http {
   Stream<Response> get(String url) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
         (Map<String, String> headers) =>
-            _parseJson(http.get(baseUrl + url, headers: headers))
-    );
+            _parseJson(http.get(Uri.parse(baseUrl + url), headers: headers)));
   }
 
   @override
   Stream<Response> delete(String url) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.delete(baseUrl + url, headers: headers)));
+        (Map<String, String> headers) => _parseJson(
+            http.delete(Uri.parse(baseUrl + url), headers: headers)));
   }
 
   @override
   Stream<Response> post(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.post(baseUrl + url,
+        (Map<String, String> headers) => _parseJson(http.post(
+            Uri.parse(baseUrl + url),
             headers: headers,
-            body: _bodyHandler(body)))
-    );
+            body: _bodyHandler(body))));
   }
 
   @override
   Stream<Response> put(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.put(baseUrl + url,
-                headers: headers,
-                body: _bodyHandler(body)))
-    );
+        (Map<String, String> headers) => _parseJson(http.put(
+            Uri.parse(baseUrl + url),
+            headers: headers,
+            body: _bodyHandler(body))));
   }
 
   @override
   Stream<Response> patch(String url, [dynamic body]) {
     return Stream<Map<String, String>>.fromFuture(_headers).flatMap(
-        (Map<String, String> headers) =>
-            _parseJson(http.patch(baseUrl + url,
-                headers: headers,
-                body: _bodyHandler(body)))
-    );
+        (Map<String, String> headers) => _parseJson(http.patch(
+            Uri.parse(baseUrl + url),
+            headers: headers,
+            body: _bodyHandler(body))));
   }
 
   dynamic _bodyHandler(dynamic body) {

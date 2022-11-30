@@ -1,7 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/weekday_enum.dart';
 import 'package:api_client/models/weekday_model.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws when JSON is null', () {

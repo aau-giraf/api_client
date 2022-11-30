@@ -1,7 +1,7 @@
 import 'package:api_client/models/giraf_user_model.dart';
+import 'package:api_client/models/model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
-import 'package:api_client/models/model.dart';
 
 ///
 class DisplayNameModel implements Model {

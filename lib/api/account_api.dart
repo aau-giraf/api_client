@@ -2,13 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:api_client/http/http.dart';
+import 'package:api_client/models/enums/role_enum.dart';
+import 'package:api_client/models/giraf_user_model.dart';
+import 'package:api_client/persistence/persistence.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:api_client/models/giraf_user_model.dart';
-import 'package:api_client/models/enums/role_enum.dart';
-import 'package:api_client/persistence/persistence.dart';
-
-import '../models/giraf_user_model.dart';
 
 /// Hello world
 /// All Account Endpoints
