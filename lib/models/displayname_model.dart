@@ -43,7 +43,7 @@ class DisplayNameModel implements Model {
   }
 
   /// The user's displayName
-  String displayName;
+  String? displayName;
 
   /// The user's role
   String role;
