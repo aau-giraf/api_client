@@ -82,7 +82,7 @@ class HttpMock implements Http {
   /// [url] The url that is expected
   Flusher expectOne(
       {Method method,
-      @required String url,
+      required String url,
       dynamic body,
       int statusCode = 200}) {
     final int index = _calls.indexWhere((Call call) =>
@@ -103,7 +103,7 @@ class HttpMock implements Http {
   ///
   /// [method] One of delete, get, patch, post, or put.
   /// [url] The url that not expected
-  void expectNone({Method method, @required String url}) {
+  void expectNone({Method method, required String url}) {
     for (Call call in _calls) {
       if (call.url == url && (method == null || method == call.method)) {
         throw Exception('Found [$method] $url, expected none');

@@ -4,16 +4,11 @@ import 'model.dart';
 
 ///Alternate Name model
 class AlternateNameModel implements Model {
-
   /// Constructor
-  AlternateNameModel({
-    this.citizen,
-    this.pictogram,
-    @required this.name
-  });
+  AlternateNameModel({this.citizen, this.pictogram, required this.name});
 
   /// Instantiate model from JSON
-  AlternateNameModel.fromJson(Map<String,dynamic> json){
+  AlternateNameModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       throw const FormatException(
           '[AlternateNameModel]: Cannot initialize from null');
@@ -37,13 +32,14 @@ class AlternateNameModel implements Model {
   String name;
 
   @override
+
   ///Transform model to JSON
   Map<String, dynamic> toJson() {
-    return <String, dynamic> {
-      'id' : id,
-      'citizen' : citizen,
-      'pictogram' : pictogram,
-      'name' : name
+    return <String, dynamic>{
+      'id': id,
+      'citizen': citizen,
+      'pictogram': pictogram,
+      'name': name
     };
   }
 }

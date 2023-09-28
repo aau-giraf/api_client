@@ -6,10 +6,10 @@ import 'package:meta/meta.dart';
 class DepartmentModel implements Model {
   /// Default constructor
   DepartmentModel({
-    @required this.id,
-    @required this.name,
-    @required this.members,
-    @required this.resources,
+    required this.id,
+    required this.name,
+    required this.members,
+    required this.resources,
   });
 
   /// Constructs from JSON

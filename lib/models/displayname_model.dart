@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 class DisplayNameModel implements Model {
   /// Default constructor
   DisplayNameModel(
-      {@required this.displayName, @required this.role, @required this.id});
+      {required this.displayName, required this.role, required this.id});
 
   /// Create object from JSON mapping
   DisplayNameModel.fromJson(Map<String, dynamic> json) {

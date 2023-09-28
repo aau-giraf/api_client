@@ -11,8 +11,8 @@ import 'package:rxdart/rxdart.dart';
 class HttpClient implements Http {
   /// Default constructor
   HttpClient(
-      {@required this.baseUrl,
-      @required Persistence persist,
+      {required this.baseUrl,
+      required Persistence persist,
       String tokenKey = 'token',
       Duration timeout = const Duration(seconds: 5)})
       : _persist = persist,

@@ -108,7 +108,7 @@ class OfflineDb {
   ///and split them into lists with size [pageSize] and then choose
   ///list number [page]
   Future<List<PictogramModel>> getAllPictograms(
-      {String query, @required int page, @required int pageSize}) async {}
+      {String query, required int page, required int pageSize}) async {}
 
   ///Get the pictogram with the id [id]
   Future<PictogramModel> getPictogramID(int id) async {}

@@ -8,11 +8,11 @@ import 'enums/activity_state_enum.dart';
 class ActivityModel implements Model {
   /// Constructor for Activity
   ActivityModel(
-      {@required this.id,
-      @required this.pictograms,
-      @required this.order,
-      @required this.state,
-      @required this.isChoiceBoard,
+      {required this.id,
+      required this.pictograms,
+      required this.order,
+      required this.state,
+      required this.isChoiceBoard,
       this.choiceBoardName,
       this.timer,
       this.title});

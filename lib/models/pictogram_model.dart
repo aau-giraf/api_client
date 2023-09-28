@@ -8,8 +8,8 @@ class PictogramModel implements Model {
   PictogramModel({
     this.id,
     this.lastEdit,
-    @required this.title,
-    @required this.accessLevel,
+    required this.title,
+    required this.accessLevel,
     this.imageUrl,
     this.imageHash,
     this.userId,

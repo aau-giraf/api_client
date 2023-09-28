@@ -5,10 +5,10 @@ import 'package:meta/meta.dart';
 class TimerModel implements Model {
   /// Constructor for timer
   TimerModel({
-    @required this.startTime,
-    @required this.progress,
-    @required this.fullLength,
-    @required this.paused,
+    required this.startTime,
+    required this.progress,
+    required this.fullLength,
+    required this.paused,
     this.key,
   });
 
@@ -32,7 +32,7 @@ class TimerModel implements Model {
     startTime = DateTime.fromMillisecondsSinceEpoch(json['startTime']);
     progress = json['progress'];
     fullLength = json['fullLength'];
-    paused = json['paused']==1;
+    paused = json['paused'] == 1;
     key = json['key'];
   }
 

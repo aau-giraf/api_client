@@ -11,13 +11,13 @@ import 'package:meta/meta.dart';
 class SettingsModel implements Model {
   /// Constructor
   SettingsModel(
-      {@required this.orientation,
-      @required this.completeMark,
-      @required this.cancelMark,
-      @required this.defaultTimer,
+      {required this.orientation,
+      required this.completeMark,
+      required this.cancelMark,
+      required this.defaultTimer,
       this.timerSeconds,
       this.activitiesCount,
-      @required this.theme,
+      required this.theme,
       this.nrOfDaysToDisplayPortrait,
       this.displayDaysRelativePortrait,
       this.nrOfDaysToDisplayLandscape,
@@ -81,14 +81,12 @@ class SettingsModel implements Model {
     timerSeconds = settingsJson['timerSeconds'];
     activitiesCount = settingsJson['activitiesCount'];
     theme = GirafTheme.values[(settingsJson['theme'])];
-    nrOfDaysToDisplayPortrait =
-    settingsJson['nrOfDaysToDisplayPortrait'];
+    nrOfDaysToDisplayPortrait = settingsJson['nrOfDaysToDisplayPortrait'];
     displayDaysRelativePortrait =
-    settingsJson['displayDaysRelativePortrait'] == 1;
-    nrOfDaysToDisplayLandscape =
-    settingsJson['nrOfDaysToDisplayLandscape'];
+        settingsJson['displayDaysRelativePortrait'] == 1;
+    nrOfDaysToDisplayLandscape = settingsJson['nrOfDaysToDisplayLandscape'];
     displayDaysRelativeLandscape =
-    settingsJson['displayDaysRelativeLandscape'] == 1;
+        settingsJson['displayDaysRelativeLandscape'] == 1;
     greyscale = settingsJson['greyScale'] == 1;
     lockTimerControl = settingsJson['lockTimerControl'] == 1;
     pictogramText = settingsJson['pictogramText'] == 1;

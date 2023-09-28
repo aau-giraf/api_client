@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 /// Represents the Weekday
 class WeekdayModel implements Model {
   /// Default constructor
-  WeekdayModel({@required this.day, @required this.activities});
+  WeekdayModel({required this.day, required this.activities});
 
   /// Construct from JSON
   WeekdayModel.fromJson(Map<String, dynamic> json) {
