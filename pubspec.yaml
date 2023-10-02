@@ -1,6 +1,6 @@
 name: api_client
 description: API client for Flutter to communicate with the web-api
-version: 0.0.1
+version: 0.0.2
 homepage:
 
 environment:
