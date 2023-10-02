@@ -10,13 +10,13 @@ import 'package:api_client/models/weekday_color_model.dart';
 class SettingsModel implements Model {
   /// Constructor
   SettingsModel(
-      {required this.orientation,
-      required this.completeMark,
-      required this.cancelMark,
-      required this.defaultTimer,
+      {this.orientation,
+      this.completeMark,
+      this.cancelMark,
+      this.defaultTimer,
       this.timerSeconds,
       this.activitiesCount,
-      required this.theme,
+      this.theme,
       this.nrOfDaysToDisplayPortrait,
       this.displayDaysRelativePortrait,
       this.nrOfDaysToDisplayLandscape,
@@ -104,16 +104,16 @@ class SettingsModel implements Model {
   }
 
   /// Preferred orientation of device/screen
-  late Orientation orientation;
+  Orientation? orientation;
 
   /// Preferred appearance of checked resources
-  late CompleteMark completeMark;
+  CompleteMark? completeMark;
 
   /// Preferred appearance of cancelled resources
-  late CancelMark cancelMark;
+  CancelMark? cancelMark;
 
   /// Preferred appearance of timer
-  late DefaultTimer defaultTimer;
+  DefaultTimer? defaultTimer;
 
   /// Number of seconds for timer
   int? timerSeconds;
@@ -122,7 +122,7 @@ class SettingsModel implements Model {
   int? activitiesCount;
 
   /// The preferred theme
-  late GirafTheme theme;
+  GirafTheme? theme;
 
   /// Defines the number of days to display in portrait mode
   /// for a user in a weekplan
@@ -171,13 +171,13 @@ class SettingsModel implements Model {
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'orientation': orientation.index + 1,
-      'completeMark': completeMark.index + 1,
-      'cancelMark': cancelMark.index + 1,
-      'defaultTimer': defaultTimer.index + 1,
+      'orientation': orientation!.index + 1,
+      'completeMark': completeMark!.index + 1,
+      'cancelMark': cancelMark!.index + 1,
+      'defaultTimer': defaultTimer!.index + 1,
       'timerSeconds': timerSeconds,
       'activitiesCount': activitiesCount,
-      'theme': theme.index + 1,
+      'theme': theme!.index + 1,
       'nrOfDaysToDisplayPortrait': nrOfDaysToDisplayPortrait,
       'displayDaysRelativePortrait': displayDaysRelativePortrait,
       'nrOfDaysToDisplayLandscape': nrOfDaysToDisplayLandscape,
