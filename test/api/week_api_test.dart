@@ -1,6 +1,6 @@
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/api/week_api.dart';
-import 'package:api_client/http/http.dart';
+import 'package:api_client/http/http.dart' as http_r;
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/activity_model.dart';
 import 'package:api_client/models/enums/access_level_enum.dart';
@@ -11,6 +11,7 @@ import 'package:api_client/models/week_model.dart';
 import 'package:api_client/models/week_name_model.dart';
 import 'package:api_client/models/weekday_model.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
@@ -30,8 +31,8 @@ Future<void> main() async {
       WeekNameModel(name: 'WeekName 2', weekYear: 2019, weekNumber: 53),
     ];
 
-    weekApi.getNames(id).listen(expectAsync1((List<WeekNameModel> names) {
-      expect(names.length, 2);
+    weekApi.getNames(id).listen(expectAsync1((List<WeekNameModel>? names) {
+      expect(names!.length, 2);
       expect(names[0].name, names[0].name);
       expect(names[0].weekYear, names[0].weekYear);
       expect(names[0].weekNumber, names[0].weekNumber);
@@ -70,8 +71,8 @@ Future<void> main() async {
 
     weekApi
         .get(id, week.weekYear!, week.weekNumber!)
-        .listen(expectAsync1((WeekModel resWeek) {
-      expect(resWeek.toJson(), week.toJson());
+        .listen(expectAsync1((WeekModel? resWeek) {
+      expect(resWeek!.toJson(), week.toJson());
     }));
 
     httpMock
@@ -176,7 +177,8 @@ Future<void> main() async {
     httpMock
         .expectOne(
             url: '/$id/$year/$weekNumber/${weekday.index}', method: Method.get)
-        .throwError(ApiException(Response(null, <String, dynamic>{
+        .throwError(
+            ApiException(http_r.Response('' as Response, <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'NotFound',
@@ -220,7 +222,8 @@ Future<void> main() async {
 
     httpMock
         .expectOne(url: '/day/$id/$year/$weekNumber', method: Method.put)
-        .throwError(ApiException(Response(null, <String, dynamic>{
+        .throwError(
+            ApiException(http_r.Response('' as Response, <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'NotFound',

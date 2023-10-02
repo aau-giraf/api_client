@@ -15,8 +15,8 @@ class WeekModel extends WeekBaseModel implements Model {
   }) : super(thumbnail: thumbnail, name: name, days: days);
 
   /// Construct from JSON
-  WeekModel.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
-    weekYear = json['weekYear'];
+  WeekModel.fromJson(Map<String, dynamic>? json) : super.fromJson(json) {
+    weekYear = json!['weekYear'];
     weekNumber = json['weekNumber'];
   }
 

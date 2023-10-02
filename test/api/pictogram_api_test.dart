@@ -39,8 +39,8 @@ Future<void> main() async {
   test('Should be able to search pictograms', () {
     pictogramApi
         .getAll(query: 'Cat', page: 0, pageSize: 10)
-        .listen(expectAsync1((List<PictogramModel> pictograms) {
-      expect(pictograms.map((PictogramModel gram) => gram.toJson()),
+        .listen(expectAsync1((List<PictogramModel>? pictograms) {
+      expect(pictograms!.map((PictogramModel gram) => gram.toJson()),
           grams.map((PictogramModel gram) => gram.toJson()));
     }));
 
@@ -147,7 +147,7 @@ Future<void> main() async {
         .listen(expectAsync1((Image imageWidget) {
       if (imageWidget.image is MemoryImage) {
         final ImageProvider<Object> currentImage = imageWidget.image;
-        expect(currentImage.bytes, imagebytes);
+        expect(currentImage.toString(), imagebytes);
       } else {
         fail('Image is not a MemoryImage');
       }

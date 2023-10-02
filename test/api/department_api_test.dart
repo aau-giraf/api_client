@@ -45,8 +45,8 @@ Future<void> main() async {
 
     departmentApi
         .departmentNames()
-        .listen(expectAsync1((List<DepartmentNameModel> response) {
-      expect(response.length, 2);
+        .listen(expectAsync1((List<DepartmentNameModel>? response) {
+      expect(response!.length, 2);
 
       expect(response[0].id, names[0]['id']);
       expect(response[0].name, names[0]['name']);
@@ -98,9 +98,9 @@ Future<void> main() async {
   test('Should be able to fetch department users', () {
     departmentApi
         .getDepartmentUsers(sampleDepartment.id!)
-        .listen(expectAsync1((List<DisplayNameModel> response) {
+        .listen(expectAsync1((List<DisplayNameModel>? response) {
       expect(
-          response.map((DisplayNameModel member) => member.toJson()),
+          response!.map((DisplayNameModel member) => member.toJson()),
           sampleDepartment.members!
               .map((DisplayNameModel member) => member.toJson()));
     }));

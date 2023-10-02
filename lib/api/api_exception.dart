@@ -8,7 +8,7 @@ class ApiException implements Exception {
     errorKey = ErrorKey.values.firstWhere(
         (ErrorKey? f) =>
             f.toString() == 'ErrorKey.' + response.json['errorKey'],
-        orElse: () => null);
+        orElse: () => 'null' as ErrorKey);
 
     final String? message = response.json['message'];
     if (message?.isNotEmpty ?? false) {
@@ -18,7 +18,7 @@ class ApiException implements Exception {
     }
 
     final String details = response.json['details'];
-    if (details?.isNotEmpty ?? false) {
+    if (details.isNotEmpty) {
       errorDetails = response.json['details'];
     } else {
       errorDetails = '';

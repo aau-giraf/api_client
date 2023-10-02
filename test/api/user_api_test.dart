@@ -297,8 +297,8 @@ Future<void> main() async {
   });
 
   test('Should fetch user with ID', () async {
-    userApi.get(user.id!).listen(expectAsync1((GirafUserModel specUser) {
-      expect(specUser.toJson(), user.toJson());
+    userApi.get(user.id!).listen(expectAsync1((GirafUserModel? specUser) {
+      expect(specUser!.toJson(), user.toJson());
     }));
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
@@ -324,8 +324,8 @@ Future<void> main() async {
 
   test('Should fetch user with ID from offline', () {
     connectivityMock.isConnected = false;
-    userApi.get(user.id!).listen(expectAsync1((GirafUserModel specUser) {
-      expect(specUser.toJson(), user.toJson());
+    userApi.get(user.id!).listen(expectAsync1((GirafUserModel? specUser) {
+      expect(specUser!.toJson(), user.toJson());
     }));
   });
 
@@ -394,8 +394,8 @@ Future<void> main() async {
   test('Should get settings from user with ID', () async {
     userApi
         .getSettings(user.id!)
-        .listen(expectAsync1((SettingsModel specSettings) {
-      expect(specSettings.toJson(), settings.toJson());
+        .listen(expectAsync1((SettingsModel? specSettings) {
+      expect(specSettings!.toJson(), settings.toJson());
     }));
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
@@ -424,8 +424,8 @@ Future<void> main() async {
 
     userApi
         .getSettings(user.id!)
-        .listen(expectAsync1((SettingsModel specSettings) {
-      expect(specSettings.toJson(), settings.toJson());
+        .listen(expectAsync1((SettingsModel? specSettings) {
+      expect(specSettings!.toJson(), settings.toJson());
     }));
   });
 

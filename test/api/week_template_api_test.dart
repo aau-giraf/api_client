@@ -42,8 +42,8 @@ Future<void> main() async {
 
     weekTemplateApi
         .getNames()
-        .listen(expectAsync1((List<WeekTemplateNameModel> templateNames) {
-      expect(templateNames.length, 2);
+        .listen(expectAsync1((List<WeekTemplateNameModel>? templateNames) {
+      expect(templateNames!.length, 2);
       expect(templateNames[0].toJson(), names[0].toJson());
       expect(templateNames[1].toJson(), names[1].toJson());
     }));
