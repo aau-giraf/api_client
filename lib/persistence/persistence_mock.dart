@@ -1,13 +1,12 @@
-
 import 'package:api_client/persistence/persistence.dart';
 
 /// Mocking for the Persistence Provider
 class PersistenceMock implements Persistence {
-  String _token;
+  String? _token;
 
   @override
   Future<String> get(String key) async {
-    return _token;
+    return _token!;
   }
 
   @override
@@ -30,6 +29,6 @@ class PersistenceMock implements Persistence {
 
   @override
   Future<List<String>> getList(String key) async {
-    return <String>[_token];
+    return <String>[_token!];
   }
 }

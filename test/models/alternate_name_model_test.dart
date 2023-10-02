@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws on JSON is null', () {
-    const Map<String, dynamic> json = null; // ignore: avoid_init_to_null
+    const Map<String, dynamic>? json = null; // ignore: avoid_init_to_null
     expect(() => AlternateNameModel.fromJson(json), throwsFormatException);
   });
 

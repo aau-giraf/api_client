@@ -6,16 +6,17 @@ class ApiException implements Exception {
   /// Create an API exception, when f.x success was false, and errorKey was set
   ApiException(this.response) {
     errorKey = ErrorKey.values.firstWhere(
-        (ErrorKey f) => f.toString() == 'ErrorKey.' + response.json['errorKey'],
+        (ErrorKey? f) =>
+            f.toString() == 'ErrorKey.' + response.json['errorKey'],
         orElse: () => null);
 
-    final String message = response.json['message'];
+    final String? message = response.json['message'];
     if (message?.isNotEmpty ?? false) {
       errorMessage = response.json['message'].toString();
     } else {
       errorMessage = 'Something went wrong.';
     }
-    
+
     final String details = response.json['details'];
     if (details?.isNotEmpty ?? false) {
       errorDetails = response.json['details'];
@@ -31,10 +32,10 @@ class ApiException implements Exception {
   ErrorKey errorKey = ErrorKey.NoError;
 
   /// The message describing the error
-  String errorMessage;
+  late String errorMessage;
 
   /// The details of the error that happened, most of the time it is empty
-  String errorDetails;
+  late String errorDetails;
 
   @override
   String toString() => '[ApiException]: ${response.json['errorKey']}';

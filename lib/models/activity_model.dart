@@ -1,7 +1,6 @@
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/pictogram_model.dart';
 import 'package:api_client/models/timer_model.dart';
-import 'package:meta/meta.dart';
 import 'enums/activity_state_enum.dart';
 
 /// The model for the activity in the api client.
@@ -18,7 +17,7 @@ class ActivityModel implements Model {
       this.title});
 
   /// Constructs the activityModel from json.
-  ActivityModel.fromJson(Map<String, dynamic> json) {
+  ActivityModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[ActivityModel]: Cannot initialize from null');
@@ -27,7 +26,7 @@ class ActivityModel implements Model {
     id = json['id'];
     pictograms = <PictogramModel>[];
     for (Map<String, dynamic> pictogram in json['pictograms']) {
-      pictograms.add(PictogramModel.fromJson(pictogram));
+      pictograms!.add(PictogramModel.fromJson(pictogram));
     }
     order = json['order'];
     state = ActivityState.values[(json['state']) - 1];
@@ -40,7 +39,7 @@ class ActivityModel implements Model {
   }
 
   /// Constructer from json for the offlineDb
-  ActivityModel.fromDatabase(Map<String, dynamic> json,
+  ActivityModel.fromDatabase(Map<String, dynamic>? json,
       {this.timer, this.pictograms}) {
     if (json == null) {
       throw const FormatException(
@@ -53,50 +52,50 @@ class ActivityModel implements Model {
       stateIndex = json['state'];
     } else {
       final String stateString = json['state'];
-      stateIndex = int.tryParse(stateString);
+      stateIndex = int.tryParse(stateString)!;
     }
     state = ActivityState.values[stateIndex];
     isChoiceBoard = json['isChoiceBoard'] == 1;
   }
 
   /// The ID of the activity.
-  int id;
+  int? id;
 
   /// The pictogram for the activity.
-  List<PictogramModel> pictograms;
+  List<PictogramModel>? pictograms;
 
   /// The order that the activity will appear on in a weekschedule. If two has
   /// same order it is a choice
-  int order;
+  int? order;
 
   /// The current ActivityState
-  ActivityState state;
+  ActivityState? state;
 
   /// This is used in the WeekPlanner app by the frontend groups and should
   /// never be set from our side
-  bool isChoiceBoard;
+  bool? isChoiceBoard;
 
   /// name of the choiceboard
-  String choiceBoardName;
+  String? choiceBoardName;
 
   /// The timer for the activity
-  TimerModel timer;
+  TimerModel? timer;
 
   ///The title of the activity
-  String title;
+  String? title;
 
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id ?? '',
-      'pictograms': pictograms
+      'pictograms': pictograms!
           .map((PictogramModel pictogram) => pictogram.toJson())
           .toList(),
       'order': order,
-      'state': state.index + 1,
+      'state': state!.index + 1,
       'isChoiceBoard': isChoiceBoard,
       'choiceBoardName': choiceBoardName,
-      'timer': timer != null ? timer.toJson() : null,
+      'timer': timer != null ? timer!.toJson() : null,
       'title': title ?? ''
     };
   }

@@ -7,8 +7,8 @@ import 'package:api_client/models/enums/role_enum.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main() async {
-  HttpMock httpMock;
-  DepartmentApi departmentApi;
+  late HttpMock httpMock;
+  late DepartmentApi departmentApi;
 
   final DepartmentModel sampleDepartment = DepartmentModel(
       id: 1,
@@ -80,7 +80,7 @@ Future<void> main() async {
 
   test('Should get department with ID', () {
     departmentApi
-        .getDepartment(sampleDepartment.id)
+        .getDepartment(sampleDepartment.id!)
         .listen(expectAsync1((DepartmentModel response) {
       expect(response.toJson(), sampleDepartment.toJson());
     }));
@@ -97,18 +97,18 @@ Future<void> main() async {
 
   test('Should be able to fetch department users', () {
     departmentApi
-        .getDepartmentUsers(sampleDepartment.id)
+        .getDepartmentUsers(sampleDepartment.id!)
         .listen(expectAsync1((List<DisplayNameModel> response) {
       expect(
           response.map((DisplayNameModel member) => member.toJson()),
-          sampleDepartment.members
+          sampleDepartment.members!
               .map((DisplayNameModel member) => member.toJson()));
     }));
 
     httpMock
         .expectOne(url: '/${sampleDepartment.id}/citizens', method: Method.get)
         .flush(<String, dynamic>{
-      'data': sampleDepartment.members
+      'data': sampleDepartment.members!
           .map((DisplayNameModel member) => member.toJson())
           .toList(),
       'success': true,
@@ -119,7 +119,7 @@ Future<void> main() async {
 
   test('Should be able to change name of department', () {
     departmentApi
-        .updateName(sampleDepartment.id, 'new Name')
+        .updateName(sampleDepartment.id!, 'new Name')
         .listen(expectAsync1((bool response) {
       expect(response, isTrue);
     }));
@@ -135,7 +135,7 @@ Future<void> main() async {
 
   test('Should be able to delete department', () {
     departmentApi
-        .delete(sampleDepartment.id)
+        .delete(sampleDepartment.id!)
         .listen(expectAsync1((bool success) {
       expect(success, isTrue);
     }));

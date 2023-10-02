@@ -6,7 +6,7 @@ class DepartmentNameModel implements Model {
   DepartmentNameModel({this.id, this.name});
 
   /// Contructor from json
-  DepartmentNameModel.fromJson(Map<String, dynamic> json) {
+  DepartmentNameModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[DepartmentNameModel]: Cannot instantiate from null');
@@ -17,10 +17,10 @@ class DepartmentNameModel implements Model {
   }
 
   /// The id of the department.
-  int id;
+  int? id;
 
   /// The name of the department.
-  String name;
+  String? name;
 
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{

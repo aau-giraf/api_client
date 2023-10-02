@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'model.dart';
 
 ///Alternate Name model
@@ -8,7 +6,7 @@ class AlternateNameModel implements Model {
   AlternateNameModel({this.citizen, this.pictogram, required this.name});
 
   /// Instantiate model from JSON
-  AlternateNameModel.fromJson(Map<String, dynamic> json) {
+  AlternateNameModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[AlternateNameModel]: Cannot initialize from null');
@@ -23,13 +21,13 @@ class AlternateNameModel implements Model {
   int id = 0;
 
   /// Related citizen
-  String citizen;
+  String? citizen;
 
   /// Related pictogram
-  int pictogram;
+  int? pictogram;
 
   /// Alternative name
-  String name;
+  String? name;
 
   @override
 

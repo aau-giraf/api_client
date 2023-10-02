@@ -7,15 +7,16 @@ import 'package:api_client/models/weekday_model.dart';
 class WeekTemplateModel extends WeekBaseModel implements Model {
   /// Default constructor
   WeekTemplateModel(
-      {PictogramModel thumbnail,
-      String name,
-      List<WeekdayModel> days,
+      {PictogramModel? thumbnail,
+      String? name,
+      List<WeekdayModel>? days,
       this.departmentKey,
       this.id})
       : super(thumbnail: thumbnail, name: name, days: days);
 
   /// Construct from JSON
-  WeekTemplateModel.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+  WeekTemplateModel.fromJson(Map<String, dynamic>? json)
+      : super.fromJson(json) {
     if (json == null) {
       throw const FormatException(
           '[WeekTemplateModel]: Cannot initialize from null');
@@ -26,7 +27,7 @@ class WeekTemplateModel extends WeekBaseModel implements Model {
   }
 
   /// Construct from offline database JSON
-  WeekTemplateModel.fromDatabase(Map<String, dynamic> json)
+  WeekTemplateModel.fromDatabase(Map<String, dynamic>? json)
       : super.fromDatabase(json) {
     if (json == null) {
       throw const FormatException(
@@ -37,20 +38,20 @@ class WeekTemplateModel extends WeekBaseModel implements Model {
   }
 
   /// Key for the Department
-  int departmentKey;
+  int? departmentKey;
 
   /// This Week template's ID
-  int id;
+  int? id;
 
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'departmentKey': departmentKey,
       'id': id,
-      'thumbnail': thumbnail.toJson(),
+      'thumbnail': thumbnail!.toJson(),
       'name': name,
       'days': days != null
-          ? days.map((WeekdayModel element) => element.toJson()).toList()
+          ? days!.map((WeekdayModel element) => element.toJson()).toList()
           : null
     };
   }

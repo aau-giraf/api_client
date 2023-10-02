@@ -3,7 +3,7 @@ import 'package:api_client/http/http_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  HttpMock httpMock;
+  late HttpMock httpMock;
 
   setUp(() {
     httpMock = HttpMock();

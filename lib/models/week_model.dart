@@ -7,9 +7,9 @@ import 'package:api_client/models/weekday_model.dart';
 class WeekModel extends WeekBaseModel implements Model {
   /// Default constructor
   WeekModel({
-    PictogramModel thumbnail,
-    String name,
-    List<WeekdayModel> days,
+    PictogramModel? thumbnail,
+    String? name,
+    List<WeekdayModel>? days,
     this.weekYear,
     this.weekNumber,
   }) : super(thumbnail: thumbnail, name: name, days: days);
@@ -27,10 +27,10 @@ class WeekModel extends WeekBaseModel implements Model {
   }
 
   /// The year the week lies in
-  int weekYear;
+  int? weekYear;
 
   /// The week number
-  int weekNumber;
+  int? weekNumber;
 
   @override
   Map<String, dynamic> toJson() {
@@ -44,7 +44,7 @@ class WeekModel extends WeekBaseModel implements Model {
     // is used in two different ways, one with thumbnail
     // and another without thumbnail.
     if (thumbnail != null) {
-      response['thumbnail'] = thumbnail.toJson();
+      response['thumbnail'] = thumbnail!.toJson();
     }
 
     // We have to take into account that this object
@@ -52,7 +52,7 @@ class WeekModel extends WeekBaseModel implements Model {
     // and another without days.
     if (days != null) {
       response['days'] =
-          days.map((WeekdayModel element) => element.toJson()).toList();
+          days!.map((WeekdayModel element) => element.toJson()).toList();
     }
 
     return response;

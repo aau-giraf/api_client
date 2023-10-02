@@ -10,9 +10,9 @@ import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  AccountApi accountApi;
-  HttpMock httpMock;
-  PersistenceMock persistenceMock;
+  late AccountApi accountApi;
+  late HttpMock httpMock;
+  late PersistenceMock persistenceMock;
 
   setUp(() {
     httpMock = HttpMock();
@@ -73,12 +73,12 @@ void main() {
     const String username = 'username';
     const String displayName = 'displayname';
     const String password = 'password';
-    const Uint8List profilePicture = null;
+    const Uint8List? profilePicture = null;
     const int departmentId = 123;
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, displayName, password, profilePicture,
+        .register(username, displayName, password, profilePicture!,
             departmentId: departmentId, role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);

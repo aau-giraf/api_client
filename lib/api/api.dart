@@ -33,36 +33,31 @@ class Api {
             tokenKey: tokenKey,
             timeout: timeout),
         persist);
-    department = DepartmentApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/Department',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    week = WeekApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/Week',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    pictogram = PictogramApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/Pictogram',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    activity = ActivityApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v2/Activity',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
-    weekTemplate = WeekTemplateApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v1/WeekTemplate',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
+    department = DepartmentApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Department',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    week = WeekApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Week',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    pictogram = PictogramApi(HttpClient(
+        baseUrl: '$baseUrl/v1/Pictogram',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    activity = ActivityApi(HttpClient(
+        baseUrl: '$baseUrl/v2/Activity',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
+    weekTemplate = WeekTemplateApi(HttpClient(
+        baseUrl: '$baseUrl/v1/WeekTemplate',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
     user = UserApi(
         HttpClient(
             baseUrl: '$baseUrl/v1/User',
@@ -70,43 +65,42 @@ class Api {
             tokenKey: tokenKey,
             timeout: timeout),
         connectivity);
-    alternateName = AlternateNameApi(
-        HttpClient(
-            baseUrl: '$baseUrl/v2/AlternateName',
-            persist: persist,
-            tokenKey: tokenKey,
-            timeout: timeout));
+    alternateName = AlternateNameApi(HttpClient(
+        baseUrl: '$baseUrl/v2/AlternateName',
+        persist: persist,
+        tokenKey: tokenKey,
+        timeout: timeout));
   }
 
   /// To access account endpoints
-  AccountApi account;
+  late AccountApi account;
 
   /// To access department endpoints
-  DepartmentApi department;
+  late DepartmentApi department;
 
   /// To access pictogram endpoints
-  PictogramApi pictogram;
+  late PictogramApi pictogram;
 
   /// To access activity endpoints
-  ActivityApi activity;
+  late ActivityApi activity;
 
   /// To access week endpoints
-  WeekApi week;
+  late WeekApi week;
 
   /// To access status endpoints
-  StatusApi status;
+  late StatusApi status;
 
   /// To access status endpoints
-  ConnectivityApi connectivity;
+  late ConnectivityApi connectivity;
 
   /// To access weekTemplate endpoints
-  WeekTemplateApi weekTemplate;
+  late WeekTemplateApi weekTemplate;
 
   /// To access user endpoints
-  UserApi user;
+  late UserApi user;
 
   /// To access alternateName endpoints
-  AlternateNameApi alternateName;
+  late AlternateNameApi alternateName;
 
   /// The base of all requests.
   ///

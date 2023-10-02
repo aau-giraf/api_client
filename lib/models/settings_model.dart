@@ -5,7 +5,6 @@ import 'package:api_client/models/enums/giraf_theme_enum.dart';
 import 'package:api_client/models/enums/orientation_enum.dart';
 import 'package:api_client/models/model.dart';
 import 'package:api_client/models/weekday_color_model.dart';
-import 'package:meta/meta.dart';
 
 /// A model used to store settings values
 class SettingsModel implements Model {
@@ -32,7 +31,7 @@ class SettingsModel implements Model {
       this.weekDayColors});
 
   /// Another constructor used to create from json.
-  SettingsModel.fromJson(Map<String, dynamic> json) {
+  SettingsModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[SettingModel]: Cannot initialize from null');
@@ -67,20 +66,20 @@ class SettingsModel implements Model {
   }
 
   /// Create a Settingsmodel from json from the database
-  SettingsModel.fromDatabase(Map<String, dynamic> settingsJson,
-      List<Map<String, dynamic>> weekdayColorsJson) {
+  SettingsModel.fromDatabase(Map<String, dynamic>? settingsJson,
+      List<Map<String, dynamic>>? weekdayColorsJson) {
     if (settingsJson == null) {
       throw const FormatException(
           '[SettingModel]: Cannot initialize from null');
     }
 
-    orientation = Orientation.values[(settingsJson['orientation'])];
-    completeMark = CompleteMark.values[(settingsJson['completeMark'])];
-    cancelMark = CancelMark.values[(settingsJson['cancelMark'])];
-    defaultTimer = DefaultTimer.values[(settingsJson['defaultTimer'])];
+    orientation = Orientation.values[settingsJson['orientation']];
+    completeMark = CompleteMark.values[settingsJson['completeMark']];
+    cancelMark = CancelMark.values[settingsJson['cancelMark']];
+    defaultTimer = DefaultTimer.values[settingsJson['defaultTimer']];
     timerSeconds = settingsJson['timerSeconds'];
     activitiesCount = settingsJson['activitiesCount'];
-    theme = GirafTheme.values[(settingsJson['theme'])];
+    theme = GirafTheme.values[settingsJson['theme']];
     nrOfDaysToDisplayPortrait = settingsJson['nrOfDaysToDisplayPortrait'];
     displayDaysRelativePortrait =
         settingsJson['displayDaysRelativePortrait'] == 1;
@@ -105,69 +104,69 @@ class SettingsModel implements Model {
   }
 
   /// Preferred orientation of device/screen
-  Orientation orientation;
+  late Orientation orientation;
 
   /// Preferred appearance of checked resources
-  CompleteMark completeMark;
+  late CompleteMark completeMark;
 
   /// Preferred appearance of cancelled resources
-  CancelMark cancelMark;
+  late CancelMark cancelMark;
 
   /// Preferred appearance of timer
-  DefaultTimer defaultTimer;
+  late DefaultTimer defaultTimer;
 
   /// Number of seconds for timer
-  int timerSeconds;
+  int? timerSeconds;
 
   /// Number of activities
-  int activitiesCount;
+  int? activitiesCount;
 
   /// The preferred theme
-  GirafTheme theme;
+  late GirafTheme theme;
 
   /// Defines the number of days to display in portrait mode
   /// for a user in a weekplan
-  int nrOfDaysToDisplayPortrait;
+  int? nrOfDaysToDisplayPortrait;
 
   /// true: if the first day shown in the weekplanner in portrait mode
   /// should be today
   /// false: if the first day shown in the weekplanner in portrait mode
   /// should be monday
-  bool displayDaysRelativePortrait;
+  bool? displayDaysRelativePortrait;
 
   /// Defines the number of days to display in landscape mode
   /// for a user in a weekplan
-  int nrOfDaysToDisplayLandscape;
+  int? nrOfDaysToDisplayLandscape;
 
   /// true: if the first day shown in the weekplanner in landscape mode
   /// should be today
   /// false: if the first day shown in the weekplanner in landscape mode
   /// should be monday
-  bool displayDaysRelativeLandscape;
+  bool? displayDaysRelativeLandscape;
 
   /// Defines the number of activities to display for a user in a weekschedule
-  int nrOfActivitiesToDisplay;
+  int? nrOfActivitiesToDisplay;
 
   /// Flag for indicating whether or not greyscale is enabled
-  bool greyscale;
+  bool? greyscale;
 
   /// Defines if the user can stop/pause/restart a timer once started
-  bool lockTimerControl;
+  bool? lockTimerControl;
 
   /// Defines if text should be shown alongside the pictograms in the weekplan
-  bool pictogramText;
+  bool? pictogramText;
 
   /// Defines if a popup should be shown on the choice board and activity timers
-  bool showPopup;
+  bool? showPopup;
 
   /// Flag for only showing activities instead of days
-  bool showOnlyActivities;
+  bool? showOnlyActivities;
 
   /// Defines if settings should be shown for a citizen
-  bool showSettingsForCitizen;
+  bool? showSettingsForCitizen;
 
   /// List of weekday colors shown in the weekplan
-  List<WeekdayColorModel> weekDayColors;
+  List<WeekdayColorModel>? weekDayColors;
 
   @override
   Map<String, dynamic> toJson() {
@@ -191,7 +190,7 @@ class SettingsModel implements Model {
       'showOnlyActivities': showOnlyActivities,
       'showSettingsForCitizen': showSettingsForCitizen,
       'weekDayColors':
-          weekDayColors?.map((WeekdayColorModel e) => e.toJson())?.toList()
+          weekDayColors?.map((WeekdayColorModel e) => e.toJson()).toList()
     };
   }
 }

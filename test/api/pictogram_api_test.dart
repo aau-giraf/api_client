@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
-  PictogramApi pictogramApi;
-  HttpMock httpMock;
+  late PictogramApi pictogramApi;
+  late HttpMock httpMock;
 
   final List<PictogramModel> grams = <PictogramModel>[
     PictogramModel(
@@ -55,7 +55,7 @@ Future<void> main() async {
   });
 
   test('Get Pictogram with specific ID', () {
-    pictogramApi.get(grams[0].id).listen(expectAsync1((PictogramModel model) {
+    pictogramApi.get(grams[0].id!).listen(expectAsync1((PictogramModel model) {
       expect(model.toJson(), grams[0].toJson());
     }));
 
@@ -98,7 +98,7 @@ Future<void> main() async {
   });
 
   test('Delete pictogram', () {
-    pictogramApi.delete(grams[0].id).listen(expectAsync1((bool success) {
+    pictogramApi.delete(grams[0].id!).listen(expectAsync1((bool success) {
       expect(success, isTrue);
     }));
 
@@ -120,7 +120,7 @@ Future<void> main() async {
     ]);
 
     pictogramApi
-        .updateImage(grams[0].id, image)
+        .updateImage(grams[0].id!, image)
         .listen(expectAsync1((PictogramModel model) {
       expect(model.id, grams[0].id);
     }));
@@ -142,9 +142,11 @@ Future<void> main() async {
       3,
       4,
     ]);
-    pictogramApi.getImage(grams[0].id).listen(expectAsync1((Image imageWidget) {
+    pictogramApi
+        .getImage(grams[0].id!)
+        .listen(expectAsync1((Image imageWidget) {
       if (imageWidget.image is MemoryImage) {
-        final MemoryImage currentImage = imageWidget.image;
+        final ImageProvider<Object> currentImage = imageWidget.image;
         expect(currentImage.bytes, imagebytes);
       } else {
         fail('Image is not a MemoryImage');

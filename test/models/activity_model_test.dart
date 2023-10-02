@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws on JSON is null', () {
-    const Map<String, dynamic> json = null; // ignore: avoid_init_to_null
+    const Map<String, dynamic>? json = null; // ignore: avoid_init_to_null
     expect(() => ActivityModel.fromJson(json), throwsFormatException);
   });
 
@@ -34,7 +34,7 @@ void main() {
     expect(model.order, json['order']);
     expect(model.isChoiceBoard, json['isChoiceBoard']);
     expect(model.state, ActivityState.Normal);
-    expect(model.pictograms[0].toJson(),
+    expect(model.pictograms![0].toJson(),
         PictogramModel.fromJson(jsonPictograms[0]).toJson());
   });
 

@@ -14,7 +14,7 @@ class WeekApi {
   /// Get week names from the user with the given ID
   ///
   /// [id] User ID
-  Stream<List<WeekNameModel>> getNames(String id) {
+  Stream<List<WeekNameModel>?> getNames(String id) {
     return _http.get('/$id/weekName').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
@@ -44,7 +44,8 @@ class WeekApi {
   /// [year] The year of the week
   /// [weekNumber] The number of the week
   /// [day] The day of the week
-  Stream<WeekdayModel> getDay(String id, int year, int weekNumber, Weekday day){
+  Stream<WeekdayModel> getDay(
+      String id, int year, int weekNumber, Weekday day) {
     return _http.get('/$id/$year/$weekNumber/${day.index}').map((Response res) {
       return WeekdayModel.fromJson(res.json['data']);
     });
@@ -78,7 +79,6 @@ class WeekApi {
       return WeekdayModel.fromJson(res.json['data']);
     });
   }
-  
 
   /// Deletes all information for the entire week with the given year and week
   /// number.
