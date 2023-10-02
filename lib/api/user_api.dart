@@ -35,7 +35,7 @@ class UserApi {
   /// Find information on the user with the given ID
   ///
   /// [id] ID of the user
-  Stream<GirafUserModel?> get(String id) => _connectivity.handle(() async {
+  Stream<GirafUserModel> get(String id) => _connectivity.handle(() async {
         final GirafUserModel user = await _http
             .get('/$id')
             .map((Response res) => GirafUserModel.fromJson(res.json['data']))

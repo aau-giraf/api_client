@@ -377,14 +377,14 @@ class OfflineDbHandler {
       _existsInTable('Users', <String>['id'], <String>[userId]);
 
   /// Get a user with [userId] if it exists, otherwise returns null.
-  Future<GirafUserModel?> getUser(String? userId) async {
+  Future<GirafUserModel> getUser(String? userId) async {
     final Database db = await database;
     final List<Map<String, dynamic>> users = await db
         .rawQuery('SELECT * FROM Users WHERE id = ?', <String>[userId!]);
     if (users.isNotEmpty) {
       return GirafUserModel.fromJson(users[0]);
     } else {
-      return null;
+      return GirafUserModel.fromJson('' as Map<String, dynamic>?); //FIXME:Hack
     }
   }
 
