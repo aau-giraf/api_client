@@ -15,6 +15,42 @@ import 'connectivity_api.dart';
 
 /// Weekplanner API
 class Api {
+  /// To access account endpoints
+  late AccountApi account;
+
+  /// To access department endpoints
+  late DepartmentApi department;
+
+  /// To access pictogram endpoints
+  late PictogramApi pictogram;
+
+  /// To access activity endpoints
+  late ActivityApi activity;
+
+  /// To access week endpoints
+  late WeekApi week;
+
+  /// To access status endpoints
+  late StatusApi status;
+
+  /// To access status endpoints
+  late ConnectivityApi connectivity;
+
+  /// To access weekTemplate endpoints
+  late WeekTemplateApi weekTemplate;
+
+  /// To access user endpoints
+  late UserApi user;
+
+  /// To access alternateName endpoints
+  late AlternateNameApi alternateName;
+
+  /// The base of all requests.
+  ///
+  /// Example: if set to `http://google.com`, then a get request with url
+  /// `/search` will resolve to `http://google.com/search`
+  String baseUrl;
+
   /// Default constructor
   Api(this.baseUrl,
       [String tokenKey = 'token',
@@ -71,42 +107,6 @@ class Api {
         tokenKey: tokenKey,
         timeout: timeout));
   }
-
-  /// To access account endpoints
-  late AccountApi account;
-
-  /// To access department endpoints
-  late DepartmentApi department;
-
-  /// To access pictogram endpoints
-  late PictogramApi pictogram;
-
-  /// To access activity endpoints
-  late ActivityApi activity;
-
-  /// To access week endpoints
-  late WeekApi week;
-
-  /// To access status endpoints
-  late StatusApi status;
-
-  /// To access status endpoints
-  late ConnectivityApi connectivity;
-
-  /// To access weekTemplate endpoints
-  late WeekTemplateApi weekTemplate;
-
-  /// To access user endpoints
-  late UserApi user;
-
-  /// To access alternateName endpoints
-  late AlternateNameApi alternateName;
-
-  /// The base of all requests.
-  ///
-  /// Example: if set to `http://google.com`, then a get request with url
-  /// `/search` will resolve to `http://google.com/search`
-  String baseUrl;
 
   /// Destroy the API
   void dispose() {}

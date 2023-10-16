@@ -186,13 +186,13 @@ class OfflineDb {
   /// [id] (User id)
   /// [year]
   /// [weekNumber]
-  Future<WeekModel?> getWeek(String id, int year, int weekNumber) async {}
+  Future<WeekModel> getWeek(String id, int year, int weekNumber) async {}
 
   /// Update a week with all the fields in the given [week]
   /// With the userid [id]
   /// Year [year]
   /// And Weeknumber [weekNumber]
-  Future<WeekModel?> updateWeek(
+  Future<WeekModel> updateWeek(
       String id, int year, int weekNumber, WeekModel week) async {}
 
   /// Delete a Week With the userid [id]

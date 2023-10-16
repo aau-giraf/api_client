@@ -53,10 +53,10 @@ class PictogramModel implements Model {
   DateTime? lastEdit;
 
   /// The title of the pictogram.
-  String? title;
+  String title = '';
 
   /// The access level of the pictogram.
-  AccessLevel? accessLevel;
+  AccessLevel accessLevel = AccessLevel.PRIVATE;
 
   /// Url for image
   String? imageUrl;

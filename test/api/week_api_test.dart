@@ -71,7 +71,7 @@ Future<void> main() async {
 
     weekApi
         .get(id, week.weekYear!, week.weekNumber!)
-        .listen(expectAsync1((WeekModel? resWeek) {
+        .listen(expectAsync1((WeekModel resWeek) {
       expect(resWeek!.toJson(), week.toJson());
     }));
 

@@ -37,7 +37,7 @@ class AccountApi {
   /// [departmentId] The users departmentId
   /// [role] The role of the user
   Stream<GirafUserModel> register(String username, String password,
-      String displayName, Uint8List profilePicture,
+      String displayName, List<int>? profilePicture,
       {required int departmentId, required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,

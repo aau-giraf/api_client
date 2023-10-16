@@ -32,7 +32,7 @@ class WeekApi {
   /// [id] User ID
   /// [year] Year the week is in
   /// [weekNumber] The week-number of the week
-  Stream<WeekModel?> get(String id, int year, int weekNumber) {
+  Stream<WeekModel> get(String id, int year, int weekNumber) {
     return _http.get('/$id/$year/$weekNumber').map((Response res) {
       return WeekModel.fromJson(res.json['data']);
     });
