@@ -85,6 +85,9 @@ class ActivityModel implements Model {
   ///The title of the activity
   String title;
 
+  /// The index of the chosen pictogram activity
+  int chosenActivity = -1;
+
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
