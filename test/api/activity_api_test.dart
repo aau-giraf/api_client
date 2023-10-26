@@ -87,7 +87,7 @@ Future<void> main() async {
 
   test('Should delete an activity', () {
     activityApi
-        .delete(mockActivity.id!, mockUser.id!)
+        .delete(mockActivity.id, mockUser.id!)
         .listen(expectAsync1((bool response) {
       expect(response, true);
     }));

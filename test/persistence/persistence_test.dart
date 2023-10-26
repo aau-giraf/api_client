@@ -9,7 +9,8 @@ void main() {
     //Necessary for tests to pass on macos
     SharedPreferences.setMockInitialValues(<String, Object>{});
 
-    WidgetsFlutterBinding.ensureInitialized();
+    // WidgetsFlutterBinding.ensureInitialized();
+    TestWidgetsFlutterBinding.ensureInitialized();
 
     //The old package is deprecated so we had to write it ourselves
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger

@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 5))
+
 import 'dart:typed_data';
 
 import 'package:api_client/api/pictogram_api.dart';
@@ -9,8 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
-  late PictogramApi pictogramApi;
-  late HttpMock httpMock;
+  HttpMock httpMock = HttpMock();
+  PictogramApi pictogramApi = PictogramApi(httpMock);
 
   final List<PictogramModel> grams = <PictogramModel>[
     PictogramModel(
@@ -136,18 +138,19 @@ Future<void> main() async {
   });
 
   test('Get raw image', () {
-    final List<int> imagebytes = Uint8List.fromList(<int>[
+    final Uint8List imagebytes = Uint8List.fromList(<int>[
       1,
       2,
       3,
       4,
     ]);
+
     pictogramApi
         .getImage(grams[0].id!)
         .listen(expectAsync1((Image imageWidget) {
       if (imageWidget.image is MemoryImage) {
-        final ImageProvider<Object> currentImage = imageWidget.image;
-        expect(currentImage.toString(), imagebytes);
+        final MemoryImage currentImage = imageWidget.image as MemoryImage;
+        expect(currentImage.bytes, imagebytes);
       } else {
         fail('Image is not a MemoryImage');
       }

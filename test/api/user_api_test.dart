@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 5))
+
 import 'dart:async';
 
 import 'package:api_client/api/connectivity_api.dart';
@@ -210,8 +212,8 @@ class DBHandlerMock implements OfflineDbHandler {
   }
 
   @override
-  Future<Future<int>?> updateUserRole(String username, int role) {
-    return Future<Future<int>>.value(3 as FutureOr<Future<int>>?);
+  Future<int> updateUserRole(String username, int role) {
+    return Future<int>.value(3);
   }
 
   @override

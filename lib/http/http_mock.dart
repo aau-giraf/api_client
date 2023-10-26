@@ -150,7 +150,7 @@ class HttpMock implements Http {
       }
       http.Response? httpResponse;
 
-      late Map<String, dynamic> json;
+      Map<String, dynamic> json = <String, dynamic>{};
 
       if (response is Map<String, dynamic>) {
         // The response is parsed json

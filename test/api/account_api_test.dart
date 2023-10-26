@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 5))
+
 import 'dart:typed_data';
 import 'package:api_client/api/account_api.dart';
 import 'package:api_client/api/api_exception.dart';
@@ -11,9 +13,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/src/response.dart';
 
 void main() {
-  late AccountApi accountApi;
-  late HttpMock httpMock;
-  late PersistenceMock persistenceMock;
+  HttpMock httpMock = HttpMock();
+  PersistenceMock persistenceMock = PersistenceMock();
+  AccountApi accountApi = AccountApi(httpMock, persistenceMock);
 
   setUp(() {
     httpMock = HttpMock();
@@ -44,7 +46,8 @@ void main() {
     }));
 
     httpMock.expectOne(url: '/login', method: Method.post).throwError(
-            ApiException(http_r.Response('' as Response, <String, dynamic>{
+            ApiException(
+                http_r.Response(Response.bytes(<int>[], 200), <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'InvalidCredentials',
@@ -78,7 +81,7 @@ void main() {
     const Role role = Role.Citizen;
 
     accountApi
-        .register(username, displayName, password, profilePicture!,
+        .register(username, displayName, password, profilePicture,
             departmentId: departmentId, role: role)
         .listen(expectAsync1((GirafUserModel res) {
       expect(res.username, username);

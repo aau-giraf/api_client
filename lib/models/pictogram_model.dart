@@ -71,7 +71,7 @@ class PictogramModel implements Model {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> result = <String, dynamic>{
       'title': title,
-      'accessLevel': accessLevel!.index + 1,
+      'accessLevel': accessLevel.index + 1,
     };
 
     if (id != 0) {

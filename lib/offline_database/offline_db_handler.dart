@@ -220,7 +220,7 @@ class OfflineDbHandler {
 
   /// Retry sending the failed changes to the online database
   Future<void> retryFailedTransactions() async {
-    // todo(): Is not implemented correctly
+    // TODO: Is not implemented correctly
     /*final Database db = await database;
 
     final List<Map<String, dynamic>> dbRes =
@@ -379,12 +379,12 @@ class OfflineDbHandler {
   /// Get a user with [userId] if it exists, otherwise returns null.
   Future<GirafUserModel> getUser(String? userId) async {
     final Database db = await database;
-    final List<Map<String, dynamic>> users = await db
+    final List<Map<String, dynamic>?> users = await db
         .rawQuery('SELECT * FROM Users WHERE id = ?', <String>[userId!]);
     if (users.isNotEmpty) {
       return GirafUserModel.fromJson(users[0]);
     } else {
-      return GirafUserModel.fromJson('' as Map<String, dynamic>?); //FIXME:Hack
+      return GirafUserModel.fromJson(null);
     }
   }
 
@@ -440,13 +440,15 @@ class OfflineDbHandler {
   }
 
   /// Update the role of a user through its username
-  Future<Future<int>?>? updateUserRole(String username, int role) async {
+  Future<int?> updateUserRole(String username, int role) async {
     final Database db = await database;
     if (await _existsInTable(
         'Users', <String>['username'], <String>[username])) {
       return db.rawUpdate('UPDATE Users SET role = ? WHERE username = ?',
           <dynamic>[role, username]);
     }
+
+    return null;
   }
 
   /// Get the settings for a user with the id: [userId]

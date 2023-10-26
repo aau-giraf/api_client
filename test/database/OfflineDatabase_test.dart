@@ -111,14 +111,14 @@ Future<void> main() async {
 
   test('Update a user with a new attribute', () async {
     await dbHandler.insertUser(jamesbondTestUser);
-    expect((await dbHandler.getUser(jamesbondTestUser.id))!.username,
+    expect((await dbHandler.getUser(jamesbondTestUser.id)).username,
         jamesbondTestUser.username);
     await dbHandler.insertUser(GirafUserModel(
         id: jamesbondTestUser.id,
         role: Role.Guardian,
         username: 'newUsername',
         displayName: 'user'));
-    expect((await dbHandler.getUser(jamesbondTestUser.id))!.username,
+    expect((await dbHandler.getUser(jamesbondTestUser.id)).username,
         'newUsername');
   });
 

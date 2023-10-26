@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 5))
+
 import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/api/week_api.dart';
 import 'package:api_client/http/http.dart' as http_r;
@@ -72,7 +74,7 @@ Future<void> main() async {
     weekApi
         .get(id, week.weekYear!, week.weekNumber!)
         .listen(expectAsync1((WeekModel resWeek) {
-      expect(resWeek!.toJson(), week.toJson());
+      expect(resWeek.toJson(), week.toJson());
     }));
 
     httpMock
@@ -177,8 +179,8 @@ Future<void> main() async {
     httpMock
         .expectOne(
             url: '/$id/$year/$weekNumber/${weekday.index}', method: Method.get)
-        .throwError(
-            ApiException(http_r.Response('' as Response, <String, dynamic>{
+        .throwError(ApiException(
+            http_r.Response(Response.bytes(<int>[], 400), <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'NotFound',
@@ -222,8 +224,8 @@ Future<void> main() async {
 
     httpMock
         .expectOne(url: '/day/$id/$year/$weekNumber', method: Method.put)
-        .throwError(
-            ApiException(http_r.Response('' as Response, <String, dynamic>{
+        .throwError(ApiException(
+            http_r.Response(Response.bytes(<int>[], 300), <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'NotFound',

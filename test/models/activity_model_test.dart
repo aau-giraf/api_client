@@ -34,7 +34,7 @@ void main() {
     expect(model.order, json['order']);
     expect(model.isChoiceBoard, json['isChoiceBoard']);
     expect(model.state, ActivityState.Normal);
-    expect(model.pictograms![0].toJson(),
+    expect(model.pictograms[0].toJson(),
         PictogramModel.fromJson(jsonPictograms[0]).toJson());
   });
 
