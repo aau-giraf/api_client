@@ -18,4 +18,5 @@ In order to make a new release of the api-client, one should go on the release b
 
 ## License
 GNU GENERAL PUBLIC LICENSE V3
+
 Copyright [2023] [Aalborg University]
