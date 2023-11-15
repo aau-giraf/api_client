@@ -66,8 +66,8 @@ Future<void> main() async {
 
   test('Should add an activity', () {
     activityApi
-        .add(mockActivity, mockUser.id!, mockWeek.name!, mockWeek.weekYear!,
-            mockWeek.weekNumber!, mockWeek.days!.first.day!)
+        .add(mockActivity, mockUser.id!, mockWeek.name!, mockWeek.weekYear,
+            mockWeek.weekNumber, mockWeek.days!.first.day!)
         .listen(expectAsync1((ActivityModel response) {
       expect(response.toJson(), mockActivity.toJson());
     }));

@@ -130,10 +130,6 @@ void main() {
     weekBaseTest(week2, response2);
   });
 
-  test('Should throw exception when JSON is null', () {
-    expect(() => WeekModel.fromJson(null), throwsFormatException);
-  });
-
   test('Should be able to serialize to JSON', () {
     final WeekModel week1 = WeekModel.fromJson(response1!);
     final WeekModel week2 = WeekModel.fromJson(response2!);

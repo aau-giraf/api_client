@@ -10,13 +10,13 @@ class WeekModel extends WeekBaseModel implements Model {
     PictogramModel? thumbnail,
     String? name,
     List<WeekdayModel>? days,
-    this.weekYear,
-    this.weekNumber,
+    this.weekYear = 0,
+    this.weekNumber = 0,
   }) : super(thumbnail: thumbnail, name: name, days: days);
 
   /// Construct from JSON
-  WeekModel.fromJson(Map<String, dynamic>? json) : super.fromJson(json) {
-    weekYear = json!['weekYear'];
+  WeekModel.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+    weekYear = json['weekYear'];
     weekNumber = json['weekNumber'];
   }
 
@@ -27,10 +27,13 @@ class WeekModel extends WeekBaseModel implements Model {
   }
 
   /// The year the week lies in
-  int? weekYear;
+  int weekYear = DateTime.now().year;
 
   /// The week number
-  int? weekNumber;
+  int weekNumber =
+      DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays ~/
+              7 +
+          1;
 
   @override
   Map<String, dynamic> toJson() {

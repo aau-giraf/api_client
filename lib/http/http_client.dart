@@ -110,7 +110,7 @@ class HttpClient implements Http {
         }
       }
 
-      return Response(res, json!);
+      return Response(res, json ?? jsonDecode('{}'));
     });
   }
 

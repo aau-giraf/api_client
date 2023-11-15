@@ -72,7 +72,7 @@ Future<void> main() async {
     );
 
     weekApi
-        .get(id, week.weekYear!, week.weekNumber!)
+        .get(id, week.weekYear, week.weekNumber)
         .listen(expectAsync1((WeekModel resWeek) {
       expect(resWeek.toJson(), week.toJson());
     }));
@@ -106,7 +106,7 @@ Future<void> main() async {
     );
 
     weekApi
-        .update(id, week.weekYear!, week.weekNumber!, week)
+        .update(id, week.weekYear, week.weekNumber, week)
         .listen(expectAsync1((WeekModel resWeek) {
       expect(resWeek.toJson(), week.toJson());
     }));
