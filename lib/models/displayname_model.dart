@@ -1,16 +1,14 @@
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/models/model.dart';
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 
 ///
 class DisplayNameModel implements Model {
   /// Default constructor
   DisplayNameModel(
-      {@required this.displayName, @required this.role, @required this.id});
+      {required this.displayName, required this.role, required this.id});
 
   /// Create object from JSON mapping
-  DisplayNameModel.fromJson(Map<String, dynamic> json) {
+  DisplayNameModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[UsernameModel]: Cannot instantiate from null');
@@ -23,7 +21,7 @@ class DisplayNameModel implements Model {
   }
 
   ///Create DisplayNameModel from database json
-  DisplayNameModel.fromDatabase(Map<String, dynamic> json) {
+  DisplayNameModel.fromDatabase(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[UsernameModel]: Cannot instantiate from null');
@@ -43,16 +41,16 @@ class DisplayNameModel implements Model {
   }
 
   /// The user's displayName
-  String displayName;
+  String? displayName;
 
   /// The user's role
-  String role;
+  String? role;
 
   /// The user's ID
-  String id;
+  String? id;
 
   ///The user's icon
-  String icon;
+  String? icon;
 
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{

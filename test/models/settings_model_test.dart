@@ -21,11 +21,11 @@ void main() {
     'displayDaysRelativeLandscape': false,
     'lockTimerControl': false,
     'greyScale': false,
-    'pictogramText' : false,
-    'showPopup' : false,
-    'nrOfActivitiesToDisplay' : 0,
-    'showOnlyActivities' : false,
-    'showSettingsForCitizen' : false,
+    'pictogramText': false,
+    'showPopup': false,
+    'nrOfActivitiesToDisplay': 0,
+    'showOnlyActivities': false,
+    'showSettingsForCitizen': false,
     'weekDayColors': <dynamic>[
       <String, dynamic>{'hexColor': '#067700', 'day': 1},
       <String, dynamic>{'hexColor': '#8c1086', 'day': 2},
@@ -61,14 +61,14 @@ void main() {
     expect(settings.nrOfActivitiesToDisplay, 0);
     expect(settings.showOnlyActivities, false);
     expect(settings.showSettingsForCitizen, false);
-    expect(settings.weekDayColors.length, 7);
-    expect(settings.weekDayColors[0].toJson(), response['weekDayColors'][0]);
-    expect(settings.weekDayColors[1].toJson(), response['weekDayColors'][1]);
-    expect(settings.weekDayColors[2].toJson(), response['weekDayColors'][2]);
-    expect(settings.weekDayColors[3].toJson(), response['weekDayColors'][3]);
-    expect(settings.weekDayColors[4].toJson(), response['weekDayColors'][4]);
-    expect(settings.weekDayColors[5].toJson(), response['weekDayColors'][5]);
-    expect(settings.weekDayColors[6].toJson(), response['weekDayColors'][6]);
+    expect(settings.weekDayColors!.length, 7);
+    expect(settings.weekDayColors![0].toJson(), response['weekDayColors'][0]);
+    expect(settings.weekDayColors![1].toJson(), response['weekDayColors'][1]);
+    expect(settings.weekDayColors![2].toJson(), response['weekDayColors'][2]);
+    expect(settings.weekDayColors![3].toJson(), response['weekDayColors'][3]);
+    expect(settings.weekDayColors![4].toJson(), response['weekDayColors'][4]);
+    expect(settings.weekDayColors![5].toJson(), response['weekDayColors'][5]);
+    expect(settings.weekDayColors![6].toJson(), response['weekDayColors'][6]);
   });
 
   test('Will throw exception when JSON is null', () {

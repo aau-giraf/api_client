@@ -18,11 +18,11 @@ class PictogramApi {
   /// if passed
   /// [pageSize] Number of pictograms per page
   /// [page] Page number
-  Stream<List<PictogramModel>> getAll(
-      {String query, @required int page, @required int pageSize}) {
+  Stream<List<PictogramModel>?> getAll(
+      {String? query, required int page, required int pageSize}) {
     // TODO(boginw): move the support for queryParams to Http
     final Uri uri = Uri(queryParameters: <String, String>{
-      'query': query,
+      'query': query!,
       'page': page.toString(),
       'pageSize': pageSize.toString(),
     });

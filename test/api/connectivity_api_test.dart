@@ -21,15 +21,15 @@ class ConnectivityMock implements Connectivity {
 }
 
 void main() {
-  ConnectivityMock connectivityMock;
-  ConnectivityApi connectivityApi;
-  HttpMock httpMock;
+  late ConnectivityMock connectivityMock;
+  late ConnectivityApi connectivityApi;
+  late HttpMock httpMock;
 
   setUp(() {
     httpMock = HttpMock();
     connectivityMock = ConnectivityMock();
-    connectivityApi = ConnectivityApi
-        .withConnectivity(StatusApi(httpMock), connectivityMock);
+    connectivityApi =
+        ConnectivityApi.withConnectivity(StatusApi(httpMock), connectivityMock);
   });
 
   test('ShouldReturnFalse_WhenDeviceConnectivity_IsNone', () {

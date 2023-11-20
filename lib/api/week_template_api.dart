@@ -11,7 +11,7 @@ class WeekTemplateApi {
 
   /// Gets all schedule templates for the currently authenticated user.
   /// Available to all users.
-  Stream<List<WeekTemplateNameModel>> getNames() {
+  Stream<List<WeekTemplateNameModel>?> getNames() {
     return _http.get('/').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])

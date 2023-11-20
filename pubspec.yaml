@@ -1,10 +1,10 @@
 name: api_client
 description: API client for Flutter to communicate with the web-api
-version: 0.0.1
+version: 0.0.2
 homepage:
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=3.1.2"
 
 dependencies:
   audioplayers: ^1.1.1

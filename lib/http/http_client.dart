@@ -4,15 +4,14 @@ import 'package:api_client/api/api_exception.dart';
 import 'package:api_client/http/http.dart';
 import 'package:api_client/persistence/persistence.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// Default implementation of Http
 class HttpClient implements Http {
   /// Default constructor
   HttpClient(
-      {@required this.baseUrl,
-      @required Persistence persist,
+      {required this.baseUrl,
+      required Persistence persist,
       String tokenKey = 'token',
       Duration timeout = const Duration(seconds: 5)})
       : _persist = persist,
@@ -25,7 +24,7 @@ class HttpClient implements Http {
       'Accept': 'application/json',
     };
 
-    final String token = await _persist.get(_tokenKey);
+    final String? token = await _persist.get(_tokenKey);
 
     if (token != null) {
       headers['Authorization'] = 'Bearer ' + token;
@@ -96,22 +95,22 @@ class HttpClient implements Http {
     res = res.timeout(_timeout);
 
     return Stream<http.Response>.fromFuture(res).map((http.Response res) {
-      Map<String, dynamic> json;
+      Map<String, dynamic>? json;
       // ensure all headers are in lowercase
       final Map<String, String> headers = res.headers.map(
           (String h, String v) => MapEntry<String, String>(h.toLowerCase(), v));
 
       // only decode json if response says it's json
       if (headers.containsKey('content-type') &&
-          headers['content-type'].toLowerCase().contains('application/json')) {
+          headers['content-type']!.toLowerCase().contains('application/json')) {
         json = jsonDecode(res.body);
 
         if (res.statusCode > 300) {
-          throw ApiException(Response(res, json));
+          throw ApiException(Response(res, json!));
         }
       }
 
-      return Response(res, json);
+      return Response(res, json ?? jsonDecode('{}'));
     });
   }
 

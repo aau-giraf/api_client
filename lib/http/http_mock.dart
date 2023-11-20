@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:api_client/http/http.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../api/api_exception.dart';
@@ -31,7 +30,7 @@ class Call {
   final int statusCode;
 
   /// Flush results
-  PublishSubject<dynamic> flush; // ignore: close_sinks
+  late PublishSubject<dynamic> flush; // ignore: close_sinks
 
   @override
   String toString() {
@@ -81,8 +80,8 @@ class HttpMock implements Http {
   /// [method] One of delete, get, patch, post, or put.
   /// [url] The url that is expected
   Flusher expectOne(
-      {Method method,
-      @required String url,
+      {Method? method,
+      required String url,
       dynamic body,
       int statusCode = 200}) {
     final int index = _calls.indexWhere((Call call) =>
@@ -103,7 +102,7 @@ class HttpMock implements Http {
   ///
   /// [method] One of delete, get, patch, post, or put.
   /// [url] The url that not expected
-  void expectNone({Method method, @required String url}) {
+  void expectNone({Method? method, required String url}) {
     for (Call call in _calls) {
       if (call.url == url && (method == null || method == call.method)) {
         throw Exception('Found [$method] $url, expected none');
@@ -122,22 +121,22 @@ class HttpMock implements Http {
   }
 
   @override
-  Stream<Response> patch(String url, [dynamic body, int statusCode]) {
+  Stream<Response> patch(String url, [dynamic body, int? statusCode]) {
     return _reqToRes(Method.patch, url, body);
   }
 
   @override
-  Stream<Response> post(String url, [dynamic body, int statusCode]) {
+  Stream<Response> post(String url, [dynamic body, int? statusCode]) {
     return _reqToRes(Method.post, url, body);
   }
 
   @override
-  Stream<Response> put(String url, [dynamic body, int statusCode]) {
+  Stream<Response> put(String url, [dynamic body, int? statusCode]) {
     return _reqToRes(Method.put, url, body);
   }
 
   Stream<Response> _reqToRes(Method method, String url,
-      [dynamic body, int statusCode]) {
+      [dynamic body, int? statusCode]) {
     final Call call = Call(method, url, body);
     _calls.add(call);
 
@@ -149,9 +148,9 @@ class HttpMock implements Http {
       if (response is Exception) {
         throw response;
       }
-      http.Response httpResponse;
+      http.Response? httpResponse;
 
-      Map<String, dynamic> json;
+      Map<String, dynamic> json = <String, dynamic>{};
 
       if (response is Map<String, dynamic>) {
         // The response is parsed json
@@ -161,7 +160,7 @@ class HttpMock implements Http {
         // The response is a binary stream
         httpResponse = http.Response.bytes(response, statusCode ?? 200);
       }
-      if (httpResponse.statusCode > 300) {
+      if (httpResponse!.statusCode > 300) {
         throw ApiException(Response(httpResponse, json));
       }
 

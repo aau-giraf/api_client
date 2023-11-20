@@ -13,8 +13,8 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
   sqfliteFfiInit();
-  HttpMock httpMock;
-  ActivityApi activityApi;
+  late HttpMock httpMock;
+  late ActivityApi activityApi;
   final DisplayNameModel mockUser =
       DisplayNameModel(id: '1', displayName: 'Test', role: 'Guardian');
 
@@ -49,7 +49,7 @@ Future<void> main() async {
 
   test('Should update an activity state', () {
     activityApi
-        .update(mockActivity, mockUser.id)
+        .update(mockActivity, mockUser.id!)
         .listen(expectAsync1((ActivityModel response) {
       expect(response.toJson(), mockActivity.toJson());
     }));
@@ -66,8 +66,8 @@ Future<void> main() async {
 
   test('Should add an activity', () {
     activityApi
-        .add(mockActivity, mockUser.id, mockWeek.name, mockWeek.weekYear,
-            mockWeek.weekNumber, mockWeek.days.first.day)
+        .add(mockActivity, mockUser.id!, mockWeek.name!, mockWeek.weekYear,
+            mockWeek.weekNumber, mockWeek.days!.first.day!)
         .listen(expectAsync1((ActivityModel response) {
       expect(response.toJson(), mockActivity.toJson());
     }));
@@ -75,7 +75,7 @@ Future<void> main() async {
     httpMock
         .expectOne(
             url: '/${mockUser.id}/${mockWeek.name}/${mockWeek.weekYear}/'
-                '${mockWeek.weekNumber}/${mockWeek.days.first.day.index + 1}',
+                '${mockWeek.weekNumber}/${mockWeek.days!.first.day!.index + 1}',
             method: Method.post)
         .flush(<String, dynamic>{
       'data': mockActivity.toJson(),
@@ -87,7 +87,7 @@ Future<void> main() async {
 
   test('Should delete an activity', () {
     activityApi
-        .delete(mockActivity.id, mockUser.id)
+        .delete(mockActivity.id, mockUser.id!)
         .listen(expectAsync1((bool response) {
       expect(response, true);
     }));

@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws on JSON is null', () {
-    const Map<String, dynamic> json = null; // ignore: avoid_init_to_null
+    const Map<String, dynamic>? json = null; // ignore: avoid_init_to_null
     expect(() => DisplayNameModel.fromJson(json), throwsFormatException);
   });
 
@@ -59,22 +59,22 @@ void main() {
 
   test('Has role property', () {
     const String role = 'testRole';
-    final DisplayNameModel model = DisplayNameModel(displayName: 'testRole',
-        role: role, id: null);
+    final DisplayNameModel model =
+        DisplayNameModel(displayName: 'testRole', role: role, id: null);
     expect(model.role, role);
   });
 
   test('Has id property', () {
     const String id = 'testId';
-    final DisplayNameModel model = DisplayNameModel(displayName: 'testId',
-        role: null, id: id);
+    final DisplayNameModel model =
+        DisplayNameModel(displayName: 'testId', role: null, id: id);
     expect(model.id, id);
   });
 
   test('Has displayName property', () {
     const String displayName = 'testDisplayName';
-    final DisplayNameModel model = DisplayNameModel(displayName: displayName,
-        role: null, id: 'testID');
+    final DisplayNameModel model =
+        DisplayNameModel(displayName: displayName, role: null, id: 'testID');
     expect(model.displayName, displayName);
   });
 }

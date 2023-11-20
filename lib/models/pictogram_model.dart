@@ -1,6 +1,5 @@
 import 'package:api_client/models/enums/access_level_enum.dart';
 import 'package:api_client/models/model.dart';
-import 'package:meta/meta.dart';
 
 /// Model with a pictogram
 class PictogramModel implements Model {
@@ -8,15 +7,15 @@ class PictogramModel implements Model {
   PictogramModel({
     this.id,
     this.lastEdit,
-    @required this.title,
-    @required this.accessLevel,
+    required this.title,
+    required this.accessLevel,
     this.imageUrl,
     this.imageHash,
     this.userId,
   });
 
   /// Constructor from Json
-  PictogramModel.fromJson(Map<String, dynamic> json) {
+  PictogramModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[PictogramModel]: Cannot initialize from null');
@@ -33,7 +32,7 @@ class PictogramModel implements Model {
   }
 
   /// Constructor for json from the database
-  PictogramModel.fromDatabase(Map<String, dynamic> json) {
+  PictogramModel.fromDatabase(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[PictogramModel]: Cannot initialize from null');
@@ -43,30 +42,30 @@ class PictogramModel implements Model {
     lastEdit =
         json['lastEdit'] == null ? null : DateTime.tryParse(json['lastEdit']);
     title = json['title'];
-    accessLevel = AccessLevel.values[(json['accessLevel'])];
+    accessLevel = AccessLevel.values[json['accessLevel']];
     imageHash = json['imageHash'];
   }
 
   /// pictogram id
-  int id;
+  int? id;
 
   /// The last time the pictogram was edited.
-  DateTime lastEdit;
+  DateTime? lastEdit;
 
   /// The title of the pictogram.
-  String title;
+  String title = '';
 
   /// The access level of the pictogram.
-  AccessLevel accessLevel;
+  AccessLevel accessLevel = AccessLevel.PRIVATE;
 
   /// Url for image
-  String imageUrl;
+  String? imageUrl;
 
   /// Hash for image
-  String imageHash;
+  String? imageHash;
 
   /// Id of the user which the pictogram is owned by
-  String userId;
+  String? userId;
 
   @override
   Map<String, dynamic> toJson() {
@@ -80,7 +79,7 @@ class PictogramModel implements Model {
     }
 
     if (lastEdit != null) {
-      result['lastEdit'] = lastEdit.toIso8601String();
+      result['lastEdit'] = lastEdit!.toIso8601String();
     }
 
     if (imageUrl != null) {

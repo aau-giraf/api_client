@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws when JSON is null', () {
-    const Map<String, dynamic> json = null; // ignore: avoid_init_to_null
+    const Map<String, dynamic>? json = null; // ignore: avoid_init_to_null
     expect(() => WeekdayModel.fromJson(json), throwsFormatException);
   });
 
@@ -28,8 +28,8 @@ void main() {
       'id': 1044,
       'isChoiceBoard': false,
       'choiceBoardName': null,
-      'timer' : null,
-      'title' : ''
+      'timer': null,
+      'title': ''
     };
 
     final Map<String, dynamic> json = <String, dynamic>{
@@ -39,8 +39,8 @@ void main() {
 
     final WeekdayModel model = WeekdayModel.fromJson(json);
     expect(model.day, Weekday.Monday);
-    expect(model.activities.length, 1);
-    expect(model.activities[0].toJson(),
+    expect(model.activities!.length, 1);
+    expect(model.activities![0].toJson(),
         ActivityModel.fromJson(activityJson).toJson());
   });
 
@@ -63,8 +63,8 @@ void main() {
       'id': 1044,
       'isChoiceBoard': false,
       'choiceBoardName': null,
-      'timer' : null,
-      'title' : ''
+      'timer': null,
+      'title': ''
     };
 
     final Map<String, dynamic> json = <String, dynamic>{

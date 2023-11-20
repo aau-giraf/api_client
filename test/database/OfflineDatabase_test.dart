@@ -14,7 +14,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'Offline_models.dart';
@@ -97,7 +96,7 @@ Future<void> main() async {
     const String passAttempt = 'password';
     await dbHandler.insertUser(jamesbondTestUser);
     final bool testLogin =
-        await dbHandler.login(jamesbondTestUser.username, passAttempt);
+        await dbHandler.login(jamesbondTestUser.username!, passAttempt);
     expect(testLogin, true);
   });
 
@@ -106,7 +105,7 @@ Future<void> main() async {
     const String passAttempt = 'notpassword';
     await dbHandler.insertUser(jamesbondTestUser);
     final bool testLogin =
-        await dbHandler.login(jamesbondTestUser.username, passAttempt);
+        await dbHandler.login(jamesbondTestUser.username!, passAttempt);
     expect(testLogin, false);
   });
 
@@ -128,9 +127,9 @@ Future<void> main() async {
     const String newPass = 'newpassword';
 
     await dbHandler.insertUser(jamesbondTestUser);
-    expect(await dbHandler.login(jamesbondTestUser.username, oldPass), true);
-    await dbHandler.changePassword(jamesbondTestUser.id, newPass);
-    expect(await dbHandler.login(jamesbondTestUser.username, newPass), true);
+    expect(await dbHandler.login(jamesbondTestUser.username!, oldPass), true);
+    await dbHandler.changePassword(jamesbondTestUser.id!, newPass);
+    expect(await dbHandler.login(jamesbondTestUser.username!, newPass), true);
   });
 
   test('performs a failed login after password change', () async {
@@ -138,9 +137,9 @@ Future<void> main() async {
     const String newPass = 'newpassword';
 
     await dbHandler.insertUser(jamesbondTestUser);
-    expect(await dbHandler.login(jamesbondTestUser.username, oldPass), true);
-    await dbHandler.changePassword(jamesbondTestUser.id, newPass);
-    expect(await dbHandler.login(jamesbondTestUser.username, oldPass), false);
+    expect(await dbHandler.login(jamesbondTestUser.username!, oldPass), true);
+    await dbHandler.changePassword(jamesbondTestUser.id!, newPass);
+    expect(await dbHandler.login(jamesbondTestUser.username!, oldPass), false);
   });
 
   //since this test deals with offline mode, it is not to be executed

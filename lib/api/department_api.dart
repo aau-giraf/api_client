@@ -11,7 +11,7 @@ class DepartmentApi {
   final Http _http;
 
   /// Get request for getting all the department names.
-  Stream<List<DepartmentNameModel>> departmentNames() {
+  Stream<List<DepartmentNameModel>?> departmentNames() {
     return _http.get('/').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])
@@ -47,7 +47,7 @@ class DepartmentApi {
   /// Gets the citizen names
   ///
   /// [id] Id of Department to get citizens for
-  Stream<List<DisplayNameModel>> getDepartmentUsers(int id) {
+  Stream<List<DisplayNameModel>?> getDepartmentUsers(int id) {
     return _http.get('/$id/citizens').map((Response res) {
       if (res.json['data'] is List) {
         return List<Map<String, dynamic>>.from(res.json['data'])

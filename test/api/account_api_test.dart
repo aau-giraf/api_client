@@ -1,18 +1,21 @@
+@Timeout(Duration(seconds: 5))
+
 import 'dart:typed_data';
 import 'package:api_client/api/account_api.dart';
 import 'package:api_client/api/api_exception.dart';
-import 'package:api_client/http/http.dart';
+import 'package:api_client/http/http.dart' as http_r;
 import 'package:api_client/http/http_mock.dart';
 import 'package:api_client/models/enums/error_key.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/persistence/persistence_mock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/src/response.dart';
 
 void main() {
-  AccountApi accountApi;
-  HttpMock httpMock;
-  PersistenceMock persistenceMock;
+  HttpMock httpMock = HttpMock();
+  PersistenceMock persistenceMock = PersistenceMock();
+  AccountApi accountApi = AccountApi(httpMock, persistenceMock);
 
   setUp(() {
     httpMock = HttpMock();
@@ -42,9 +45,9 @@ void main() {
       expect(error.errorKey, ErrorKey.InvalidCredentials);
     }));
 
-    httpMock
-        .expectOne(url: '/login', method: Method.post)
-        .throwError(ApiException(Response(null, <String, dynamic>{
+    httpMock.expectOne(url: '/login', method: Method.post).throwError(
+            ApiException(
+                http_r.Response(Response.bytes(<int>[], 200), <String, dynamic>{
           'success': false,
           'message': '',
           'errorKey': 'InvalidCredentials',
@@ -73,7 +76,7 @@ void main() {
     const String username = 'username';
     const String displayName = 'displayname';
     const String password = 'password';
-    const Uint8List profilePicture = null;
+    const Uint8List? profilePicture = null;
     const int departmentId = 123;
     const Role role = Role.Citizen;
 

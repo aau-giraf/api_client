@@ -6,7 +6,7 @@ class WeekTemplateNameModel implements Model {
   WeekTemplateNameModel({this.name, this.id});
 
   /// Construct from JSON
-  WeekTemplateNameModel.fromJson(Map<String, dynamic> json) {
+  WeekTemplateNameModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[WeekTemplateNameModel]: Cannot initialize from null');
@@ -17,7 +17,7 @@ class WeekTemplateNameModel implements Model {
   }
 
   /// Construct from offline database JSON
-  WeekTemplateNameModel.fromDatabase(Map<String, dynamic> json) {
+  WeekTemplateNameModel.fromDatabase(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[WeekTemplateNameModel]: Cannot initialize from null');
@@ -28,10 +28,10 @@ class WeekTemplateNameModel implements Model {
   }
 
   /// Name of the template
-  String name;
+  String? name;
 
   /// The template's ID
-  int id;
+  int? id;
 
   @override
   Map<String, dynamic> toJson() {

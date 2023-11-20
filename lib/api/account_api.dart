@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:api_client/http/http.dart';
 import 'package:api_client/models/enums/role_enum.dart';
 import 'package:api_client/models/giraf_user_model.dart';
 import 'package:api_client/persistence/persistence.dart';
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// Hello world
@@ -38,8 +36,8 @@ class AccountApi {
   /// [departmentId] The users departmentId
   /// [role] The role of the user
   Stream<GirafUserModel> register(String username, String password,
-      String displayName, Uint8List profilePicture,
-      {@required int departmentId, @required Role role}) {
+      String displayName, List<int>? profilePicture,
+      {required int departmentId, required Role role}) {
     final Map<String, dynamic> body = <String, dynamic>{
       'username': username,
       'displayName': displayName,

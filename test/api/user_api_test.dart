@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 5))
+
 import 'dart:async';
 
 import 'package:api_client/api/connectivity_api.dart';
@@ -19,7 +21,6 @@ import 'package:api_client/models/weekday_color_model.dart';
 import 'package:api_client/offline_database/offline_db_handler.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class ConnectivityMock implements Connectivity {
@@ -39,7 +40,7 @@ class ConnectivityMock implements Connectivity {
 }
 
 class DBHandlerMock implements OfflineDbHandler {
-  FutureOr<GirafUserModel> _authUser;
+  late FutureOr<GirafUserModel> _authUser;
 
   @override
   Future<bool> addCitizenToGuardian(String guardianId, String citizenId) {
@@ -74,7 +75,8 @@ class DBHandlerMock implements OfflineDbHandler {
       DisplayNameModel(
           displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
       DisplayNameModel(
-          displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2')]);
+          displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2')
+    ]);
   }
 
   @override
@@ -89,7 +91,8 @@ class DBHandlerMock implements OfflineDbHandler {
       DisplayNameModel(
           displayName: 'Kurt', role: Role.SuperUser.toString(), id: '1'),
       DisplayNameModel(
-          displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2')]);
+          displayName: 'Hüttel', role: Role.SuperUser.toString(), id: '2')
+    ]);
   }
 
   @override
@@ -108,7 +111,7 @@ class DBHandlerMock implements OfflineDbHandler {
   Future<String> get getPictogramDirectory => throw UnimplementedError();
 
   @override
-  Future<GirafUserModel> getUser(String id) {
+  Future<GirafUserModel> getUser(String? id) {
     return Future<GirafUserModel>.value(GirafUserModel(
         id: '1236',
         department: 3,
@@ -148,8 +151,8 @@ class DBHandlerMock implements OfflineDbHandler {
   }
 
   @override
-  Future<SettingsModel> insertUserSettings(String userId,
-      SettingsModel settings) {
+  Future<SettingsModel> insertUserSettings(
+      String userId, SettingsModel settings) {
     return Future<SettingsModel>.value(settings);
   }
 
@@ -191,7 +194,7 @@ class DBHandlerMock implements OfflineDbHandler {
 
   @override
   Future<void> saveFailedTransactions(String type, String baseUrl, String url,
-      {Map<String, dynamic> body, String tableAffected, String tempId}) {
+      {Map<String, dynamic>? body, String? tableAffected, String? tempId}) {
     // TODO(bogin): Implement saveFailedTransactions
     throw UnimplementedError();
   }
@@ -202,8 +205,8 @@ class DBHandlerMock implements OfflineDbHandler {
   }
 
   @override
-  Future<void> updateIdInOfflineDb(Map<String, dynamic> json,
-      String table, int tempId) {
+  Future<void> updateIdInOfflineDb(
+      Map<String, dynamic> json, String table, int tempId) {
     // TODO(bogin): Implement updateIdInOfflineDb
     throw UnimplementedError();
   }
@@ -219,19 +222,19 @@ class DBHandlerMock implements OfflineDbHandler {
   }
 
   @override
-  Future<void> insertSettingsWeekDayColor(int settingsId,
-      WeekdayColorModel weekdayColor) {
+  Future<void> insertSettingsWeekDayColor(
+      int settingsId, WeekdayColorModel weekdayColor) {
     // TODO(bogin): Implement insertSettingsWeekDayColor
     throw UnimplementedError();
   }
 }
 
 Future<void> main() async {
-  ConnectivityMock connectivityMock;
+  late ConnectivityMock connectivityMock;
   sqfliteFfiInit();
-  DBHandlerMock dbHandlerMock;
-  UserApi userApi;
-  HttpMock httpMock;
+  late DBHandlerMock dbHandlerMock;
+  late UserApi userApi;
+  late HttpMock httpMock;
 
   final GirafUserModel user = GirafUserModel(
       id: '1236',
@@ -255,10 +258,9 @@ Future<void> main() async {
     connectivityMock = ConnectivityMock();
     dbHandlerMock = DBHandlerMock();
     userApi = UserApi.withMockDbHandler(
-      httpMock,
-      ConnectivityApi.withConnectivity(StatusApi(httpMock), connectivityMock),
-      dbHandlerMock
-    );
+        httpMock,
+        ConnectivityApi.withConnectivity(StatusApi(httpMock), connectivityMock),
+        dbHandlerMock);
   });
 
   test('Should fetch authenticated user from online', () async {
@@ -297,50 +299,51 @@ Future<void> main() async {
   });
 
   test('Should fetch user with ID', () async {
-    userApi.get(user.id).listen(expectAsync1((GirafUserModel specUser) {
-      expect(specUser.toJson(), user.toJson());
+    userApi.get(user.id!).listen(expectAsync1((GirafUserModel? specUser) {
+      expect(specUser!.toJson(), user.toJson());
     }));
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
 
     // This is expecting a call to the status api (on status())
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
-    'data': true,
-    'success': true,
-    'message': '',
-    'errorKey': 'NoError'
+      'data': true,
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError'
     });
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
 
-    httpMock.expectOne(url: '/${user.id}', method: Method.get)
+    httpMock
+        .expectOne(url: '/${user.id}', method: Method.get)
         .flush(<String, dynamic>{
       'data': user.toJson(),
       'message': '',
       'errorKey': 'NoError',
     });
   });
-  
+
   test('Should fetch user with ID from offline', () {
     connectivityMock.isConnected = false;
-    userApi.get(user.id).listen(expectAsync1((GirafUserModel specUser) {
-      expect(specUser.toJson(), user.toJson());
+    userApi.get(user.id!).listen(expectAsync1((GirafUserModel? specUser) {
+      expect(specUser!.toJson(), user.toJson());
     }));
   });
 
   test('Should get the role endpoint', () async {
-    userApi.role(user.username).listen(expectAsync1((int roleIndex) {
-      expect(roleIndex, user.role.index);
+    userApi.role(user.username!).listen(expectAsync1((int roleIndex) {
+      expect(roleIndex, user.role!.index);
     }));
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
 
     // This is expecting a call to the status api (on status())
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
-    'data': true,
-    'success': true,
-    'message': '',
-    'errorKey': 'NoError'
+      'data': true,
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError'
     });
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
@@ -348,7 +351,7 @@ Future<void> main() async {
     httpMock
         .expectOne(url: '/${user.username}/role', method: Method.get)
         .flush(<String, dynamic>{
-      'data': user.role.index,
+      'data': user.role!.index,
       'message': '',
       'errorKey': 'NoError'
     });
@@ -356,8 +359,8 @@ Future<void> main() async {
 
   test('Should get the role endpoint from offline', () {
     connectivityMock.isConnected = false;
-    userApi.role(user.username).listen(expectAsync1((int roleIndex) {
-      expect(roleIndex, user.role.index);
+    userApi.role(user.username!).listen(expectAsync1((int roleIndex) {
+      expect(roleIndex, user.role!.index);
     }));
   });
 
@@ -368,10 +371,10 @@ Future<void> main() async {
 
     // This is expecting a call to the status api (on status())
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
-    'data': true,
-    'success': true,
-    'message': '',
-    'errorKey': 'NoError'
+      'data': true,
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError'
     });
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
@@ -392,19 +395,19 @@ Future<void> main() async {
 
   test('Should get settings from user with ID', () async {
     userApi
-        .getSettings(user.id)
-        .listen(expectAsync1((SettingsModel specSettings) {
-      expect(specSettings.toJson(), settings.toJson());
+        .getSettings(user.id!)
+        .listen(expectAsync1((SettingsModel? specSettings) {
+      expect(specSettings!.toJson(), settings.toJson());
     }));
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
 
     // This is expecting a call to the status api (on status())
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
-    'data': true,
-    'success': true,
-    'message': '',
-    'errorKey': 'NoError'
+      'data': true,
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError'
     });
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
@@ -421,23 +424,24 @@ Future<void> main() async {
   test('Should get settings from user with ID from offline', () {
     connectivityMock.isConnected = false;
 
-    userApi.getSettings(user.id)
-        .listen(expectAsync1((SettingsModel specSettings) {
-      expect(specSettings.toJson(), settings.toJson());
+    userApi
+        .getSettings(user.id!)
+        .listen(expectAsync1((SettingsModel? specSettings) {
+      expect(specSettings!.toJson(), settings.toJson());
     }));
   });
 
   test('Should update settings from user with ID', () async {
-    userApi.updateSettings(user.id, settings);
+    userApi.updateSettings(user.id!, settings);
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
 
     // This is expecting a call to the status api (on status())
     httpMock.expectOne(url: '/', method: Method.get).flush(<String, dynamic>{
-    'data': true,
-    'success': true,
-    'message': '',
-    'errorKey': 'NoError'
+      'data': true,
+      'success': true,
+      'message': '',
+      'errorKey': 'NoError'
     });
 
     await Future<dynamic>.delayed(const Duration(seconds: 1));
@@ -454,7 +458,7 @@ Future<void> main() async {
   test('Should update settings from user with ID from offline', () {
     connectivityMock.isConnected = false;
 
-    userApi.updateSettings(user.id, settings);
+    userApi.updateSettings(user.id!, settings);
   });
 
   tearDown(() {

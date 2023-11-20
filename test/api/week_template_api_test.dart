@@ -12,8 +12,8 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
   sqfliteFfiInit();
-  WeekTemplateApi weekTemplateApi;
-  HttpMock httpMock;
+  late WeekTemplateApi weekTemplateApi;
+  late HttpMock httpMock;
 
   final WeekTemplateModel weekTemplateSample = WeekTemplateModel(
       name: 'Week 1',
@@ -42,8 +42,8 @@ Future<void> main() async {
 
     weekTemplateApi
         .getNames()
-        .listen(expectAsync1((List<WeekTemplateNameModel> templateNames) {
-      expect(templateNames.length, 2);
+        .listen(expectAsync1((List<WeekTemplateNameModel>? templateNames) {
+      expect(templateNames!.length, 2);
       expect(templateNames[0].toJson(), names[0].toJson());
       expect(templateNames[1].toJson(), names[1].toJson());
     }));
@@ -73,7 +73,7 @@ Future<void> main() async {
 
   test('Should be able to get week template', () {
     weekTemplateApi
-        .get(weekTemplateSample.id)
+        .get(weekTemplateSample.id!)
         .listen(expectAsync1((WeekTemplateModel template) {
       expect(template.toJson(), weekTemplateSample.toJson());
     }));
@@ -107,7 +107,7 @@ Future<void> main() async {
 
   test('Should be able to delete week template', () {
     weekTemplateApi
-        .delete(weekTemplateSample.id)
+        .delete(weekTemplateSample.id!)
         .listen(expectAsync1((bool success) {
       expect(success, isTrue);
     }));

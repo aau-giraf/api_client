@@ -19,13 +19,19 @@ import 'package:sqflite/sqflite.dart';
 class OfflineDb {
   /// Get the database, if it doesnt exist create it
 
-  Future<Database> get database async {}
+  Future<Database?> get database async {
+    return null;
+  }
 
   /// Return the directory where pictograms are saved
-  Future<String> get getPictogramDirectory async {}
+  Future<String?> get getPictogramDirectory async {
+    return null;
+  }
 
   /// Initiate the database
-  Future<Database> initializeDatabase() async {}
+  Future<Database?> initializeDatabase() async {
+    return null;
+  }
 
   ///Creates all of the tables in the DB
   Future<void> createTables(Database db) async {}
@@ -39,7 +45,9 @@ class OfflineDb {
   /// [tableAffected] NEEDS to be set when we try to create objects with public
   /// id's we need to have syncronized between the offline and online database
   Future<void> saveFailedTransactions(String type, String baseUrl, String url,
-      {Map<String, dynamic> body, String tableAffected, String tempId}) async {}
+      {Map<String, dynamic>? body,
+      String? tableAffected,
+      String? tempId}) async {}
 
   /// Retry sending the failed changes to the online database
   Future<void> retryFailedTransactions() async {}
@@ -73,150 +81,216 @@ class OfflineDb {
 
   // Account API functions
   /// Returns [true] if [password] matches the password saved for [username]
-  Future<bool> login(String username, String password) async {}
+  Future<bool?> login(String username, String password) async {
+    return null;
+  }
 
   /// register an account for a user
-  Future<GirafUserModel> registerAccount(Map<String, dynamic> body) async {}
+  Future<GirafUserModel?> registerAccount(Map<String, dynamic> body) async {
+    return null;
+  }
 
   /// Do not call this function without ensuring that the password is
   /// successfully changed online
   /// change a password of a user with id [id] to [newPassword]
-  Future<bool> changePassword(String id, String newPassword) async {}
+  Future<bool?> changePassword(String id, String newPassword) async {
+    return null;
+  }
 
   /// Delete a user from the offline database
-  Future<bool> deleteAccount(String id) async {}
+  Future<bool?> deleteAccount(String id) async {
+    return null;
+  }
 
   // Activity API functions
   /// Add an activity to DB
-  Future<ActivityModel> addActivity(
+  Future<ActivityModel?> addActivity(
       ActivityModel activity,
       String userId,
       String weekplanName,
       int weekYear,
       int weekNumber,
-      Weekday weekDay) async {}
+      Weekday weekDay) async {
+    return null;
+  }
 
   ///Update an [activity] from its id
-  Future<ActivityModel> updateActivity(
-      ActivityModel activity, String userId) async {}
+  Future<ActivityModel?> updateActivity(
+      ActivityModel activity, String userId) async {
+    return null;
+  }
 
   ///Delete an activity with the id [activityId]
-  Future<bool> deleteActivity(int activityId, String userId) async {}
+  Future<bool?> deleteActivity(int activityId, String userId) async {
+    return null;
+  }
 
   // Pictogram API functions
   ///Get [pageSize] pictograms by adding all pictograms to a list
   ///and split them into lists with size [pageSize] and then choose
   ///list number [page]
-  Future<List<PictogramModel>> getAllPictograms(
-      {String query, @required int page, @required int pageSize}) async {}
+  Future<List<PictogramModel>?> getAllPictograms(
+      {String? query, required int page, required int pageSize}) async {
+    return null;
+  }
 
   ///Get the pictogram with the id [id]
-  Future<PictogramModel> getPictogramID(int id) async {}
+  Future<PictogramModel?> getPictogramID(int id) async {
+    return null;
+  }
 
   ///Add a pictogram to the offline database
-  Future<PictogramModel> createPictogram(PictogramModel pictogram) async {}
+  Future<PictogramModel?> createPictogram(PictogramModel pictogram) async {
+    return null;
+  }
 
   ///Update a given pictogram
-  Future<PictogramModel> updatePictogram(PictogramModel pictogram) async {}
+  Future<PictogramModel?> updatePictogram(PictogramModel pictogram) async {
+    return null;
+  }
 
   /// Delete a pictogram with the id [id]
-  Future<bool> deletePictogram(int id) async {}
+  Future<bool?> deletePictogram(int id) async {
+    return null;
+  }
 
   /// Update an image in the pictogram table
-  Future<PictogramModel> updateImageInPictogram(
-      int id, Uint8List image) async {}
+  Future<PictogramModel?> updateImageInPictogram(
+      int id, Uint8List image) async {
+    return null;
+  }
 
   /// Get an image from the local pictogram directory
-  Future<Image> getPictogramImage(int id) async {}
+  Future<Image?> getPictogramImage(int id) async {
+    return null;
+  }
 
   // User API functions
   /// Return the me value
-  GirafUserModel getMe() {}
+  GirafUserModel? getMe() {
+    return null;
+  }
 
   /// Set the me value
   void setMe(GirafUserModel model) {}
 
   /// Get a user
-  Future<GirafUserModel> getUser(String id) async {}
+  Future<GirafUserModel?> getUser(String id) async {
+    return null;
+  }
 
   //Get User Id
   // ignore: public_member_api_docs
-  Future<String> getUserId(String userName) async {}
+  Future<String?> getUserId(String userName) async {
+    return null;
+  }
 
   /// Update a user based on [user.id] with the values from [user]
-  Future<GirafUserModel> updateUser(GirafUserModel user) async {}
+  Future<GirafUserModel?> updateUser(GirafUserModel user) async {
+    return null;
+  }
 
   /// Get a the relevant settings for a user with the id: [id]
-  Future<SettingsModel> getUserSettings(String id) async {}
+  Future<SettingsModel?> getUserSettings(String id) async {
+    return null;
+  }
 
   /// Update the settings for a Girafuser with the id: [id]
-  Future<SettingsModel> updateUserSettings(
-      String id, SettingsModel settings) async {}
+  Future<SettingsModel?> updateUserSettings(
+      String id, SettingsModel settings) async {
+    return null;
+  }
 
-  /// Delete a users icon. as users do not have an icon,
-  /// this is not yet implemented
-  Future<bool> deleteUserIcon(String id) {}
+  // /// Delete a users icon. as users do not have an icon,
+  // /// this is not yet implemented
+  // Future<bool?> deleteUserIcon(String id) {}
 
-  /// Get a users icon. as users do not have an icon,
-  /// this is not yet implemented
-  Future<Image> getUserIcon(String id) {}
+  // /// Get a users icon. as users do not have an icon,
+  // /// this is not yet implemented
+  // Future<Image?> getUserIcon(String id) {}
 
-  /// Update a users icon. as users do not have an icon,
-  /// this is not yet implemented
-  Future<bool> updateUserIcon() {}
+  // /// Update a users icon. as users do not have an icon,
+  // /// this is not yet implemented
+  // Future<bool?> updateUserIcon() {}
 
   /// return list of citizens from database based on guardian id
-  Future<List<DisplayNameModel>> getCitizens(String id) async {}
+  Future<List<DisplayNameModel>?> getCitizens(String id) async {
+    return null;
+  }
 
   /// Get all guardians for a citizen with id [id]
-  Future<List<DisplayNameModel>> getGuardians(String id) async {}
+  Future<List<DisplayNameModel>?> getGuardians(String id) async {
+    return null;
+  }
 
   /// Add a [guardianId] to a [citizenId]
-  Future<bool> addCitizenToGuardian(
-      String guardianId, String citizenId) async {}
+  Future<bool?> addCitizenToGuardian(
+      String guardianId, String citizenId) async {
+    return null;
+  }
 
   // Week API functions
 
   /// Get all weeks from a user with the Id [id]
-  Future<List<WeekNameModel>> getWeekNames(String id) async {}
+  Future<List<WeekNameModel>?> getWeekNames(String id) async {
+    return null;
+  }
 
   /// Get a week base on
   /// [id] (User id)
   /// [year]
   /// [weekNumber]
-  Future<WeekModel> getWeek(String id, int year, int weekNumber) async {}
+  Future<WeekModel?> getWeek(String id, int year, int weekNumber) async {
+    return null;
+  }
 
   /// Update a week with all the fields in the given [week]
   /// With the userid [id]
   /// Year [year]
   /// And Weeknumber [weekNumber]
-  Future<WeekModel> updateWeek(
-      String id, int year, int weekNumber, WeekModel week) async {}
+  Future<WeekModel?> updateWeek(
+      String id, int year, int weekNumber, WeekModel week) async {
+    return null;
+  }
 
   /// Delete a Week With the userid [id]
   /// Year [year]
   /// And Weeknumber [weekNumber]
-  Future<bool> deleteWeek(String id, int year, int weekNumber) async {}
+  Future<bool?> deleteWeek(String id, int year, int weekNumber) async {
+    return null;
+  }
 
   // Week Template API functions
 
   /// Get all weekTemplateNameModels
-  Future<List<WeekTemplateNameModel>> getTemplateNames() async {}
+  Future<List<WeekTemplateNameModel>?> getTemplateNames() async {
+    return null;
+  }
 
   /// Create a week template in the database from [template]
-  Future<WeekTemplateModel> createTemplate(WeekTemplateModel template) async {}
+  Future<WeekTemplateModel?> createTemplate(WeekTemplateModel template) async {
+    return null;
+  }
 
   /// get a template by its [id]
-  Future<WeekTemplateModel> getTemplate(int id) async {}
+  Future<WeekTemplateModel?> getTemplate(int id) async {
+    return null;
+  }
 
   /// Update a template with all the values from [template]
-  Future<WeekTemplateModel> updateTemplate(WeekTemplateModel template) async {}
+  Future<WeekTemplateModel?> updateTemplate(WeekTemplateModel template) async {
+    return null;
+  }
 
   /// Delete a template with the id [id]
-  Future<bool> deleteTemplate(int id) async {}
+  Future<bool?> deleteTemplate(int id) async {
+    return null;
+  }
 
   /// Gets the version of the currently running db
-  Future<int> getCurrentDBVersion() async {}
+  Future<int?> getCurrentDBVersion() async {
+    return null;
+  }
 
   /// Force close the db
   Future<void> closeDb() async {}

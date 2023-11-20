@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Throws on JSON is null', () {
-    const Map<String, dynamic> json = null; // ignore: avoid_init_to_null
+    const Map<String, dynamic>? json = null; // ignore: avoid_init_to_null
     expect(() => DepartmentModel.fromJson(json), throwsFormatException);
   });
 
@@ -26,7 +26,7 @@ void main() {
     final DepartmentModel model = DepartmentModel.fromJson(json);
     expect(model.id, json['id']);
     expect(model.name, json['name']);
-    expect(model.members.map((DisplayNameModel val) => val.toJson()),
+    expect(model.members!.map((DisplayNameModel val) => val.toJson()),
         <Map<String, dynamic>>[userJson]);
     expect(model.resources, json['resources']);
   });

@@ -9,7 +9,7 @@ abstract class WeekBaseModel {
   WeekBaseModel({this.thumbnail, this.name, this.days});
 
   /// Constructor from Json
-  WeekBaseModel.fromJson(Map<String, dynamic> json) {
+  WeekBaseModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[WeekBaseModel]: Cannot initialize from null');
@@ -31,7 +31,7 @@ abstract class WeekBaseModel {
   }
 
   /// Creates a weekbase model from offline database json
-  WeekBaseModel.fromDatabase(Map<String, dynamic> json) {
+  WeekBaseModel.fromDatabase(Map<String, dynamic>? json) {
     if (json == null) {
       throw const FormatException(
           '[WeekBaseModel]: Cannot initialize from null');
@@ -54,11 +54,11 @@ abstract class WeekBaseModel {
   }
 
   /// Id for a pictogram to be used as thumbnail
-  PictogramModel thumbnail;
+  PictogramModel? thumbnail;
 
   /// Name for the weekModel
-  String name;
+  String? name;
 
   /// List of seven days connected to the week
-  List<WeekdayModel> days;
+  List<WeekdayModel>? days;
 }

@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 5))
+
 import 'dart:typed_data';
 
 import 'package:api_client/api/pictogram_api.dart';
@@ -9,8 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
-  PictogramApi pictogramApi;
-  HttpMock httpMock;
+  HttpMock httpMock = HttpMock();
+  PictogramApi pictogramApi = PictogramApi(httpMock);
 
   final List<PictogramModel> grams = <PictogramModel>[
     PictogramModel(
@@ -39,8 +41,8 @@ Future<void> main() async {
   test('Should be able to search pictograms', () {
     pictogramApi
         .getAll(query: 'Cat', page: 0, pageSize: 10)
-        .listen(expectAsync1((List<PictogramModel> pictograms) {
-      expect(pictograms.map((PictogramModel gram) => gram.toJson()),
+        .listen(expectAsync1((List<PictogramModel>? pictograms) {
+      expect(pictograms!.map((PictogramModel gram) => gram.toJson()),
           grams.map((PictogramModel gram) => gram.toJson()));
     }));
 
@@ -55,7 +57,7 @@ Future<void> main() async {
   });
 
   test('Get Pictogram with specific ID', () {
-    pictogramApi.get(grams[0].id).listen(expectAsync1((PictogramModel model) {
+    pictogramApi.get(grams[0].id!).listen(expectAsync1((PictogramModel model) {
       expect(model.toJson(), grams[0].toJson());
     }));
 
@@ -98,7 +100,7 @@ Future<void> main() async {
   });
 
   test('Delete pictogram', () {
-    pictogramApi.delete(grams[0].id).listen(expectAsync1((bool success) {
+    pictogramApi.delete(grams[0].id!).listen(expectAsync1((bool success) {
       expect(success, isTrue);
     }));
 
@@ -120,7 +122,7 @@ Future<void> main() async {
     ]);
 
     pictogramApi
-        .updateImage(grams[0].id, image)
+        .updateImage(grams[0].id!, image)
         .listen(expectAsync1((PictogramModel model) {
       expect(model.id, grams[0].id);
     }));
@@ -136,15 +138,18 @@ Future<void> main() async {
   });
 
   test('Get raw image', () {
-    final List<int> imagebytes = Uint8List.fromList(<int>[
+    final Uint8List imagebytes = Uint8List.fromList(<int>[
       1,
       2,
       3,
       4,
     ]);
-    pictogramApi.getImage(grams[0].id).listen(expectAsync1((Image imageWidget) {
+
+    pictogramApi
+        .getImage(grams[0].id!)
+        .listen(expectAsync1((Image imageWidget) {
       if (imageWidget.image is MemoryImage) {
-        final MemoryImage currentImage = imageWidget.image;
+        final MemoryImage currentImage = imageWidget.image as MemoryImage;
         expect(currentImage.bytes, imagebytes);
       } else {
         fail('Image is not a MemoryImage');
